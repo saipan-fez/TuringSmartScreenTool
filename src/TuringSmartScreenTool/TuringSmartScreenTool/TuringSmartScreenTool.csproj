@@ -1,0 +1,82 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
+        <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+        <RootNamespace>TuringSmartScreenTool</RootNamespace>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <Platforms>x86;x64</Platforms>
+        <RuntimeIdentifiers>win10-x86;win10-x64</RuntimeIdentifiers>
+        <UseWPF>true</UseWPF>
+        <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+        <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
+        <StartupObject>TuringSmartScreenTool.Program</StartupObject>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <NoWarn>1701;1702;CA1416</NoWarn>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <None Remove="Views\CommonEditor.xaml" />
+      <None Remove="Views\ImageEditor.xaml" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="6.0.0" />
+        <PackageReference Include="Microsoft.Toolkit" Version="7.1.2" />
+        <PackageReference Include="Microsoft.Toolkit.Mvvm" Version="7.1.2" />
+        <PackageReference Include="ModernWpfUI" Version="0.9.4" />
+        <PackageReference Include="NLog.Extensions.Logging" Version="1.7.4" />
+        <PackageReference Include="OpenCvSharp4" Version="4.5.5.20211231" />
+        <PackageReference Include="OpenCvSharp4.runtime.win" Version="4.5.5.20211231" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.1" />
+        <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
+        <PackageReference Include="ReactiveProperty.WPF" Version="8.0.5" />
+        <PackageReference Include="XamlAnimatedGif" Version="2.0.2" />
+        <Manifest Include="$(ApplicationManifest)" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\TuringSmartScreenLibrary\TuringSmartScreenLibrary.csproj" />
+        <ProjectReference Include="..\..\TuringSmartScreenTool.HardwareMonitor\TuringSmartScreenTool.HardwareMonitor.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Views\ImageEditor.xaml.cs">
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Views\CommonEditor.xaml.cs">
+        <SubType>Code</SubType>
+      </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="NLog.Release.config" Condition="'$(Configuration)'=='RELEASE'">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="NLog.Debug.config" Condition="'$(Configuration)'=='DEBUG'">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Page Update="Views\ImageEditor.xaml">
+        <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+        <SubType>Designer</SubType>
+      </Page>
+      <Page Update="Views\CommonEditor.xaml">
+        <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+        <SubType>Designer</SubType>
+      </Page>
+      <Page Update="Views\Themes\Light.xaml">
+        <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+        <SubType>Designer</SubType>
+      </Page>
+      <Page Update="Views\Themes\Dark.xaml">
+        <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+        <SubType>Designer</SubType>
+      </Page>
+    </ItemGroup>
+</Project>

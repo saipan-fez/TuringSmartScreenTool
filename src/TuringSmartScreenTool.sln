@@ -1,0 +1,65 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32328.378
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "TuringSmartScreenTool (Package)", "TuringSmartScreenTool\TuringSmartScreenTool (Package)\TuringSmartScreenTool (Package).wapproj", "{DA7E305A-F850-40F3-AB45-F06145A77AD0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TuringSmartScreenTool", "TuringSmartScreenTool\TuringSmartScreenTool\TuringSmartScreenTool.csproj", "{00B226D4-D70C-4CC7-AA1A-0CC53A37EEAE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TuringSmartScreenLibrary", "TuringSmartScreenLibrary\TuringSmartScreenLibrary.csproj", "{FCC7D6A1-555A-4C66-8A16-B906C2EEDFB2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TuringSmartScreenTool.HardwareMonitor", "TuringSmartScreenTool.HardwareMonitor\TuringSmartScreenTool.HardwareMonitor.csproj", "{85CD646E-AD8D-4811-A247-5884D9FE0333}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DA7E305A-F850-40F3-AB45-F06145A77AD0}.Debug|x64.ActiveCfg = Debug|x64
+		{DA7E305A-F850-40F3-AB45-F06145A77AD0}.Debug|x64.Build.0 = Debug|x64
+		{DA7E305A-F850-40F3-AB45-F06145A77AD0}.Debug|x64.Deploy.0 = Debug|x64
+		{DA7E305A-F850-40F3-AB45-F06145A77AD0}.Debug|x86.ActiveCfg = Debug|x86
+		{DA7E305A-F850-40F3-AB45-F06145A77AD0}.Debug|x86.Build.0 = Debug|x86
+		{DA7E305A-F850-40F3-AB45-F06145A77AD0}.Debug|x86.Deploy.0 = Debug|x86
+		{DA7E305A-F850-40F3-AB45-F06145A77AD0}.Release|x64.ActiveCfg = Release|x64
+		{DA7E305A-F850-40F3-AB45-F06145A77AD0}.Release|x64.Build.0 = Release|x64
+		{DA7E305A-F850-40F3-AB45-F06145A77AD0}.Release|x64.Deploy.0 = Release|x64
+		{DA7E305A-F850-40F3-AB45-F06145A77AD0}.Release|x86.ActiveCfg = Release|x86
+		{DA7E305A-F850-40F3-AB45-F06145A77AD0}.Release|x86.Build.0 = Release|x86
+		{DA7E305A-F850-40F3-AB45-F06145A77AD0}.Release|x86.Deploy.0 = Release|x86
+		{00B226D4-D70C-4CC7-AA1A-0CC53A37EEAE}.Debug|x64.ActiveCfg = Debug|x64
+		{00B226D4-D70C-4CC7-AA1A-0CC53A37EEAE}.Debug|x64.Build.0 = Debug|x64
+		{00B226D4-D70C-4CC7-AA1A-0CC53A37EEAE}.Debug|x86.ActiveCfg = Debug|x86
+		{00B226D4-D70C-4CC7-AA1A-0CC53A37EEAE}.Debug|x86.Build.0 = Debug|x86
+		{00B226D4-D70C-4CC7-AA1A-0CC53A37EEAE}.Release|x64.ActiveCfg = Release|x64
+		{00B226D4-D70C-4CC7-AA1A-0CC53A37EEAE}.Release|x64.Build.0 = Release|x64
+		{00B226D4-D70C-4CC7-AA1A-0CC53A37EEAE}.Release|x86.ActiveCfg = Release|x86
+		{00B226D4-D70C-4CC7-AA1A-0CC53A37EEAE}.Release|x86.Build.0 = Release|x86
+		{FCC7D6A1-555A-4C66-8A16-B906C2EEDFB2}.Debug|x64.ActiveCfg = Debug|x64
+		{FCC7D6A1-555A-4C66-8A16-B906C2EEDFB2}.Debug|x64.Build.0 = Debug|x64
+		{FCC7D6A1-555A-4C66-8A16-B906C2EEDFB2}.Debug|x86.ActiveCfg = Debug|x86
+		{FCC7D6A1-555A-4C66-8A16-B906C2EEDFB2}.Debug|x86.Build.0 = Debug|x86
+		{FCC7D6A1-555A-4C66-8A16-B906C2EEDFB2}.Release|x64.ActiveCfg = Release|x64
+		{FCC7D6A1-555A-4C66-8A16-B906C2EEDFB2}.Release|x64.Build.0 = Release|x64
+		{FCC7D6A1-555A-4C66-8A16-B906C2EEDFB2}.Release|x86.ActiveCfg = Release|x86
+		{FCC7D6A1-555A-4C66-8A16-B906C2EEDFB2}.Release|x86.Build.0 = Release|x86
+		{85CD646E-AD8D-4811-A247-5884D9FE0333}.Debug|x64.ActiveCfg = Debug|x64
+		{85CD646E-AD8D-4811-A247-5884D9FE0333}.Debug|x64.Build.0 = Debug|x64
+		{85CD646E-AD8D-4811-A247-5884D9FE0333}.Debug|x86.ActiveCfg = Debug|x86
+		{85CD646E-AD8D-4811-A247-5884D9FE0333}.Debug|x86.Build.0 = Debug|x86
+		{85CD646E-AD8D-4811-A247-5884D9FE0333}.Release|x64.ActiveCfg = Release|x86
+		{85CD646E-AD8D-4811-A247-5884D9FE0333}.Release|x64.Build.0 = Release|x86
+		{85CD646E-AD8D-4811-A247-5884D9FE0333}.Release|x86.ActiveCfg = Release|x86
+		{85CD646E-AD8D-4811-A247-5884D9FE0333}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9EB7864D-C641-4F68-B8E1-2D03A0DDA087}
+	EndGlobalSection
+EndGlobal

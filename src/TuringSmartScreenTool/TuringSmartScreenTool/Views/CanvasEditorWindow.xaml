@@ -1,0 +1,174 @@
+﻿<Window x:Class="TuringSmartScreenTool.Views.CanvasEditorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:vm="clr-namespace:TuringSmartScreenTool.ViewModels"
+        xmlns:cvt="clr-namespace:TuringSmartScreenTool.Views.Converters"
+        xmlns:view="clr-namespace:TuringSmartScreenTool.Views"
+        xmlns:ui="http://schemas.modernwpf.com/2019"
+        d:DataContext="{d:DesignInstance vm:CanvasEditorWindowViewModel}"
+        mc:Ignorable="d"
+        Title="Turing Smart Screen Tool (Edit)"
+        Width="870" Height="800">
+    <Window.Resources>
+        <cvt:BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
+        <cvt:BooleanToVisibilityConverter x:Key="InverseBooleanToVisibility" TrueValue="Collapsed" FalseValue="Visible"/>
+        <cvt:InverseBooleanConverter x:Key="InverseBoolean"/>
+        <cvt:EnumToBooleanConverter x:Key="EnumToBoolean"/>
+        <cvt:EnumToVisibilityConverter x:Key="EnumToVisibility"/>
+        <cvt:ObjectToBrushConverter x:Key="ObjectToBrush"/>
+        <cvt:NullToNotDependencyConverter x:Key="NullToNotDependency"/>
+        <cvt:BooleanToStretchConverter x:Key="BooleanToStretch" TrueValue="None" FalseValue="Uniform"/>
+    </Window.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*" MinWidth="300"/>
+            <ColumnDefinition Width="2"/>
+            <ColumnDefinition Width="*" MinWidth="320"/>
+        </Grid.ColumnDefinitions>
+        <Viewbox Grid.Column="0" Margin="10">
+            <Border BorderThickness="0.5">
+                <ListBox x:Name="DrawingCanvas" d:Width="320" d:Height="480"
+                         MouseDown="DrawingCanvas_MouseDown"
+                         Width="{Binding CanvasWidth.Value}" Height="{Binding CanvasHeight.Value}"
+                         ItemsSource="{Binding EditorViewModels}"
+                         SelectedIndex="{Binding SelectedEditorViewModelIndex.Value}"
+                         Background="{Binding CanvasBackground.Value, Converter={StaticResource ObjectToBrush}}">
+                    <ListBox.Resources>
+                        <DataTemplate DataType="{x:Type vm:TextBlockEditorViewModel}">
+                            <Thumb PreviewMouseDown="Editor_PreviewMouseDown">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="DragDelta">
+                                        <i:InvokeCommandAction Command="{Binding DragDeltaCommand}" PassEventArgsToCommand="True"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                                <Thumb.Template>
+                                    <ControlTemplate TargetType="Thumb">
+                                        <Grid Background="Transparent">
+                                            <Viewbox Stretch="{Binding IsAutoSize.Value, Converter={StaticResource BooleanToStretch}}"
+                                                     Width="{Binding Width.Value, Converter={StaticResource NullToNotDependency}}"
+                                                     Height="{Binding Height.Value, Converter={StaticResource NullToNotDependency}}">
+                                                <TextBlock FontSize="{Binding FontSize.Value, Converter={StaticResource NullToNotDependency}}"
+                                                           FontWeight="{Binding SelectedFontWeight.Value, Converter={StaticResource NullToNotDependency}}"
+                                                           FontFamily="{Binding SelectedFontFamily.Value, Converter={StaticResource NullToNotDependency}}"
+                                                           Foreground="{Binding Foreground.Value, Converter={StaticResource ObjectToBrush}}"
+                                                           Text="{Binding Text.Value, Converter={StaticResource NullToNotDependency}}" />
+                                            </Viewbox>
+                                        </Grid>
+                                    </ControlTemplate>
+                                </Thumb.Template>
+                            </Thumb>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:ImageEditorViewModel}">
+                            <Thumb PreviewMouseDown="Editor_PreviewMouseDown">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="DragDelta">
+                                        <i:InvokeCommandAction Command="{Binding DragDeltaCommand}" PassEventArgsToCommand="True"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                                <Thumb.Template>
+                                    <ControlTemplate>
+                                        <Grid Background="Transparent">
+                                            <Image Source="{Binding ImageFilePath.Value, Converter={StaticResource NullToNotDependency}}"
+                                                   Stretch="{Binding IsAutoSize.Value, Converter={StaticResource BooleanToStretch}}"
+                                                   Width="{Binding Width.Value, Converter={StaticResource NullToNotDependency}}"
+                                                   Height="{Binding Height.Value, Converter={StaticResource NullToNotDependency}}"/>
+                                        </Grid>
+                                    </ControlTemplate>
+                                </Thumb.Template>
+                            </Thumb>
+                        </DataTemplate>
+                    </ListBox.Resources>
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas/>
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Style.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="BorderBrush" Value="Red"/>
+                                    <Setter Property="BorderThickness" Value="1"/>
+                                    <Setter Property="Cursor" Value="SizeAll"/>
+                                </Trigger>
+                            </Style.Triggers>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ListBoxItem">
+                                        <Border BorderBrush="{TemplateBinding BorderBrush}"
+                                                BorderThickness="{TemplateBinding BorderThickness}"
+                                                Cursor="{TemplateBinding Cursor}">
+                                            <ContentPresenter />
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="Canvas.Left" Value="{Binding CanvasLeft.Value, Converter={StaticResource NullToNotDependency}}" />
+                            <Setter Property="Canvas.Top" Value="{Binding CanvasTop.Value, Converter={StaticResource NullToNotDependency}}" />
+                            <Setter Property="Canvas.Right" Value="{Binding CanvasRight.Value, Converter={StaticResource NullToNotDependency}}" />
+                            <Setter Property="Canvas.Bottom" Value="{Binding CanvasBottom.Value, Converter={StaticResource NullToNotDependency}}" />
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                </ListBox>
+            </Border>
+        </Viewbox>
+        <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch"/>
+        <ui:ScrollViewerEx Grid.Column="2" Padding="10">
+            <ui:SimpleStackPanel Orientation="Vertical" Style="{StaticResource PageSimpleStackPanel}">
+                <TextBlock Text="Background" Style="{StaticResource ContentTitleTextBlock}"/>
+                <ui:SimpleStackPanel Orientation="Vertical" Style="{StaticResource ContentSimpleStackPanel}">
+                    <RadioButton Content="Solid Color" GroupName="BackgroundType"
+                                 IsChecked="{Binding InputCanvasBackgroundType.Value, ConverterParameter=SolidColor, Converter={StaticResource EnumToBoolean}}"/>
+                    <ui:SimpleStackPanel Orientation="Horizontal" Spacing="10">
+                        <Button Content="Select" Command="{Binding SelectBackgroundColorCommand}"/>
+                        <Border BorderThickness="1" Width="100" Height="30"
+                                Background="{Binding InputCanvasBackgroundColor.Value, Converter={StaticResource ObjectToBrush}}"/>
+                        <TextBlock Text="{Binding InputCanvasBackgroundColor.Value}"
+                                   VerticalAlignment="Center"/>
+                    </ui:SimpleStackPanel>
+                    <RadioButton Content="Image" GroupName="BackgroundType"
+                                 IsChecked="{Binding InputCanvasBackgroundType.Value, ConverterParameter=Image, Converter={StaticResource EnumToBoolean}}"/>
+                    <ui:SimpleStackPanel Orientation="Horizontal" Spacing="10">
+                        <Button Content="Select" Command="{Binding SelectBackgroundImageCommand}"/>
+                        <TextBlock Text="{Binding InputCanvasBackgroundImagePath.Value}"
+                                   VerticalAlignment="Center"/>
+                    </ui:SimpleStackPanel>
+                </ui:SimpleStackPanel>
+                <TextBlock Text="Element" Style="{StaticResource ContentTitleTextBlock}"/>
+                <ui:SimpleStackPanel Orientation="Horizontal" Spacing="10">
+                    <ComboBox VerticalAlignment="Center" MinWidth="200"
+                              ItemsSource="{Binding EditorCollection}"
+                              SelectedItem="{Binding SelectedEditor.Value}"/>
+                    <ui:AppBarButton Icon="Add" ToolTip="Add" Command="{Binding AddEditorCommand}"/>
+                </ui:SimpleStackPanel>
+                <ListBox Height="300"
+                         ItemsSource="{Binding EditorViewModels}"
+                         SelectedIndex="{Binding SelectedEditorViewModelIndex.Value}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate DataType="{x:Type vm:CommonEditorViewModel}">
+                            <TextBlock Text="{Binding Name.Value}"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <ui:SimpleStackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
+                    <ui:AppBarButton Icon="59150" ToolTip="Move Up" Command="{Binding MoveUpEditorCommand}"/>
+                    <ui:AppBarButton Icon="59149" ToolTip="Move Down" Command="{Binding MoveDownEditorCommand}"/>
+                    <ui:AppBarButton Icon="Cancel" ToolTip="Delete" Command="{Binding DeleteSelectedEditorCommand}"/>
+                </ui:SimpleStackPanel>
+                <ContentPresenter Content="{Binding SelectedEditorViewModel.Value}">
+                    <ContentPresenter.Resources>
+                        <DataTemplate DataType="{x:Type vm:TextBlockEditorViewModel}">
+                            <view:TextBlockEditor />
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:ImageEditorViewModel}">
+                            <view:ImageEditor />
+                        </DataTemplate>
+                    </ContentPresenter.Resources>
+                </ContentPresenter>
+            </ui:SimpleStackPanel>
+        </ui:ScrollViewerEx>
+    </Grid>
+</Window>
