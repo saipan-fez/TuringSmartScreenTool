@@ -361,3 +361,5 @@ src/coreclr/System.Private.CoreLib/common
 # Temporary artifacts from local libraries stress builds
 .dotnet-daily/
 run-stress-*
+
+BundleArtifacts/

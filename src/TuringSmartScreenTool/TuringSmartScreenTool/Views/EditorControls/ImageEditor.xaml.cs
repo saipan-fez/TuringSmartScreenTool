@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace TuringSmartScreenTool.Views
+namespace TuringSmartScreenTool.Views.EditorControls
 {
     public partial class ImageEditor : UserControl
     {

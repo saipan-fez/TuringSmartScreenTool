@@ -6,22 +6,11 @@
         xmlns:ui="http://schemas.modernwpf.com/2019"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:vm="clr-namespace:TuringSmartScreenTool.ViewModels"
-        xmlns:cvt="clr-namespace:TuringSmartScreenTool.Views.Converters"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance vm:MainWindowViewModel}"
         ui:WindowHelper.UseModernWindowStyle="True"
         Title="Turing Smart Screen Tool"
         Width="870" Height="680">
-    <Window.Resources>
-        <cvt:BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
-        <cvt:BooleanToVisibilityConverter x:Key="InverseBooleanToVisibility" TrueValue="Collapsed" FalseValue="Visible"/>
-        <cvt:InverseBooleanConverter x:Key="InverseBoolean"/>
-        <cvt:EnumToBooleanConverter x:Key="EnumToBoolean"/>
-        <cvt:EnumToVisibilityConverter x:Key="EnumToVisibility"/>
-        <cvt:ObjectToBrushConverter x:Key="ObjectToBrush"/>
-        <cvt:NullToNotDependencyConverter x:Key="NullToNotDependency"/>
-        <cvt:BooleanToStretchConverter x:Key="BooleanToStretch" TrueValue="None" FalseValue="Uniform"/>
-    </Window.Resources>
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding WindowLoadedCommand}"/>

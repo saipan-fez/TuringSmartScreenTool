@@ -1,9 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using TuringSmartScreenTool.Controllers;
 
 namespace TuringSmartScreenTool
 {
@@ -20,6 +17,10 @@ namespace TuringSmartScreenTool
 
             using (var serviceProvider = serviceCollection.BuildServiceProvider())
             {
+                // TODO: async
+                var hardwareMonitor = serviceProvider.GetService<IHardwareMonitorController>();
+                hardwareMonitor.InitializeAsync().AsTask().Wait();
+
                 var app = new App(serviceProvider);
                 app.Run();
             }

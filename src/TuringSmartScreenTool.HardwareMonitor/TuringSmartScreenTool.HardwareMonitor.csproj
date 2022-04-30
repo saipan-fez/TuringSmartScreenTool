@@ -6,9 +6,9 @@
     <Platforms>x86;x64</Platforms>
     <UseWPF>true</UseWPF>
     <RuntimeIdentifiers>win10-x86;win10-x64</RuntimeIdentifiers>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
   </PropertyGroup>
-
   <ItemGroup>
+    <ProjectReference Include="..\openhardwaremonitor\OpenHardwareMonitorLib\OpenHardwareMonitorLib.csproj" />
   </ItemGroup>
 </Project>

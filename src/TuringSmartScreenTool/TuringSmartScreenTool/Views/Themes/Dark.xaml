@@ -3,4 +3,8 @@
     <Style TargetType="Border">
         <Setter Property="BorderBrush" Value="White"/>
     </Style>
+    <Style TargetType="TreeView">
+        <Setter Property="BorderBrush" Value="White"/>
+        <Setter Property="BorderThickness" Value="1"/>
+    </Style>
 </ResourceDictionary>

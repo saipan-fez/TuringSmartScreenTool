@@ -2,6 +2,7 @@
 using System.Windows.Input;
 using Microsoft.Extensions.Logging;
 using TuringSmartScreenTool.ViewModels;
+using TuringSmartScreenTool.ViewModels.Editors;
 
 namespace TuringSmartScreenTool.Views
 {
@@ -27,7 +28,7 @@ namespace TuringSmartScreenTool.Views
         {
             if (sender is not FrameworkElement elem)
                 return;
-            if (elem.DataContext is not CommonEditorViewModel vm)
+            if (elem.DataContext is not BaseEditorViewModel vm)
                 return;
 
             var index = _mainWindowViewModel.EditorViewModels.IndexOf(vm);
@@ -37,7 +38,9 @@ namespace TuringSmartScreenTool.Views
 
         private void DrawingCanvas_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            _mainWindowViewModel.SelectedEditorViewModelIndex.Value = -1;
+            // TODO: System.Runtime.InteropServices.COMException
+            //       Right数値をキーボードで変更してこのイベントを発生させると例外が発生する（原因不明）
+            //_mainWindowViewModel.SelectedEditorViewModelIndex.Value = -1;
         }
     }
 }

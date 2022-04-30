@@ -19,10 +19,17 @@
 
     <ItemGroup>
       <None Remove="Views\CommonEditor.xaml" />
+      <None Remove="Views\EditorControls\DateTimeTextEditor.xaml" />
+      <None Remove="Views\EditorControls\HardwareNameEditor.xaml" />
+      <None Remove="Views\EditorControls\HardwareSensorIndicator.xaml" />
+      <None Remove="Views\EditorControls\HardwareSensorTextEditor.xaml" />
+      <None Remove="Views\EditorControls\StaticTextBlockEditor.xaml" />
+      <None Remove="Views\HardwareSelectContentDialog.xaml" />
       <None Remove="Views\ImageEditor.xaml" />
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="Humanizer" Version="2.14.1" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="6.0.0" />
         <PackageReference Include="Microsoft.Toolkit" Version="7.1.2" />
@@ -35,19 +42,20 @@
         <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
         <PackageReference Include="ReactiveProperty.WPF" Version="8.0.5" />
         <PackageReference Include="XamlAnimatedGif" Version="2.0.2" />
+        <PackageReference Include="XamlRadialProgressBar" Version="1.0.3" />
         <Manifest Include="$(ApplicationManifest)" />
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\..\openhardwaremonitor\OpenHardwareMonitorLib\OpenHardwareMonitorLib.csproj" />
         <ProjectReference Include="..\..\TuringSmartScreenLibrary\TuringSmartScreenLibrary.csproj" />
-        <ProjectReference Include="..\..\TuringSmartScreenTool.HardwareMonitor\TuringSmartScreenTool.HardwareMonitor.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Update="Views\ImageEditor.xaml.cs">
+      <Compile Update="Views\EditorControls\ImageEditor.xaml.cs">
         <SubType>Code</SubType>
       </Compile>
-      <Compile Update="Views\CommonEditor.xaml.cs">
+      <Compile Update="Views\EditorControls\BaseEditor.xaml.cs">
         <SubType>Code</SubType>
       </Compile>
     </ItemGroup>
@@ -62,11 +70,11 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Page Update="Views\ImageEditor.xaml">
+      <Page Update="Views\EditorControls\ImageEditor.xaml">
         <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
         <SubType>Designer</SubType>
       </Page>
-      <Page Update="Views\CommonEditor.xaml">
+      <Page Update="Views\EditorControls\BaseEditor.xaml">
         <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
         <SubType>Designer</SubType>
       </Page>

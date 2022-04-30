@@ -45,6 +45,7 @@
 
     <Capabilities>
         <rescap:Capability Name="runFullTrust" />
-        <rescap:Capability Name="extendedExecutionUnconstrained"/>
+        <!-- TODO: uncomment -->
+        <rescap:Capability Name="allowElevation" />
     </Capabilities>
 </Package>

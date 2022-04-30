@@ -1,0 +1,25 @@
+﻿<UserControl x:Class="TuringSmartScreenTool.Views.EditorControls.DateTimeTextEditor"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:evm="clr-namespace:TuringSmartScreenTool.ViewModels.Editors"
+             xmlns:editor="clr-namespace:TuringSmartScreenTool.Views.EditorControls"
+             xmlns:ui="http://schemas.modernwpf.com/2019"
+             mc:Ignorable="d"
+             d:Background="White"
+             d:DataContext="{d:DesignInstance evm:DateTimeTextEditorViewModel}">
+    <ui:SimpleStackPanel Orientation="Vertical" Style="{StaticResource PageSimpleStackPanel}">
+        <TextBlock Text="Time Zone" Style="{StaticResource ContentTitleTextBlock}"/>
+        <ComboBox ItemsSource="{Binding TimeZoneInfoCollection}"
+                  SelectedItem="{Binding SelectedTimeZoneInfo.Value}"
+                  DisplayMemberPath="DisplayName"
+                  MinWidth="200"/>
+        <TextBlock Text="Format" Style="{StaticResource ContentTitleTextBlock}"/>
+        <ComboBox ItemsSource="{Binding DateTimeFormatCollection}"
+                  SelectedItem="{Binding SelectedDateTimeFormat.Value}"
+                  DisplayMemberPath="DisplayName"
+                  MinWidth="200"/>
+        <editor:BaseTextBlockEditor/>
+    </ui:SimpleStackPanel>
+</UserControl>

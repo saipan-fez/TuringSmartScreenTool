@@ -11,6 +11,7 @@ namespace TuringSmartScreenTool.Helpers
         {
             visual.Dispatcher.Invoke(() =>
             {
+                // TODO: check DPI
                 var bounds = VisualTreeHelper.GetDescendantBounds(visual);
                 var render = new RenderTargetBitmap((int)bounds.Width, (int)bounds.Height, 96, 96, PixelFormats.Pbgra32);
                 var darwingVisual = new DrawingVisual();

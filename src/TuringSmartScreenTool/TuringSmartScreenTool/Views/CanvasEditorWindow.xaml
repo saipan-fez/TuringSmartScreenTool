@@ -5,23 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:vm="clr-namespace:TuringSmartScreenTool.ViewModels"
-        xmlns:cvt="clr-namespace:TuringSmartScreenTool.Views.Converters"
-        xmlns:view="clr-namespace:TuringSmartScreenTool.Views"
+        xmlns:evm="clr-namespace:TuringSmartScreenTool.ViewModels.Editors"
+        xmlns:editor="clr-namespace:TuringSmartScreenTool.Views.EditorControls"
         xmlns:ui="http://schemas.modernwpf.com/2019"
+        xmlns:xrpb="http://XamlRadialProgressBar/DotNet"
         d:DataContext="{d:DesignInstance vm:CanvasEditorWindowViewModel}"
         mc:Ignorable="d"
         Title="Turing Smart Screen Tool (Edit)"
-        Width="870" Height="800">
-    <Window.Resources>
-        <cvt:BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
-        <cvt:BooleanToVisibilityConverter x:Key="InverseBooleanToVisibility" TrueValue="Collapsed" FalseValue="Visible"/>
-        <cvt:InverseBooleanConverter x:Key="InverseBoolean"/>
-        <cvt:EnumToBooleanConverter x:Key="EnumToBoolean"/>
-        <cvt:EnumToVisibilityConverter x:Key="EnumToVisibility"/>
-        <cvt:ObjectToBrushConverter x:Key="ObjectToBrush"/>
-        <cvt:NullToNotDependencyConverter x:Key="NullToNotDependency"/>
-        <cvt:BooleanToStretchConverter x:Key="BooleanToStretch" TrueValue="None" FalseValue="Uniform"/>
-    </Window.Resources>
+        Width="870" Height="800" MinWidth="600" MinHeight="600">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="2*" MinWidth="300"/>
@@ -37,7 +28,7 @@
                          SelectedIndex="{Binding SelectedEditorViewModelIndex.Value}"
                          Background="{Binding CanvasBackground.Value, Converter={StaticResource ObjectToBrush}}">
                     <ListBox.Resources>
-                        <DataTemplate DataType="{x:Type vm:TextBlockEditorViewModel}">
+                        <DataTemplate DataType="{x:Type evm:BaseTextBlockEditorViewModel}">
                             <Thumb PreviewMouseDown="Editor_PreviewMouseDown">
                                 <i:Interaction.Triggers>
                                     <i:EventTrigger EventName="DragDelta">
@@ -61,7 +52,50 @@
                                 </Thumb.Template>
                             </Thumb>
                         </DataTemplate>
-                        <DataTemplate DataType="{x:Type vm:ImageEditorViewModel}">
+                        <DataTemplate DataType="{x:Type evm:HardwareSensorIndicatorEditorViewModel}">
+                            <Thumb PreviewMouseDown="Editor_PreviewMouseDown">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="DragDelta">
+                                        <i:InvokeCommandAction Command="{Binding DragDeltaCommand}" PassEventArgsToCommand="True"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                                <Thumb.Template>
+                                    <ControlTemplate TargetType="Thumb">
+                                        <Grid Background="Transparent">
+                                            <xrpb:RadialProgressBar Value="{Binding Value.Value, Mode=OneWay}"
+                                                                    Maximum="{Binding Max.Value}"
+                                                                    Minimum="{Binding Min.Value}"
+                                                                    Foreground="{Binding Foreground.Value, Converter={StaticResource ObjectToBrush}}"
+                                                                    OuterBackgroundBrush="{Binding Background.Value, Converter={StaticResource ObjectToBrush}}"
+                                                                    Visibility="{Binding Indicator.Value, ConverterParameter=Pie, Converter={StaticResource EnumToVisibility}}"
+                                                                    Width="{Binding Width.Value, Converter={StaticResource NullToNotDependency}}"
+                                                                    Height="{Binding Height.Value, Converter={StaticResource NullToNotDependency}}"
+                                                                    ArcMode="Pie"/>
+                                            <xrpb:RadialProgressBar Value="{Binding Value.Value, Mode=OneWay}"
+                                                                    Maximum="{Binding Max.Value}"
+                                                                    Minimum="{Binding Min.Value}"
+                                                                    Foreground="{Binding Foreground.Value, Converter={StaticResource ObjectToBrush}}"
+                                                                    OuterBackgroundBrush="{Binding Background.Value, Converter={StaticResource ObjectToBrush}}"
+                                                                    ArcBackgroundWidth="{Binding IndicatorArcWidth.Value}"
+                                                                    ArcWidth="{Binding IndicatorArcWidth.Value}"
+                                                                    Visibility="{Binding Indicator.Value, ConverterParameter=Ring, Converter={StaticResource EnumToVisibility}}"
+                                                                    Width="{Binding Width.Value, Converter={StaticResource NullToNotDependency}}"
+                                                                    Height="{Binding Height.Value, Converter={StaticResource NullToNotDependency}}"
+                                                                    ArcMode="Fill"/>
+                                            <ui:ProgressBar Value="{Binding Value.Value, Mode=OneWay}"
+                                                            Maximum="{Binding Max.Value}"
+                                                            Minimum="{Binding Min.Value}"
+                                                            Foreground="{Binding Foreground.Value, Converter={StaticResource ObjectToBrush}}"
+                                                            Background="{Binding Background.Value, Converter={StaticResource ObjectToBrush}}"
+                                                            Visibility="{Binding Indicator.Value, ConverterParameter=Bar, Converter={StaticResource EnumToVisibility}}"
+                                                            Width="{Binding Width.Value, Converter={StaticResource NullToNotDependency}}"
+                                                            Height="{Binding Height.Value, Converter={StaticResource NullToNotDependency}}"/>
+                                        </Grid>
+                                    </ControlTemplate>
+                                </Thumb.Template>
+                            </Thumb>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type evm:ImageEditorViewModel}">
                             <Thumb PreviewMouseDown="Editor_PreviewMouseDown">
                                 <i:Interaction.Triggers>
                                     <i:EventTrigger EventName="DragDelta">
@@ -148,7 +182,7 @@
                          ItemsSource="{Binding EditorViewModels}"
                          SelectedIndex="{Binding SelectedEditorViewModelIndex.Value}">
                     <ListBox.ItemTemplate>
-                        <DataTemplate DataType="{x:Type vm:CommonEditorViewModel}">
+                        <DataTemplate DataType="{x:Type evm:BaseEditorViewModel}">
                             <TextBlock Text="{Binding Name.Value}"/>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
@@ -160,11 +194,23 @@
                 </ui:SimpleStackPanel>
                 <ContentPresenter Content="{Binding SelectedEditorViewModel.Value}">
                     <ContentPresenter.Resources>
-                        <DataTemplate DataType="{x:Type vm:TextBlockEditorViewModel}">
-                            <view:TextBlockEditor />
+                        <DataTemplate DataType="{x:Type evm:BaseTextBlockEditorViewModel}">
+                            <editor:BaseTextBlockEditor />
                         </DataTemplate>
-                        <DataTemplate DataType="{x:Type vm:ImageEditorViewModel}">
-                            <view:ImageEditor />
+                        <DataTemplate DataType="{x:Type evm:ImageEditorViewModel}">
+                            <editor:ImageEditor />
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type evm:HardwareNameTextBlockEditorViewModel}">
+                            <editor:HardwareNameEditor />
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type evm:HardwareSensorTextBlockEditorViewModel}">
+                            <editor:HardwareSensorTextEditor />
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type evm:HardwareSensorIndicatorEditorViewModel}">
+                            <editor:HardwareSensorIndicator />
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type evm:DateTimeTextEditorViewModel}">
+                            <editor:DateTimeTextEditor />
                         </DataTemplate>
                     </ContentPresenter.Resources>
                 </ContentPresenter>

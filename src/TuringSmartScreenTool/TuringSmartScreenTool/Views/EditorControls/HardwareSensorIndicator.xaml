@@ -1,0 +1,83 @@
+﻿<UserControl x:Class="TuringSmartScreenTool.Views.EditorControls.HardwareSensorIndicator"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:evm="clr-namespace:TuringSmartScreenTool.ViewModels.Editors"
+             xmlns:editor="clr-namespace:TuringSmartScreenTool.Views.EditorControls"
+             xmlns:ui="http://schemas.modernwpf.com/2019"
+             mc:Ignorable="d"
+             d:Background="White"
+             d:DataContext="{d:DesignInstance evm:HardwareSensorIndicatorEditorViewModel}">
+    <Grid>
+        <ui:SimpleStackPanel Orientation="Vertical" Style="{StaticResource PageSimpleStackPanel}">
+            <TextBlock Text="Hardware" Style="{StaticResource ContentTitleTextBlock}"/>
+            <ui:SimpleStackPanel Orientation="Horizontal" Spacing="10">
+                <Button Content="Select" Command="{Binding SelectSensorCommand}"/>
+                <TextBlock Text="{Binding SensorName.Value}" VerticalAlignment="Center"/>
+            </ui:SimpleStackPanel>
+            <TextBlock Text="Visual" Style="{StaticResource ContentTitleTextBlock}"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="5"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Style" VerticalAlignment="Center"/>
+                <ComboBox Grid.Row="0" Grid.Column="2"
+                          ItemsSource="{Binding IndicatorCollection}"
+                          SelectedItem="{Binding Indicator.Value}"
+                          MinWidth="200"/>
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Arc Width" VerticalAlignment="Center"/>
+                <ui:NumberBox Grid.Row="2" Grid.Column="2"
+                              Value="{Binding IndicatorArcWidth.Value}"
+                              IsEnabled="{Binding IsRingIndicator.Value}"/>
+            </Grid>
+            <TextBlock Text="Value Range" Style="{StaticResource ContentTitleTextBlock}"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="5"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Minimum" VerticalAlignment="Center"/>
+                <ui:NumberBox Grid.Row="0" Grid.Column="2"
+                              Maximum="{Binding Max.Value}"
+                              Value="{Binding Min.Value}"/>
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Maximum" VerticalAlignment="Center"/>
+                <ui:NumberBox Grid.Row="2" Grid.Column="2"
+                              Minimum="{Binding Min.Value}"
+                              Value="{Binding Max.Value}"/>
+            </Grid>
+            <TextBlock Text="Color" Style="{StaticResource ContentTitleTextBlock}"/>
+            <ui:SimpleStackPanel Style="{StaticResource ContentSimpleStackPanel}">
+                <TextBlock Text="Foreground" Style="{StaticResource ContentSubTitleTextBlock}"/>
+                <ui:SimpleStackPanel Orientation="Horizontal" Spacing="10">
+                    <Button Content="Select" Command="{Binding SelectForegroundCommand}"/>
+                    <Border BorderThickness="1" Width="100" Height="30"
+                            Background="{Binding Foreground.Value, Converter={StaticResource ObjectToBrush}}"/>
+                    <TextBlock Text="{Binding Foreground.Value}" VerticalAlignment="Center"/>
+                </ui:SimpleStackPanel>
+                <TextBlock Text="Background" Style="{StaticResource ContentSubTitleTextBlock}"/>
+                <CheckBox IsChecked="{Binding IsBackgroundTransparent.Value}" Content="Transparent"/>
+                <ui:SimpleStackPanel Orientation="Horizontal" Spacing="10">
+                    <Button Content="Select" Command="{Binding SelectBackgroundCommand}"/>
+                    <Border BorderThickness="1" Width="100" Height="30"
+                            Background="{Binding Background.Value, Converter={StaticResource ObjectToBrush}}"/>
+                    <TextBlock Text="{Binding Background.Value}" VerticalAlignment="Center"/>
+                </ui:SimpleStackPanel>
+            </ui:SimpleStackPanel>
+            <editor:BaseEditor/>
+        </ui:SimpleStackPanel>
+    </Grid>
+</UserControl>

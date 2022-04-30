@@ -44,7 +44,8 @@ namespace TuringSmartScreenTool.Controllers
             }
         }
 
-        private static readonly TimeSpan ScreenUpdateInterval = TimeSpan.FromMilliseconds(500);
+        // TODO: optional
+        private static readonly TimeSpan s_screenUpdateInterval = TimeSpan.FromMilliseconds(500);
 
         private readonly ILogger<string> _logger;
         private readonly ISerialDeviceFinder _serialPortDeviceFinder;
@@ -64,8 +65,6 @@ namespace TuringSmartScreenTool.Controllers
 
         public void Dispose()
         {
-            _logger.LogEnteredMethod();
-
             try
             {
                 foreach (var screenDevice in _devices.Keys)
@@ -79,8 +78,6 @@ namespace TuringSmartScreenTool.Controllers
 
         public IReadOnlyCollection<ScreenDevice> FindDevices()
         {
-            _logger.LogEnteredMethod();
-
             return _serialPortDeviceFinder.Find()
                 .Select(x => new ScreenDevice(x.PortName))
                 .ToList();
@@ -88,8 +85,6 @@ namespace TuringSmartScreenTool.Controllers
 
         public void Open(ScreenDevice screenDevice, OrientationType orientation)
         {
-            _logger.LogEnteredMethod();
-
             if (screenDevice is null)
             {
                 throw new ArgumentNullException(nameof(screenDevice));
@@ -123,8 +118,6 @@ namespace TuringSmartScreenTool.Controllers
 
         public void Close(ScreenDevice screenDevice)
         {
-            _logger.LogEnteredMethod();
-
             if (screenDevice is null)
             {
                 throw new ArgumentNullException(nameof(screenDevice));
@@ -146,8 +139,6 @@ namespace TuringSmartScreenTool.Controllers
 
         public OrientationType GetOrientation(ScreenDevice screenDevice)
         {
-            _logger.LogEnteredMethod();
-
             if (screenDevice is null)
             {
                 throw new ArgumentNullException(nameof(screenDevice));
@@ -170,8 +161,6 @@ namespace TuringSmartScreenTool.Controllers
 
         public void SetOrientation(ScreenDevice screenDevice, OrientationType orientation)
         {
-            _logger.LogEnteredMethod();
-
             if (screenDevice is null)
             {
                 throw new ArgumentNullException(nameof(screenDevice));
@@ -196,8 +185,6 @@ namespace TuringSmartScreenTool.Controllers
 
         public Size GetScreenSize(ScreenDevice screenDevice)
         {
-            _logger.LogEnteredMethod();
-
             if (screenDevice is null)
             {
                 throw new ArgumentNullException(nameof(screenDevice));
@@ -213,8 +200,6 @@ namespace TuringSmartScreenTool.Controllers
 
         public (double value, Entities.Capabilities capabilities) GetBrightness(ScreenDevice screenDevice)
         {
-            _logger.LogEnteredMethod();
-
             if (screenDevice is null)
             {
                 throw new ArgumentNullException(nameof(screenDevice));
@@ -239,8 +224,6 @@ namespace TuringSmartScreenTool.Controllers
 
         public void SetBrightness(ScreenDevice screenDevice, double value)
         {
-            _logger.LogEnteredMethod();
-
             if (screenDevice is null)
             {
                 throw new ArgumentNullException(nameof(screenDevice));
@@ -269,8 +252,6 @@ namespace TuringSmartScreenTool.Controllers
 
         public bool IsScreenTurnedOn(ScreenDevice screenDevice)
         {
-            _logger.LogEnteredMethod();
-
             if (screenDevice is null)
             {
                 throw new ArgumentNullException(nameof(screenDevice));
@@ -291,8 +272,6 @@ namespace TuringSmartScreenTool.Controllers
 
         public void TurnOnScreen(ScreenDevice screenDevice)
         {
-            _logger.LogEnteredMethod();
-
             if (screenDevice is null)
             {
                 throw new ArgumentNullException(nameof(screenDevice));
@@ -313,8 +292,6 @@ namespace TuringSmartScreenTool.Controllers
 
         public void TurnOffScreen(ScreenDevice screenDevice)
         {
-            _logger.LogEnteredMethod();
-
             if (screenDevice is null)
             {
                 throw new ArgumentNullException(nameof(screenDevice));
@@ -335,8 +312,6 @@ namespace TuringSmartScreenTool.Controllers
 
         public void StartToUpdateScreen(ScreenDevice screenDevice, Action<Mat<Vec3b>> updateScreenAction)
         {
-            _logger.LogEnteredMethod();
-
             if (updateScreenAction is null)
             {
                 throw new ArgumentNullException(nameof(updateScreenAction));
@@ -365,8 +340,6 @@ namespace TuringSmartScreenTool.Controllers
 
         public void StopToUpdateScreen(ScreenDevice screenDevice)
         {
-            _logger.LogEnteredMethod();
-
             if (!_devices.TryGetValue(screenDevice, out var d))
             {
                 throw new InvalidOperationException("device is not exists.");
@@ -409,9 +382,10 @@ namespace TuringSmartScreenTool.Controllers
 
             try
             {
+                var stopwatch = new Stopwatch();
                 while (!token.IsCancellationRequested)
                 {
-                    var stopwatch = Stopwatch.StartNew();
+                    stopwatch.Restart();
                     var start = stopwatch.Elapsed;
 
                     // update Mat
@@ -427,7 +401,7 @@ namespace TuringSmartScreenTool.Controllers
                     _logger.LogTrace("Update screen  time:{ms}ms", (waypoint1 - start).TotalMilliseconds);
                     _logger.LogTrace("Send to device time:{ms}ms", (finish - waypoint1).TotalMilliseconds);
 
-                    var waitTime = ScreenUpdateInterval - (finish - start);
+                    var waitTime = s_screenUpdateInterval - (finish - start);
                     if (waitTime > TimeSpan.Zero)
                     {
                         Thread.Sleep(waitTime);

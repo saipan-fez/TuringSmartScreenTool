@@ -1,19 +1,22 @@
 ﻿<Application x:Class="TuringSmartScreenTool.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:ui="http://schemas.modernwpf.com/2019">
+             xmlns:ui="http://schemas.modernwpf.com/2019"
+             xmlns:cvt="clr-namespace:TuringSmartScreenTool.Views.Converters">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <ui:XamlControlsResources />
+                <ResourceDictionary Source="Views/Themes/Common.xaml" />
                 <ui:ThemeResources>
                     <ui:ThemeResources.ThemeDictionaries>
-                        <ResourceDictionary x:Key="Light">
+                        <ResourceDictionary x:Key="Light" ui:ThemeDictionary.Key="Light">
                             <ResourceDictionary.MergedDictionaries>
                                 <ui:ColorPaletteResources/>
                                 <ResourceDictionary Source="Views/Themes/Light.xaml" />
                             </ResourceDictionary.MergedDictionaries>
                         </ResourceDictionary>
-                        <ResourceDictionary x:Key="Dark">
+                        <ResourceDictionary x:Key="Dark" ui:ThemeDictionary.Key="Dark">
                             <ResourceDictionary.MergedDictionaries>
                                 <ui:ColorPaletteResources/>
                                 <ResourceDictionary Source="Views/Themes/Dark.xaml" />
@@ -21,9 +24,15 @@
                         </ResourceDictionary>
                     </ui:ThemeResources.ThemeDictionaries>
                 </ui:ThemeResources>
-                <ui:XamlControlsResources />
-                <ResourceDictionary Source="Views/Themes/Common.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <cvt:BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
+            <cvt:BooleanToVisibilityConverter x:Key="InverseBooleanToVisibility" TrueValue="Collapsed" FalseValue="Visible"/>
+            <cvt:InverseBooleanConverter x:Key="InverseBoolean"/>
+            <cvt:EnumToBooleanConverter x:Key="EnumToBoolean"/>
+            <cvt:EnumToVisibilityConverter x:Key="EnumToVisibility"/>
+            <cvt:ObjectToBrushConverter x:Key="ObjectToBrush"/>
+            <cvt:NullToNotDependencyConverter x:Key="NullToNotDependency"/>
+            <cvt:BooleanToStretchConverter x:Key="BooleanToStretch" TrueValue="None" FalseValue="Uniform"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

@@ -11,7 +11,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Toolkit.Mvvm.Input;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using TuringSmartScreenTool.Controllers;
 using TuringSmartScreenTool.Entities;
+using TuringSmartScreenTool.ViewModels.Editors;
+using TuringSmartScreenTool.Views;
 
 namespace TuringSmartScreenTool.ViewModels
 {
@@ -19,18 +22,25 @@ namespace TuringSmartScreenTool.ViewModels
     {
         public enum EditorType
         {
-            TextBlock,
+            Text,
             Image,
-            CpuClock,
+            HardwareName,
+            HardwareValueText,
+            HardwareValueIndicator,
+            DateTime,
         }
 
         private readonly CompositeDisposable _disposables = new CompositeDisposable();
 
         private readonly ILogger<CanvasEditorWindowViewModel> _logger;
+        private readonly IHardwareSelectContentDialog _hardwareSelectContentDialog;
+        private readonly IHardwareFinder _hardwareFinder;
+        private readonly ISensorFinder _sensorFinder;
+        private readonly ITimeManager _timeManager;
 
-        public ObservableCollection<CommonEditorViewModel> EditorViewModels { get; } = new() { new TextBlockEditorViewModel(), new ImageEditorViewModel() };
+        public ObservableCollection<BaseEditorViewModel> EditorViewModels { get; } = new() { new StaticTextBlockEditorViewModel(), new ImageEditorViewModel() };
         public ReactiveProperty<int> SelectedEditorViewModelIndex { get; } = new(-1);
-        public ReadOnlyReactiveProperty<CommonEditorViewModel> SelectedEditorViewModel { get; }
+        public ReadOnlyReactiveProperty<BaseEditorViewModel> SelectedEditorViewModel { get; }
 
         public ObservableCollection<EditorType> EditorCollection { get; } = new(GetEditorCollection());
         public ReactiveProperty<EditorType> SelectedEditor { get; } = new(GetEditorCollection().FirstOrDefault());
@@ -39,7 +49,7 @@ namespace TuringSmartScreenTool.ViewModels
         public ReactiveProperty<int> CanvasHeight { get; } = new(0);
 
         public ReactiveProperty<CanvasBackgroundType> InputCanvasBackgroundType { get; } = new(CanvasBackgroundType.SolidColor);
-        public ReactiveProperty<Color> InputCanvasBackgroundColor { get; } = new(Colors.White);
+        public ReactiveProperty<Color> InputCanvasBackgroundColor { get; } = new(Colors.Black);
         public ReactiveProperty<string> InputCanvasBackgroundImagePath { get; } = new();
         public ReadOnlyReactiveProperty<object> CanvasBackground { get; }
 
@@ -52,13 +62,23 @@ namespace TuringSmartScreenTool.ViewModels
         public ICommand DeleteSelectedEditorCommand { get; }
 
         public CanvasEditorWindowViewModel(
-            ILogger<CanvasEditorWindowViewModel> logger)
+            ILogger<CanvasEditorWindowViewModel> logger,
+            IHardwareSelectContentDialog hardwareSelectContentDialog,
+            // TODO: usecase
+            IHardwareFinder hardwareFinder,
+            ISensorFinder sensorFinder,
+            ITimeManager timeManager)
         {
             _logger = logger;
+            _hardwareSelectContentDialog = hardwareSelectContentDialog;
+            _hardwareFinder = hardwareFinder;
+            _sensorFinder = sensorFinder;
+            _timeManager = timeManager;
 
             SelectedEditorViewModel = SelectedEditorViewModelIndex
                 .Select(idx => EditorViewModels.ElementAtOrDefault(idx))
-                .ToReadOnlyReactiveProperty();
+                .ToReadOnlyReactiveProperty()
+                .AddTo(_disposables);
             CanvasBackground =
                 Observable.CombineLatest(
                     InputCanvasBackgroundType,
@@ -112,12 +132,40 @@ namespace TuringSmartScreenTool.ViewModels
 
         private void AddEditor()
         {
-            CommonEditorViewModel editorViewModel = SelectedEditor.Value switch
+            BaseEditorViewModel editorViewModel;
+            switch (SelectedEditor.Value)
             {
-                EditorType.TextBlock => new TextBlockEditorViewModel(),
-                EditorType.Image => new ImageEditorViewModel(),
-                _ => throw new InvalidOperationException()
-            };
+                case EditorType.Text:
+                    editorViewModel = new StaticTextBlockEditorViewModel();
+                    break;
+                case EditorType.Image:
+                    editorViewModel = new ImageEditorViewModel();
+                    break;
+                case EditorType.HardwareName:
+                    editorViewModel = new HardwareNameTextBlockEditorViewModel(
+                        _hardwareSelectContentDialog,
+                        _hardwareFinder);
+                    break;
+                case EditorType.HardwareValueText:
+                    editorViewModel = new HardwareSensorTextBlockEditorViewModel(
+                        _hardwareSelectContentDialog,
+                        _sensorFinder);
+                    break;
+                case EditorType.HardwareValueIndicator:
+                    editorViewModel = new HardwareSensorIndicatorEditorViewModel(
+                        _hardwareSelectContentDialog,
+                        _sensorFinder);
+                    break;
+                case EditorType.DateTime:
+                    editorViewModel = new DateTimeTextEditorViewModel(_timeManager);
+                    break;
+                default:
+                    throw new InvalidOperationException();
+            }
+
+            if (editorViewModel is null)
+                return;
+
             EditorViewModels.Add(editorViewModel);
         }
 

@@ -26,12 +26,22 @@ namespace TuringSmartScreenTool
 
             services.AddTransient<MainWindow>();
             services.AddTransient<CanvasEditorWindow>();
+            services.AddTransient<IHardwareSelectContentDialog, HardwareSelectContentDialog>();
             services.AddTransient<MainWindowViewModel>();
             services.AddTransient<CanvasEditorWindowViewModel>();
+            services.AddTransient<HardwareSelectContentDialogViewModel>();
             services.AddTransient<IFindScreenDeviceUseCase, FindScreenDeviceUseCase>();
             services.AddTransient<IControlScreenDeviceUseCase, ControlScreenDeviceUseCase>();
             services.AddTransient<IUpdateScreenUseCase, UpdateScreenUseCase>();
+
+            // Registered as Singleton
+            services.AddSingleton<HardwareMonitor>();
+            services.AddSingleton<IHardwareMonitorController>(s => s.GetService<HardwareMonitor>());
+            services.AddSingleton<ISensorFinder>(s => s.GetService<HardwareMonitor>());
+            services.AddSingleton<IHardwareFinder>(s => s.GetService<HardwareMonitor>());
+            services.AddSingleton<IValueUpdateManager, ValueUpdateManager>();
             services.AddSingleton<IScreenDeviceManager, ScreenDeviceManager>();
+            services.AddSingleton<ITimeManager, TimeManager>();
 
             return services;
         }

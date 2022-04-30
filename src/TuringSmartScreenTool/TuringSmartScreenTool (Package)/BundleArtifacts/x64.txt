@@ -1,2 +1,0 @@
-MainPackage=D:\src\TuringSmartScreenTool\TuringSmartScreenTool\TuringSmartScreenTool (Package)\bin\x64\Release\TuringSmartScreenTool (Package)_1.0.0.0_x64.msix
-SymbolPackage=D:\src\TuringSmartScreenTool\TuringSmartScreenTool\TuringSmartScreenTool (Package)\obj\x64\Release\Symbols\TuringSmartScreenTool (Package)_1.0.0.0_x64.appxsym

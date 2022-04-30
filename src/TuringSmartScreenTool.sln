@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TuringSmartScreenTool", "Tu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TuringSmartScreenLibrary", "TuringSmartScreenLibrary\TuringSmartScreenLibrary.csproj", "{FCC7D6A1-555A-4C66-8A16-B906C2EEDFB2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TuringSmartScreenTool.HardwareMonitor", "TuringSmartScreenTool.HardwareMonitor\TuringSmartScreenTool.HardwareMonitor.csproj", "{85CD646E-AD8D-4811-A247-5884D9FE0333}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenHardwareMonitorLib", "openhardwaremonitor\OpenHardwareMonitorLib\OpenHardwareMonitorLib.csproj", "{545E1B19-E378-47F0-9118-EC4999F2A07C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,14 +47,14 @@ Global
 		{FCC7D6A1-555A-4C66-8A16-B906C2EEDFB2}.Release|x64.Build.0 = Release|x64
 		{FCC7D6A1-555A-4C66-8A16-B906C2EEDFB2}.Release|x86.ActiveCfg = Release|x86
 		{FCC7D6A1-555A-4C66-8A16-B906C2EEDFB2}.Release|x86.Build.0 = Release|x86
-		{85CD646E-AD8D-4811-A247-5884D9FE0333}.Debug|x64.ActiveCfg = Debug|x64
-		{85CD646E-AD8D-4811-A247-5884D9FE0333}.Debug|x64.Build.0 = Debug|x64
-		{85CD646E-AD8D-4811-A247-5884D9FE0333}.Debug|x86.ActiveCfg = Debug|x86
-		{85CD646E-AD8D-4811-A247-5884D9FE0333}.Debug|x86.Build.0 = Debug|x86
-		{85CD646E-AD8D-4811-A247-5884D9FE0333}.Release|x64.ActiveCfg = Release|x86
-		{85CD646E-AD8D-4811-A247-5884D9FE0333}.Release|x64.Build.0 = Release|x86
-		{85CD646E-AD8D-4811-A247-5884D9FE0333}.Release|x86.ActiveCfg = Release|x86
-		{85CD646E-AD8D-4811-A247-5884D9FE0333}.Release|x86.Build.0 = Release|x86
+		{545E1B19-E378-47F0-9118-EC4999F2A07C}.Debug|x64.ActiveCfg = Debug|x64
+		{545E1B19-E378-47F0-9118-EC4999F2A07C}.Debug|x64.Build.0 = Debug|x64
+		{545E1B19-E378-47F0-9118-EC4999F2A07C}.Debug|x86.ActiveCfg = Debug|x86
+		{545E1B19-E378-47F0-9118-EC4999F2A07C}.Debug|x86.Build.0 = Debug|x86
+		{545E1B19-E378-47F0-9118-EC4999F2A07C}.Release|x64.ActiveCfg = Release|x64
+		{545E1B19-E378-47F0-9118-EC4999F2A07C}.Release|x64.Build.0 = Release|x64
+		{545E1B19-E378-47F0-9118-EC4999F2A07C}.Release|x86.ActiveCfg = Release|x86
+		{545E1B19-E378-47F0-9118-EC4999F2A07C}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

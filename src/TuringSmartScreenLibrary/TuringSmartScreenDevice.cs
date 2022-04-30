@@ -73,8 +73,6 @@ namespace TuringSmartScreenLibrary
 
         public void Open(SerialDevice serialDevice, Rotation rotation)
         {
-            _logger.LogEnteredMethod();
-
             if (IsOpen)
                 return;
 
@@ -119,8 +117,6 @@ namespace TuringSmartScreenLibrary
 
         public void Close()
         {
-            _logger.LogEnteredMethod();
-
             try
             {
                 lock (_serialPortLockObj)
@@ -147,8 +143,6 @@ namespace TuringSmartScreenLibrary
 
         public void Dispose()
         {
-            _logger.LogEnteredMethod();
-
             if (_isDisposed)
                 throw new ObjectDisposedException(GetType().FullName, "Already disposed.");
 
@@ -173,8 +167,6 @@ namespace TuringSmartScreenLibrary
 
         public void RefreshScreen(Mat<Vec3b> mat)
         {
-            _logger.LogEnteredMethod();
-
             ThrowExceptionIfNotOpened();
 
             try
@@ -277,8 +269,6 @@ namespace TuringSmartScreenLibrary
 
         public void TurnOffScreen()
         {
-            _logger.LogEnteredMethod();
-
             ThrowExceptionIfNotOpened();
 
             _logger.LogInformation("Screen turned off.");
@@ -289,8 +279,6 @@ namespace TuringSmartScreenLibrary
 
         public void TurnOnScreen()
         {
-            _logger.LogEnteredMethod();
-
             ThrowExceptionIfNotOpened();
 
             _logger.LogInformation("Screen turned on.");
@@ -301,8 +289,6 @@ namespace TuringSmartScreenLibrary
 
         public void ClearScreen()
         {
-            _logger.LogEnteredMethod();
-
             ThrowExceptionIfNotOpened();
 
             _logger.LogInformation("Screen clear.");
@@ -312,8 +298,6 @@ namespace TuringSmartScreenLibrary
 
         public void SetRotation(Rotation rotation)
         {
-            _logger.LogEnteredMethod();
-
             ThrowExceptionIfNotOpened();
 
             _rotation = rotation;
@@ -321,8 +305,6 @@ namespace TuringSmartScreenLibrary
 
         public void SetBrightness(double value)
         {
-            _logger.LogEnteredMethod();
-
             ThrowExceptionIfNotOpened();
 
             var inrangeValue = (byte)Math.Max(BrightnessCapabilities.Min, Math.Min(BrightnessCapabilities.Max, value));

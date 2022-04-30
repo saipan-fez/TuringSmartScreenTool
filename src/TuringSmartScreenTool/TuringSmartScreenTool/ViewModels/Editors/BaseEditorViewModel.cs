@@ -8,14 +8,16 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using TuringSmartScreenTool.Entities;
 
-namespace TuringSmartScreenTool.ViewModels
+namespace TuringSmartScreenTool.ViewModels.Editors
 {
-    public abstract class CommonEditorViewModel : IDisposable
+    public abstract class BaseEditorViewModel : IDisposable
     {
         protected readonly CompositeDisposable _disposables = new CompositeDisposable();
 
         public ReactiveProperty<string> Id { get; } = new(Guid.NewGuid().ToString());
+
         public abstract ReactiveProperty<string> Name { get; }
+        public virtual bool IsAutoSizeSupported => true;
 
         public ReactiveProperty<HorizontalAlignment> CanvasHorizontalAlignment { get; } = new(HorizontalAlignment.Left);
         public ReactiveProperty<VerticalAlignment> CanvasVerticalAlignment { get; } = new(VerticalAlignment.Top);
@@ -30,7 +32,7 @@ namespace TuringSmartScreenTool.ViewModels
         public ReadOnlyReactiveProperty<double?> CanvasTop { get; }
         public ReadOnlyReactiveProperty<double?> CanvasBottom { get; }
 
-        public ReactiveProperty<bool> IsAutoSize { get; } = new(true);
+        public ReactiveProperty<bool> IsAutoSize { get; }
         public ReactiveProperty<double?> InputWidth { get; } = new(100d);
         public ReactiveProperty<double?> InputHeight { get; } = new(100d);
         public ReadOnlyReactiveProperty<double?> Width { get; }
@@ -40,45 +42,52 @@ namespace TuringSmartScreenTool.ViewModels
         public ReactiveCommand<DragCompletedEventArgs> DragCompletedCommand { get; }
         public ReactiveCommand<DragDeltaEventArgs> DragDeltaCommand { get; }
 
-        public CommonEditorViewModel()
+        public BaseEditorViewModel()
         {
             CanvasLeft = Observable
                 .CombineLatest(
                     CanvasHorizontalAlignment,
                     InputCanvasLeft,
                     (a, v) => a == HorizontalAlignment.Left ? v : null)
-                .ToReadOnlyReactiveProperty();
+                .ToReadOnlyReactiveProperty()
+                .AddTo(_disposables);
             CanvasRight = Observable
                 .CombineLatest(
                     CanvasHorizontalAlignment,
                     InputCanvasRight,
                     (a, v) => a == HorizontalAlignment.Right ? v : null)
-                .ToReadOnlyReactiveProperty();
+                .ToReadOnlyReactiveProperty()
+                .AddTo(_disposables);
             CanvasTop = Observable
                 .CombineLatest(
                     CanvasVerticalAlignment,
                     InputCanvasTop,
                     (a, v) => a == VerticalAlignment.Top ? v : null)
-                .ToReadOnlyReactiveProperty();
+                .ToReadOnlyReactiveProperty()
+                .AddTo(_disposables);
             CanvasBottom = Observable
                 .CombineLatest(
                     CanvasVerticalAlignment,
                     InputCanvasBottom,
                     (a, v) => a == VerticalAlignment.Bottom ? v : null)
-                .ToReadOnlyReactiveProperty();
+                .ToReadOnlyReactiveProperty()
+                .AddTo(_disposables);
 
+            IsAutoSize = new (IsAutoSizeSupported);
             Width = Observable
                 .CombineLatest(
                     IsAutoSize,
                     InputWidth,
                     (auto, v) => auto ? null : v)
-                .ToReadOnlyReactiveProperty();
+                .ToReadOnlyReactiveProperty()
+                .AddTo(_disposables);
             Height = Observable
                 .CombineLatest(
                     IsAutoSize,
                     InputHeight,
                     (auto, v) => auto ? null : v)
-                .ToReadOnlyReactiveProperty();
+                .ToReadOnlyReactiveProperty()
+                .AddTo(_disposables);
 
             DragStartedCommand = new ReactiveCommand<DragStartedEventArgs>()
                 .WithSubscribe(e => e.Handled = false)
@@ -125,7 +134,7 @@ namespace TuringSmartScreenTool.ViewModels
             _disposables.Dispose();
         }
 
-        protected void SelectColor(ReactiveProperty<Color> target)
+        protected static void SelectColor(ReactiveProperty<Color> target)
         {
             var c = target.Value;
             var colorDialog = new System.Windows.Forms.ColorDialog()
@@ -141,7 +150,7 @@ namespace TuringSmartScreenTool.ViewModels
             }
         }
 
-        protected void SelectImageFilePath(ReactiveProperty<string> target)
+        protected static void SelectImageFilePath(ReactiveProperty<string> target)
         {
             var fileDialog = new System.Windows.Forms.OpenFileDialog()
             {
