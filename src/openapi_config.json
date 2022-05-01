@@ -1,7 +1,0 @@
-{
-    "sourceFolder": ".",
-    "targetFramework": "netcoreapp2.0",
-    "useDateTimeOffset": true,
-    "netCoreProjectFile": true,
-    "returnICollection": true
-  }

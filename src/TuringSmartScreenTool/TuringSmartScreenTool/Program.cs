@@ -1,6 +1,15 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using NodaTime.TimeZones;
+using Nominatim.API.Geocoders;
+using Nominatim.API.Models;
+using OpenMeteoLib;
 using System;
+using System.Globalization;
+using System.Linq;
+using System.Threading.Tasks;
 using TuringSmartScreenTool.Controllers;
+using WeatherLib;
 
 namespace TuringSmartScreenTool
 {
@@ -13,7 +22,8 @@ namespace TuringSmartScreenTool
         static void Main(string[] args)
         {
             var serviceCollection = new ServiceCollection()
-                .AddServicesForApp();
+                .AddServicesForApp()
+                .AddWeatherServices();
 
             using (var serviceProvider = serviceCollection.BuildServiceProvider())
             {

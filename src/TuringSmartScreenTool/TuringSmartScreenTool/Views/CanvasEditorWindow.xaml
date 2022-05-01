@@ -9,6 +9,7 @@
         xmlns:editor="clr-namespace:TuringSmartScreenTool.Views.EditorControls"
         xmlns:ui="http://schemas.modernwpf.com/2019"
         xmlns:xrpb="http://XamlRadialProgressBar/DotNet"
+        xmlns:ns="http://schemas.nishy-software.com/xaml/attached-properties"
         d:DataContext="{d:DesignInstance vm:CanvasEditorWindowViewModel}"
         mc:Ignorable="d"
         Title="Turing Smart Screen Tool (Edit)"
@@ -178,7 +179,7 @@
                               SelectedItem="{Binding SelectedEditor.Value}"/>
                     <ui:AppBarButton Icon="Add" ToolTip="Add" Command="{Binding AddEditorCommand}"/>
                 </ui:SimpleStackPanel>
-                <ListBox Height="300"
+                <ListBox Height="300" ns:ScrollViewerProperties.MouseWheelHandlingMode="OnlyScrollable"
                          ItemsSource="{Binding EditorViewModels}"
                          SelectedIndex="{Binding SelectedEditorViewModelIndex.Value}">
                     <ListBox.ItemTemplate>

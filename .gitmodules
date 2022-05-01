@@ -1,3 +1,9 @@
 [submodule "src\\openhardwaremonitor"]
 	path = src\\openhardwaremonitor
 	url = https://github.com/hexagon-oss/openhardwaremonitor.git
+[submodule "src/open-meteo"]
+	path = src/open-meteo
+	url = https://github.com/open-meteo/open-meteo.git
+[submodule "src/weather-icons"]
+	path = src/weather-icons
+	url = https://github.com/erikflowers/weather-icons
