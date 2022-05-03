@@ -28,8 +28,10 @@ namespace TuringSmartScreenTool.ViewModels.Editors
     public enum WeatherDisplayType
     {
         Text,
-        Icon1,
-        Icon2
+        TextIcon1,
+        TextIcon2,
+        ColorIcon1,
+        ColorIcon2,
     }
 
     public enum TemperatureUnit
