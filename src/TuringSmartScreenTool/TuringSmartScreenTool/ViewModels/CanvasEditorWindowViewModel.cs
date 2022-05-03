@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -11,7 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Toolkit.Mvvm.Input;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
-using TuringSmartScreenTool.Controllers;
+using TuringSmartScreenTool.Controllers.Interfaces;
 using TuringSmartScreenTool.Entities;
 using TuringSmartScreenTool.ViewModels.Editors;
 using TuringSmartScreenTool.Views;
@@ -28,22 +29,27 @@ namespace TuringSmartScreenTool.ViewModels
             HardwareValueText,
             HardwareValueIndicator,
             DateTime,
+            Weather,
         }
+
+        private static readonly IEnumerable<EditorType> s_editorTypeCollection = Enum.GetValues(typeof(EditorType)).Cast<EditorType>();
 
         private readonly CompositeDisposable _disposables = new CompositeDisposable();
 
         private readonly ILogger<CanvasEditorWindowViewModel> _logger;
         private readonly IHardwareSelectContentDialog _hardwareSelectContentDialog;
+        private readonly ILocationSelectContentDialog _locationSelectContentDialog;
         private readonly IHardwareFinder _hardwareFinder;
         private readonly ISensorFinder _sensorFinder;
         private readonly ITimeManager _timeManager;
+        private readonly IWeatherManager _weatherManager;
 
-        public ObservableCollection<BaseEditorViewModel> EditorViewModels { get; } = new() { new StaticTextBlockEditorViewModel(), new ImageEditorViewModel() };
+        public ObservableCollection<BaseEditorViewModel> EditorViewModels { get; } = new();
         public ReactiveProperty<int> SelectedEditorViewModelIndex { get; } = new(-1);
         public ReadOnlyReactiveProperty<BaseEditorViewModel> SelectedEditorViewModel { get; }
 
-        public ObservableCollection<EditorType> EditorCollection { get; } = new(GetEditorCollection());
-        public ReactiveProperty<EditorType> SelectedEditor { get; } = new(GetEditorCollection().FirstOrDefault());
+        public IEnumerable<EditorType> EditorCollection { get; } = s_editorTypeCollection;
+        public ReactiveProperty<EditorType> SelectedEditor { get; } = new(s_editorTypeCollection.FirstOrDefault());
 
         public ReactiveProperty<int> CanvasWidth { get; } = new(0);
         public ReactiveProperty<int> CanvasHeight { get; } = new(0);
@@ -64,16 +70,20 @@ namespace TuringSmartScreenTool.ViewModels
         public CanvasEditorWindowViewModel(
             ILogger<CanvasEditorWindowViewModel> logger,
             IHardwareSelectContentDialog hardwareSelectContentDialog,
+            ILocationSelectContentDialog locationSelectContentDialog,
             // TODO: usecase
             IHardwareFinder hardwareFinder,
             ISensorFinder sensorFinder,
-            ITimeManager timeManager)
+            ITimeManager timeManager,
+            IWeatherManager weatherManager)
         {
             _logger = logger;
             _hardwareSelectContentDialog = hardwareSelectContentDialog;
+            _locationSelectContentDialog = locationSelectContentDialog;
             _hardwareFinder = hardwareFinder;
             _sensorFinder = sensorFinder;
             _timeManager = timeManager;
+            _weatherManager = weatherManager;
 
             SelectedEditorViewModel = SelectedEditorViewModelIndex
                 .Select(idx => EditorViewModels.ElementAtOrDefault(idx))
@@ -132,39 +142,17 @@ namespace TuringSmartScreenTool.ViewModels
 
         private void AddEditor()
         {
-            BaseEditorViewModel editorViewModel;
-            switch (SelectedEditor.Value)
+            BaseEditorViewModel editorViewModel = SelectedEditor.Value switch
             {
-                case EditorType.Text:
-                    editorViewModel = new StaticTextBlockEditorViewModel();
-                    break;
-                case EditorType.Image:
-                    editorViewModel = new ImageEditorViewModel();
-                    break;
-                case EditorType.HardwareName:
-                    editorViewModel = new HardwareNameTextBlockEditorViewModel(
-                        _hardwareSelectContentDialog,
-                        _hardwareFinder);
-                    break;
-                case EditorType.HardwareValueText:
-                    editorViewModel = new HardwareSensorTextBlockEditorViewModel(
-                        _hardwareSelectContentDialog,
-                        _sensorFinder);
-                    break;
-                case EditorType.HardwareValueIndicator:
-                    editorViewModel = new HardwareSensorIndicatorEditorViewModel(
-                        _hardwareSelectContentDialog,
-                        _sensorFinder);
-                    break;
-                case EditorType.DateTime:
-                    editorViewModel = new DateTimeTextEditorViewModel(_timeManager);
-                    break;
-                default:
-                    throw new InvalidOperationException();
-            }
-
-            if (editorViewModel is null)
-                return;
+                EditorType.Text => new StaticTextBlockEditorViewModel(),
+                EditorType.Image => new ImageEditorViewModel(),
+                EditorType.HardwareName => new HardwareNameTextBlockEditorViewModel(_hardwareSelectContentDialog, _hardwareFinder),
+                EditorType.HardwareValueText => new HardwareSensorTextBlockEditorViewModel(_hardwareSelectContentDialog, _sensorFinder),
+                EditorType.HardwareValueIndicator => new HardwareSensorIndicatorEditorViewModel(_hardwareSelectContentDialog, _sensorFinder),
+                EditorType.DateTime => new DateTimeTextEditorViewModel(_timeManager),
+                EditorType.Weather => new WeatherTextEditorViewModel(_weatherManager, _locationSelectContentDialog),
+                _ => throw new InvalidOperationException(),
+            };
 
             EditorViewModels.Add(editorViewModel);
         }
@@ -252,11 +240,6 @@ namespace TuringSmartScreenTool.ViewModels
             {
                 target.Value = fileDialog.FileName;
             }
-        }
-
-        private static ObservableCollection<EditorType> GetEditorCollection()
-        {
-            return new(Enum.GetValues(typeof(EditorType)).Cast<EditorType>());
         }
     }
 }

@@ -213,6 +213,9 @@
                         <DataTemplate DataType="{x:Type evm:DateTimeTextEditorViewModel}">
                             <editor:DateTimeTextEditor />
                         </DataTemplate>
+                        <DataTemplate DataType="{x:Type evm:WeatherTextEditorViewModel}">
+                            <editor:WeatherEditor />
+                        </DataTemplate>
                     </ContentPresenter.Resources>
                 </ContentPresenter>
             </ui:SimpleStackPanel>

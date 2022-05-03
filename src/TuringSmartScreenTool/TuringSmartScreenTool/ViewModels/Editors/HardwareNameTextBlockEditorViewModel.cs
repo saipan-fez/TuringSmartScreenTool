@@ -6,6 +6,7 @@ using ModernWpf.Controls;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using TuringSmartScreenTool.Controllers;
+using TuringSmartScreenTool.Controllers.Interfaces;
 using TuringSmartScreenTool.Entities;
 using TuringSmartScreenTool.Views;
 

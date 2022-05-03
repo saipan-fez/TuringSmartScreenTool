@@ -6,7 +6,7 @@
         Sunny,
         PartlyCloudy,
         Cloudy,
-        Fog,
+        Foggy,
         Drizzle,
         HeavyDrizzle,
         Rain,

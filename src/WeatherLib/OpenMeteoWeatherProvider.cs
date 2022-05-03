@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using NodaTime.TimeZones;
@@ -20,17 +22,17 @@ namespace WeatherLib
         };
 
         private readonly ILogger<OpenMeteoWeatherProvider> _logger;
-        private readonly IOpenMeteoClient _openMeteoClient;
+        private readonly IServiceProvider _serviceProvider;
 
         public OpenMeteoWeatherProvider(
             ILogger<OpenMeteoWeatherProvider> logger,
-            IOpenMeteoClient openMeteoClient)
+            IServiceProvider serviceProvider)
         {
             _logger = logger;
-            _openMeteoClient = openMeteoClient;
+            _serviceProvider = serviceProvider;
         }
 
-        public async Task<WeatherData> GetWeatherAsync(Geocode geocode)
+        public async Task<WeatherData> GetWeatherAsync(Geocode geocode, CancellationToken token = default)
         {
             try
             {
@@ -45,7 +47,8 @@ namespace WeatherLib
                     timeZone.ZoneId);
 
                 // send request
-                var response = await _openMeteoClient.ForecastAsync(
+                var openMeteoClient = _serviceProvider.GetService<IOpenMeteoClient>();
+                var response = await openMeteoClient.ForecastAsync(
                     Array.Empty<Anonymous>(),
                     s_anonymous2Parameter,
                     (float)geocode.Latitude,
@@ -55,7 +58,8 @@ namespace WeatherLib
                     null,
                     Timeformat.Iso8601,
                     timeZone.ZoneId,
-                    null);
+                    null,
+                    token);
 
                 /*
                  * [Samples of response]
@@ -89,6 +93,14 @@ namespace WeatherLib
                 var minCelsiusTemps    = dailyJson["temperature_2m_min"].Values<double>();
                 var maxCelsiusTemps    = dailyJson["temperature_2m_max"].Values<double>();
                 var currentCelsiusTemp = currentJson["temperature"].Value<double>();
+
+                _logger.LogTrace("succeed to get weather. lat:{latitude} log:{longitude} weathercode:{weatherCodes} minTemp:{minTemps} maxTemp{maxTemps} currentTemp{currentTemp}",
+                    response.Latitude,
+                    response.Longitude,
+                    weatherCodes,
+                    minCelsiusTemps,
+                    maxCelsiusTemps,
+                    currentCelsiusTemp);
 
                 return new()
                 {
@@ -148,7 +160,7 @@ namespace WeatherLib
                 0 or 1                     => WeatherType.Sunny,
                 2                          => WeatherType.PartlyCloudy,
                 3                          => WeatherType.Cloudy,
-                45 or 48                   => WeatherType.Fog,
+                45 or 48                   => WeatherType.Foggy,
                 51 or 53 or 56             => WeatherType.Drizzle,
                 55 or 57                   => WeatherType.HeavyDrizzle,
                 61 or 63 or 66 or 80 or 81 => WeatherType.Rain,

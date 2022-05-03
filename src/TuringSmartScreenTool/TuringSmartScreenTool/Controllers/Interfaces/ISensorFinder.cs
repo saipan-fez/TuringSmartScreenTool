@@ -1,6 +1,6 @@
 ﻿using TuringSmartScreenTool.Entities;
 
-namespace TuringSmartScreenTool.Controllers
+namespace TuringSmartScreenTool.Controllers.Interfaces
 {
     public interface ISensorFinder
     {

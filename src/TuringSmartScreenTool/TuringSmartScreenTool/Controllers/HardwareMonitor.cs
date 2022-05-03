@@ -10,6 +10,7 @@ using Reactive.Bindings;
 using TuringSmartScreenTool.Entities;
 using Humanizer;
 using TuringSmartScreenTool.Helpers;
+using TuringSmartScreenTool.Controllers.Interfaces;
 
 namespace TuringSmartScreenTool.Controllers
 {

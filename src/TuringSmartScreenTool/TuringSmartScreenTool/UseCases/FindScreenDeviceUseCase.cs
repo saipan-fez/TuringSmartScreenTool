@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
-using TuringSmartScreenTool.Controllers;
+using TuringSmartScreenTool.Controllers.Interfaces;
 using TuringSmartScreenTool.Entities;
 
 namespace TuringSmartScreenTool.UseCases

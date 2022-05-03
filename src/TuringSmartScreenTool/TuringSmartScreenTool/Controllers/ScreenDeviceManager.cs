@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using OpenCvSharp;
 using TuringSmartScreenLibrary.Entities;
 using TuringSmartScreenLibrary.Interfaces;
+using TuringSmartScreenTool.Controllers.Interfaces;
 using TuringSmartScreenTool.Entities;
 
 namespace TuringSmartScreenTool.Controllers

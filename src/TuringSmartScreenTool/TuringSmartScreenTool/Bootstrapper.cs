@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
 using TuringSmartScreenLibrary;
 using TuringSmartScreenTool.Controllers;
+using TuringSmartScreenTool.Controllers.Interfaces;
 using TuringSmartScreenTool.UseCases;
 using TuringSmartScreenTool.ViewModels;
 using TuringSmartScreenTool.Views;
@@ -26,10 +27,14 @@ namespace TuringSmartScreenTool
 
             services.AddTransient<MainWindow>();
             services.AddTransient<CanvasEditorWindow>();
-            services.AddTransient<IHardwareSelectContentDialog, HardwareSelectContentDialog>();
             services.AddTransient<MainWindowViewModel>();
             services.AddTransient<CanvasEditorWindowViewModel>();
             services.AddTransient<HardwareSelectContentDialogViewModel>();
+            services.AddTransient<LocationSelectContentDialogViewModel>();
+            services.AddTransient<IHardwareSelectContentDialog, HardwareSelectContentDialog>();
+            services.AddTransient<ILocationSelectContentDialog, LocationSelectContentDialog>();
+
+            // UseCase
             services.AddTransient<IFindScreenDeviceUseCase, FindScreenDeviceUseCase>();
             services.AddTransient<IControlScreenDeviceUseCase, ControlScreenDeviceUseCase>();
             services.AddTransient<IUpdateScreenUseCase, UpdateScreenUseCase>();
@@ -42,6 +47,7 @@ namespace TuringSmartScreenTool
             services.AddSingleton<IValueUpdateManager, ValueUpdateManager>();
             services.AddSingleton<IScreenDeviceManager, ScreenDeviceManager>();
             services.AddSingleton<ITimeManager, TimeManager>();
+            services.AddSingleton<IWeatherManager, WeatherManager>();
 
             return services;
         }

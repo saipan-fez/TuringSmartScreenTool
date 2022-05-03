@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
-using TuringSmartScreenTool.Controllers;
+using TuringSmartScreenTool.Controllers.Interfaces;
 
 namespace TuringSmartScreenTool.ViewModels.Editors
 {

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Reactive.Bindings;
+using TuringSmartScreenTool.Controllers.Interfaces;
 
 namespace TuringSmartScreenTool.Controllers
 {

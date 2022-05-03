@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using TuringSmartScreenTool.Controllers.Interfaces;
 
 namespace TuringSmartScreenTool.Controllers
 {
@@ -21,6 +22,7 @@ namespace TuringSmartScreenTool.Controllers
             public string Name { get; init; }
             public TimeSpan Interval { get; init; }
             public Action Task { get; init; }
+            public Func<CancellationToken, Task> AsyncTask { get; init; }
             public DateTime NextUpdate { get; set; }
         }
 
@@ -73,6 +75,28 @@ namespace TuringSmartScreenTool.Controllers
             return newId;
         }
 
+        public string Register(string name, TimeSpan interval, Func<CancellationToken, Task> updateAsyncFunction)
+        {
+            if (interval < TimeSpan.FromMilliseconds(100))
+            {
+                _logger.LogWarning("interval is higher resolution than DateTime class.");
+            }
+
+            var newId = Guid.NewGuid().ToString();
+
+            UpdateTaskDictionary.TryAdd(
+                newId,
+                new UpdateTask
+                {
+                    Name = name,
+                    Interval = interval,
+                    NextUpdate = DateTime.Now.AddSeconds(-1),   // Execute the first execution in the next loop
+                    AsyncTask = updateAsyncFunction
+                });
+
+            return newId;
+        }
+
         public void Unregister(string id)
         {
             UpdateTaskDictionary.Remove(id, out _);
@@ -96,15 +120,20 @@ namespace TuringSmartScreenTool.Controllers
                         stopwatch.Restart();
                         var start = stopwatch.Elapsed;
 
-                        foreach (var pair in UpdateTaskDictionary)
+                        //foreach (var pair in UpdateTaskDictionary)
+                        Parallel.ForEach(UpdateTaskDictionary, async (pair) =>
                         {
                             var v = pair.Value;
-                            if (v.NextUpdate < DateTime.Now)
+                            if (v.NextUpdate > DateTime.Now)
                                 return;
 
                             try
                             {
-                                v.Task();
+                                if (v.Task is not null)
+                                    v.Task();
+                                if (v.AsyncTask is not null)
+                                    await v.AsyncTask(token);
+
                                 _logger.LogTrace("task executed. name:{name} next:{next}", v.Name, v.NextUpdate);
                             }
                             catch (Exception ex)
@@ -115,7 +144,7 @@ namespace TuringSmartScreenTool.Controllers
                             {
                                 v.NextUpdate = DateTime.Now.Add(v.Interval);
                             }
-                        }
+                        });
 
                         var elapsed = stopwatch.Elapsed - start;
                         var waitTime = _parameter.Interval - elapsed;

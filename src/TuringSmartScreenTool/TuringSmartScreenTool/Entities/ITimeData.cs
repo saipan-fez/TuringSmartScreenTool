@@ -1,14 +1,9 @@
 ﻿using System;
 
-namespace TuringSmartScreenTool.Controllers
+namespace TuringSmartScreenTool.Controllers.Interfaces
 {
     public interface ITimeData
     {
         IObservable<DateTimeOffset> Value { get; }
-    }
-
-    public interface ITimeManager
-    {
-        ITimeData Get();
     }
 }

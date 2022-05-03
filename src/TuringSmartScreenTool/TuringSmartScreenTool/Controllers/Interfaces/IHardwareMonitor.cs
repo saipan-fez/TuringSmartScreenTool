@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using TuringSmartScreenTool.Entities;
 
-namespace TuringSmartScreenTool.Controllers
+namespace TuringSmartScreenTool.Controllers.Interfaces
 {
     public interface IHardwareMonitorController
     {

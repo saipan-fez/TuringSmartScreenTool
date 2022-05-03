@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Collections.Generic;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
-using TuringSmartScreenTool.Controllers;
 using TuringSmartScreenTool.Entities;
+using TuringSmartScreenTool.Controllers.Interfaces;
 
 namespace TuringSmartScreenTool.ViewModels
 {
@@ -18,7 +17,7 @@ namespace TuringSmartScreenTool.ViewModels
             Sensor,
         }
 
-        private readonly CompositeDisposable _disposables = new CompositeDisposable();
+        private readonly CompositeDisposable _disposables = new();
 
         public ReactiveProperty<IReadOnlyCollection<IMonitorTarget>> MonitorTargets { get; } = new();
         public ReactiveProperty<IMonitorTarget> SelectedMonitorTarget { get; } = new();
