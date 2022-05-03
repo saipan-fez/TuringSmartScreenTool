@@ -28,11 +28,11 @@
             </ResourceDictionary.MergedDictionaries>
 
             <!-- Fonts for Weather -->
-            <FontFamily x:Key="Font_qwd_icons">
-                /Assets/qwd_icons/icon.ttf #qweather-icons
-            </FontFamily>
             <FontFamily x:Key="Font_erikflowers_weather_icons">
                 /Assets/erikflowers_weather-icons/icon.ttf #Weather Icons
+            </FontFamily>
+            <FontFamily x:Key="Font_qwd_icons">
+                /Assets/qwd_icons/icon.ttf #qweather-icons
             </FontFamily>
 
             <!-- Converters -->

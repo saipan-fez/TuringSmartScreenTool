@@ -10,6 +10,7 @@
         xmlns:ui="http://schemas.modernwpf.com/2019"
         xmlns:xrpb="http://XamlRadialProgressBar/DotNet"
         xmlns:ns="http://schemas.nishy-software.com/xaml/attached-properties"
+        xmlns:svgc="http://sharpvectors.codeplex.com/svgc/"
         d:DataContext="{d:DesignInstance vm:CanvasEditorWindowViewModel}"
         mc:Ignorable="d"
         Title="Turing Smart Screen Tool (Edit)"
@@ -110,6 +111,49 @@
                                                    Stretch="{Binding IsAutoSize.Value, Converter={StaticResource BooleanToStretch}}"
                                                    Width="{Binding Width.Value, Converter={StaticResource NullToNotDependency}}"
                                                    Height="{Binding Height.Value, Converter={StaticResource NullToNotDependency}}"/>
+                                        </Grid>
+                                    </ControlTemplate>
+                                </Thumb.Template>
+                            </Thumb>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type evm:WeatherTextEditorViewModel}">
+                            <Thumb PreviewMouseDown="Editor_PreviewMouseDown">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="DragDelta">
+                                        <i:InvokeCommandAction Command="{Binding DragDeltaCommand}" PassEventArgsToCommand="True"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                                <Thumb.Template>
+                                    <ControlTemplate TargetType="Thumb">
+                                        <Grid Background="Transparent">
+                                            <!-- Text -->
+                                            <Viewbox Stretch="{Binding IsAutoSize.Value, Converter={StaticResource BooleanToStretch}}"
+                                                     Width="{Binding Width.Value, Converter={StaticResource NullToNotDependency}}"
+                                                     Height="{Binding Height.Value, Converter={StaticResource NullToNotDependency}}"
+                                                     Visibility="{Binding IsText.Value, Converter={StaticResource BooleanToVisibility}}">
+                                                <TextBlock FontSize="{Binding FontSize.Value, Converter={StaticResource NullToNotDependency}}"
+                                                           FontWeight="{Binding SelectedFontWeight.Value, Converter={StaticResource NullToNotDependency}}"
+                                                           FontFamily="{Binding SelectedFontFamily.Value, Converter={StaticResource NullToNotDependency}}"
+                                                           Foreground="{Binding Foreground.Value, Converter={StaticResource ObjectToBrush}}"
+                                                           Text="{Binding Text.Value, Converter={StaticResource NullToNotDependency}}"/>
+                                            </Viewbox>
+                                            <!-- SvgIcon -->
+                                            <svgc:SvgViewbox Stretch="{Binding IsAutoSize.Value, Converter={StaticResource BooleanToStretch}}"
+                                                             Width="{Binding Width.Value, Converter={StaticResource NullToNotDependency}}"
+                                                             Height="{Binding Height.Value, Converter={StaticResource NullToNotDependency}}"
+                                                             Source="{Binding SvgPath.Value, Converter={StaticResource NullToNotDependency}}"
+                                                             Visibility="{Binding IsSvgIcon.Value, Converter={StaticResource BooleanToVisibility}}"/>
+                                            <!-- TextIcon -->
+                                            <Viewbox Stretch="{Binding IsAutoSize.Value, Converter={StaticResource BooleanToStretch}}"
+                                                     Width="{Binding Width.Value, Converter={StaticResource NullToNotDependency}}"
+                                                     Height="{Binding Height.Value, Converter={StaticResource NullToNotDependency}}"
+                                                     Visibility="{Binding IsTextIcon.Value, Converter={StaticResource BooleanToVisibility}}">
+                                                <TextBlock FontSize="{Binding FontSize.Value, Converter={StaticResource NullToNotDependency}}"
+                                                           FontWeight="{Binding SelectedFontWeight.Value, Converter={StaticResource NullToNotDependency}}"
+                                                           FontFamily="{Binding TextIconFont.Value, Converter={StaticResource NullToNotDependency}}"
+                                                           Foreground="{Binding Foreground.Value, Converter={StaticResource ObjectToBrush}}"
+                                                           Text="{Binding Text.Value, Converter={StaticResource NullToNotDependency}}"/>
+                                            </Viewbox>
                                         </Grid>
                                     </ControlTemplate>
                                 </Thumb.Template>

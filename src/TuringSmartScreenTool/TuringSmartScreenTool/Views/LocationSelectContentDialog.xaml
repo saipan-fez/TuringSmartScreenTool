@@ -30,8 +30,8 @@
                     Command="{Binding ConvertAddressToLocationCommand}"/>
         </StackPanel>
         <TextBlock Text="Latitude" Style="{StaticResource ContentSubTitleTextBlock}"/>
-        <ui:NumberBox Value="{Binding Latitude.Value}"/>
+        <ui:NumberBox Value="{Binding Latitude.Value, Converter={StaticResource NullToNotDependency}}"/>
         <TextBlock Text="Longitude" Style="{StaticResource ContentSubTitleTextBlock}"/>
-        <ui:NumberBox Value="{Binding Longitude.Value}"/>
+        <ui:NumberBox Value="{Binding Longitude.Value, Converter={StaticResource NullToNotDependency}}"/>
     </ui:SimpleStackPanel>
 </ui:ContentDialog>

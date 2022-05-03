@@ -48,6 +48,7 @@ namespace TuringSmartScreenTool.ViewModels
                 {
                     IsConvertFailed.Value = false;
 
+                    // TODO: 検索中は押下不可&くるくる表示
                     var geocode = await geocoder.SearchAsync(
                         SelectedRegionInfo.Value,
                         InputState.Value,
