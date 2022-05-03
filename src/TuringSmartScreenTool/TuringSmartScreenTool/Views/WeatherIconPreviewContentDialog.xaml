@@ -5,29 +5,35 @@
                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                   xmlns:ui="http://schemas.modernwpf.com/2019"
                   xmlns:svgc="http://sharpvectors.codeplex.com/svgc/"
-                  xmlns:sys="clr-namespace:System;assembly=mscorlib"
                   mc:Ignorable="d"
-                  Title="Preview weather icons"
+                  Title="Weather icons"
                   PrimaryButtonText="Close">
     <ui:ContentDialog.Resources>
         <Style TargetType="RowDefinition">
-            <Setter Property="Height" Value="50"/>
+            <Setter Property="Height" Value="60"/>
         </Style>
         <Style TargetType="ColumnDefinition">
-            <Setter Property="Width" Value="60"/>
+            <Setter Property="Width" Value="80"/>
         </Style>
-
         <Style TargetType="TextBlock">
+            <Setter Property="Margin" Value="10"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
         </Style>
-        <Style x:Key="ColumnHeaderTextBlockStyle" TargetType="TextBlock">
-            <Setter Property="HorizontalAlignment" Value="Center"/>
-        </Style>
         <Style TargetType="svgc:SvgViewbox">
+            <Setter Property="Margin" Value="10"/>
+        </Style>
+        <Style x:Key="TI1" TargetType="ui:FontIcon">
+            <Setter Property="FontFamily" Value="{StaticResource Font_erikflowers_weather_icons}"/>
+            <Setter Property="FontSize" Value="30"/>
+        </Style>
+        <Style x:Key="TI2" TargetType="ui:FontIcon">
+            <Setter Property="FontFamily" Value="{StaticResource Font_qwd_icons}"/>
+            <Setter Property="FontSize" Value="35"/>
         </Style>
     </ui:ContentDialog.Resources>
     <ui:ScrollViewerEx>
-        <Grid>
+        <Grid Margin="0,0,10,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition/>
@@ -63,7 +69,7 @@
             <TextBlock Grid.Row="11" Grid.Column="0" Text="Thunderstorm"/>
             <TextBlock Grid.Row="12" Grid.Column="0" Text="Unknown"/>
 
-            <TextBlock Grid.Row="0" Grid.Column="1" Text="ColorIcon1" Style="{StaticResource ColumnHeaderTextBlockStyle}"/>
+            <TextBlock Grid.Row="0" Grid.Column="1" Text="ColorIcon1"/>
             <svgc:SvgViewbox Grid.Row="1" Grid.Column="1" Source="/Assets/nrkno_yr-weather-symbols/01d.svg"/>
             <svgc:SvgViewbox Grid.Row="2" Grid.Column="1" Source="/Assets/nrkno_yr-weather-symbols/03d.svg"/>
             <svgc:SvgViewbox Grid.Row="3" Grid.Column="1" Source="/Assets/nrkno_yr-weather-symbols/04.svg"/>
@@ -77,11 +83,47 @@
             <svgc:SvgViewbox Grid.Row="11" Grid.Column="1" Source="/Assets/nrkno_yr-weather-symbols/11.svg"/>
             <TextBlock Grid.Row="12" Grid.Column="1" Text="-" HorizontalAlignment="Center"/>
 
-            <TextBlock Grid.Row="0" Grid.Column="2" Text="TextIcon1" Style="{StaticResource ColumnHeaderTextBlockStyle}"/>
-            <ui:FontIcon Grid.Row="1" Grid.Column="2" FontFamily="/Assets/erikflowers_weather-icons/icon" Glyph="&#xf00d;"/>
-            <ui:FontIcon Grid.Row="2" Grid.Column="2" FontFamily="{StaticResource Font_erikflowers_weather_icons}" Glyph="&#xf002;"/>
-            <ui:FontIcon Grid.Row="3" Grid.Column="2" FontFamily="{StaticResource Font_qwd_icons}" Glyph="&#xf101;"/>
-            <ui:FontIcon Grid.Row="4" Grid.Column="2" FontFamily="{StaticResource Font_qwd_icons}" Glyph="&#xf102;"/>
+            <TextBlock Grid.Row="0" Grid.Column="2" Text="ColorIcon2"/>
+            <svgc:SvgViewbox Grid.Row="1" Grid.Column="2" Source="/Assets/basmilius_weather-icons/clear-day.svg"/>
+            <svgc:SvgViewbox Grid.Row="2" Grid.Column="2" Source="/Assets/basmilius_weather-icons/partly-cloudy-day.svg"/>
+            <svgc:SvgViewbox Grid.Row="3" Grid.Column="2" Source="/Assets/basmilius_weather-icons/cloudy.svg"/>
+            <svgc:SvgViewbox Grid.Row="4" Grid.Column="2" Source="/Assets/basmilius_weather-icons/fog.svg"/>
+            <svgc:SvgViewbox Grid.Row="5" Grid.Column="2" Source="/Assets/basmilius_weather-icons/drizzle.svg"/>
+            <svgc:SvgViewbox Grid.Row="6" Grid.Column="2" Source="/Assets/basmilius_weather-icons/extreme-drizzle.svg"/>
+            <svgc:SvgViewbox Grid.Row="7" Grid.Column="2" Source="/Assets/basmilius_weather-icons/rain.svg"/>
+            <svgc:SvgViewbox Grid.Row="8" Grid.Column="2" Source="/Assets/basmilius_weather-icons/extreme-rain.svg"/>
+            <svgc:SvgViewbox Grid.Row="9" Grid.Column="2" Source="/Assets/basmilius_weather-icons/snow.svg"/>
+            <svgc:SvgViewbox Grid.Row="10" Grid.Column="2" Source="/Assets/basmilius_weather-icons/extreme-snow.svg"/>
+            <svgc:SvgViewbox Grid.Row="11" Grid.Column="2" Source="/Assets/basmilius_weather-icons/thunderstorms.svg"/>
+            <svgc:SvgViewbox Grid.Row="12" Grid.Column="2" Source="/Assets/basmilius_weather-icons/not-available.svg"/>
+
+            <TextBlock Grid.Row="0" Grid.Column="3" Text="TextIcon1"/>
+            <ui:FontIcon Grid.Row="1" Grid.Column="3" Glyph="&#xf00d;" Style="{StaticResource TI1}"/>
+            <ui:FontIcon Grid.Row="2" Grid.Column="3" Glyph="&#xf002;" Style="{StaticResource TI1}"/>
+            <ui:FontIcon Grid.Row="3" Grid.Column="3" Glyph="&#xf013;" Style="{StaticResource TI1}"/>
+            <ui:FontIcon Grid.Row="4" Grid.Column="3" Glyph="&#xf014;" Style="{StaticResource TI1}"/>
+            <ui:FontIcon Grid.Row="5" Grid.Column="3" Glyph="&#xf01a;" Style="{StaticResource TI1}"/>
+            <ui:FontIcon Grid.Row="6" Grid.Column="3" Glyph="&#xf01a;" Style="{StaticResource TI1}"/>
+            <ui:FontIcon Grid.Row="7" Grid.Column="3" Glyph="&#xf019;" Style="{StaticResource TI1}"/>
+            <ui:FontIcon Grid.Row="8" Grid.Column="3" Glyph="&#xf019;" Style="{StaticResource TI1}"/>
+            <ui:FontIcon Grid.Row="9" Grid.Column="3" Glyph="&#xf01b;" Style="{StaticResource TI1}"/>
+            <ui:FontIcon Grid.Row="10" Grid.Column="3" Glyph="&#xf01b;" Style="{StaticResource TI1}"/>
+            <ui:FontIcon Grid.Row="11" Grid.Column="3" Glyph="&#xf01e;" Style="{StaticResource TI1}"/>
+            <ui:FontIcon Grid.Row="12" Grid.Column="3" Glyph="&#xf07b;" Style="{StaticResource TI1}"/>
+
+            <TextBlock Grid.Row="0" Grid.Column="4" Text="TextIcon2"/>
+            <ui:FontIcon Grid.Row="1" Grid.Column="4" Glyph="&#xf101;" Style="{StaticResource TI2}"/>
+            <ui:FontIcon Grid.Row="2" Grid.Column="4" Glyph="&#xf102;" Style="{StaticResource TI2}"/>
+            <ui:FontIcon Grid.Row="3" Grid.Column="4" Glyph="&#xf105;" Style="{StaticResource TI2}"/>
+            <ui:FontIcon Grid.Row="4" Grid.Column="4" Glyph="&#xf135;" Style="{StaticResource TI2}"/>
+            <ui:FontIcon Grid.Row="5" Grid.Column="4" Glyph="&#xf113;" Style="{StaticResource TI2}"/>
+            <ui:FontIcon Grid.Row="6" Grid.Column="4" Glyph="&#xf113;" Style="{StaticResource TI2}"/>
+            <ui:FontIcon Grid.Row="7" Grid.Column="4" Glyph="&#xf110;" Style="{StaticResource TI2}"/>
+            <ui:FontIcon Grid.Row="8" Grid.Column="4" Glyph="&#xf111;" Style="{StaticResource TI2}"/>
+            <ui:FontIcon Grid.Row="9" Grid.Column="4" Glyph="&#xf121;" Style="{StaticResource TI2}"/>
+            <ui:FontIcon Grid.Row="10" Grid.Column="4" Glyph="&#xf122;" Style="{StaticResource TI2}"/>
+            <ui:FontIcon Grid.Row="11" Grid.Column="4" Glyph="&#xf10d;" Style="{StaticResource TI2}"/>
+            <ui:FontIcon Grid.Row="12" Grid.Column="4" Glyph="&#xf146;" Style="{StaticResource TI2}"/>
         </Grid>
     </ui:ScrollViewerEx>
 </ui:ContentDialog>

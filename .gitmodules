@@ -13,6 +13,6 @@
 [submodule "src/weather_icons/yr-weather-symbols"]
 	path = src/3rdparty/weather_icons/yr-weather-symbols
 	url = https://github.com/nrkno/yr-weather-symbols.git
-[submodule "src/weather_icons/noto-emoji"]
-	path = src/3rdparty/weather_icons/noto-emoji
-	url = https://github.com/googlefonts/noto-emoji.git
+[submodule "src/3rdparty/weather_icons/basmilius"]
+	path = src/3rdparty/weather_icons/basmilius
+	url = https://github.com/basmilius/weather-icons.git

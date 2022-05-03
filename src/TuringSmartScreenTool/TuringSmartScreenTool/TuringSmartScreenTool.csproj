@@ -48,9 +48,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="..\..\3rdparty\weather_icons\basmilius\design\fill-static\final\*.svg" LinkBase="Assets\basmilius_weather-icons" />
     <Resource Include="..\..\3rdparty\weather_icons\yr-weather-symbols\dist\svg\*.svg" LinkBase="Assets\nrkno_yr-weather-symbols" />
     <Resource Include="..\..\3rdparty\weather_icons\weather-icons\font\weathericons-regular-webfont.ttf" Link="Assets\erikflowers_weather-icons\icon.ttf" />
-    <Resource Include="..\..\3rdparty\weather_icons\noto-emoji\fonts\NotoColorEmoji_WindowsCompatible.ttf" Link="Assets\googlefonts_noto-emoji\icon.ttf" />
     <Resource Include="..\..\3rdparty\weather_icons\Icons\font\fonts\qweather-icons.ttf" Link="Assets\qwd_icons\icon.ttf" />
   </ItemGroup>
 </Project>
