@@ -39,6 +39,7 @@ namespace TuringSmartScreenTool.ViewModels
         private readonly ILogger<CanvasEditorWindowViewModel> _logger;
         private readonly IHardwareSelectContentDialog _hardwareSelectContentDialog;
         private readonly ILocationSelectContentDialog _locationSelectContentDialog;
+        private readonly IWeatherIconPreviewContentDialog _weatherIconPreviewContentDialog;
         private readonly IHardwareFinder _hardwareFinder;
         private readonly ISensorFinder _sensorFinder;
         private readonly ITimeManager _timeManager;
@@ -71,6 +72,7 @@ namespace TuringSmartScreenTool.ViewModels
             ILogger<CanvasEditorWindowViewModel> logger,
             IHardwareSelectContentDialog hardwareSelectContentDialog,
             ILocationSelectContentDialog locationSelectContentDialog,
+            IWeatherIconPreviewContentDialog weatherIconPreviewContentDialog,
             // TODO: usecase
             IHardwareFinder hardwareFinder,
             ISensorFinder sensorFinder,
@@ -80,6 +82,7 @@ namespace TuringSmartScreenTool.ViewModels
             _logger = logger;
             _hardwareSelectContentDialog = hardwareSelectContentDialog;
             _locationSelectContentDialog = locationSelectContentDialog;
+            _weatherIconPreviewContentDialog = weatherIconPreviewContentDialog;
             _hardwareFinder = hardwareFinder;
             _sensorFinder = sensorFinder;
             _timeManager = timeManager;
@@ -150,7 +153,7 @@ namespace TuringSmartScreenTool.ViewModels
                 EditorType.HardwareValueText => new HardwareSensorTextBlockEditorViewModel(_hardwareSelectContentDialog, _sensorFinder),
                 EditorType.HardwareValueIndicator => new HardwareSensorIndicatorEditorViewModel(_hardwareSelectContentDialog, _sensorFinder),
                 EditorType.DateTime => new DateTimeTextEditorViewModel(_timeManager),
-                EditorType.Weather => new WeatherTextEditorViewModel(_weatherManager, _locationSelectContentDialog),
+                EditorType.Weather => new WeatherTextEditorViewModel(_weatherManager, _locationSelectContentDialog, _weatherIconPreviewContentDialog),
                 _ => throw new InvalidOperationException(),
             };
 

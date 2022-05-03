@@ -6,6 +6,7 @@
              xmlns:evm="clr-namespace:TuringSmartScreenTool.ViewModels.Editors"
              xmlns:editor="clr-namespace:TuringSmartScreenTool.Views.EditorControls"
              xmlns:ui="http://schemas.modernwpf.com/2019"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d"
              d:Background="White"
              d:DataContext="{d:DesignInstance evm:WeatherTextEditorViewModel}">
@@ -29,11 +30,22 @@
             <ComboBox ItemsSource="{Binding DisplayWeatherInfoTypeCollection}"
                       SelectedItem="{Binding DisplayWeatherInfoType.Value}"
                       MinWidth="200"/>
-            <TextBlock Text="Visual" Style="{StaticResource ContentTitleTextBlock}"/>
+            <TextBlock Text="Weather Visual" Style="{StaticResource ContentTitleTextBlock}"
+                      Visibility="{Binding CanSelectWeatherType.Value, Converter={StaticResource BooleanToVisibility}}"/>
             <ComboBox ItemsSource="{Binding WeatherDisplayTypeCollection}"
                       SelectedItem="{Binding SelectedWeatherDisplayType.Value}"
                       Visibility="{Binding CanSelectWeatherType.Value, Converter={StaticResource BooleanToVisibility}}"
                       MinWidth="200"/>
+            <ui:HyperlinkButton Content="Preview icons"
+                                Visibility="{Binding CanSelectWeatherType.Value, Converter={StaticResource BooleanToVisibility}}">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="Click">
+                        <i:InvokeCommandAction Command="{Binding ShowWeatherIconPreviewCommand}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </ui:HyperlinkButton>
+            <TextBlock Text="Temperature Unit" Style="{StaticResource ContentTitleTextBlock}"
+                       Visibility="{Binding CanSelectTemperatureUnit.Value, Converter={StaticResource BooleanToVisibility}}"/>
             <ComboBox ItemsSource="{Binding TemperatureUnitCollection}"
                       SelectedItem="{Binding SelectedTemperatureUnit.Value}"
                       Visibility="{Binding CanSelectTemperatureUnit.Value, Converter={StaticResource BooleanToVisibility}}"

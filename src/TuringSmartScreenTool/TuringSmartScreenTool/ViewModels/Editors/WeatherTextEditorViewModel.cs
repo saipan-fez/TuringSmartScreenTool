@@ -72,11 +72,13 @@ namespace TuringSmartScreenTool.ViewModels.Editors
         public ReactiveProperty<TemperatureUnit> SelectedTemperatureUnit { get; } = new(TemperatureUnit.CelsiusWithUnit);
 
         public ICommand SelectGeolocationCommand { get; }
+        public ICommand ShowWeatherIconPreviewCommand { get; }
 
         public WeatherTextEditorViewModel(
             // TODO: usecase
             IWeatherManager weatherManager,
-            ILocationSelectContentDialog locationSelectContentDialog)
+            ILocationSelectContentDialog locationSelectContentDialog,
+            IWeatherIconPreviewContentDialog weatherIconPreviewContentDialog)
         {
             _todayWeather = _weatherInfo
                 .Select(x => x?.TodayWeather ?? Observable.Empty<WeatherType?>())
@@ -164,6 +166,11 @@ namespace TuringSmartScreenTool.ViewModels.Editors
                     Longitude.Value = longitude;
                     _weatherInfo.Value = weatherManager.Get(new Geocode(latitude.Value, longitude.Value));
                 }
+            });
+
+            ShowWeatherIconPreviewCommand = new RelayCommand(() =>
+            {
+                weatherIconPreviewContentDialog.ShowAsync();
             });
         }
 

@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Collections.Generic;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
-using TuringSmartScreenTool.Entities;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Input;

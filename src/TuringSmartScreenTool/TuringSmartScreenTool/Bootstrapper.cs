@@ -33,6 +33,7 @@ namespace TuringSmartScreenTool
             services.AddTransient<LocationSelectContentDialogViewModel>();
             services.AddTransient<IHardwareSelectContentDialog, HardwareSelectContentDialog>();
             services.AddTransient<ILocationSelectContentDialog, LocationSelectContentDialog>();
+            services.AddTransient<IWeatherIconPreviewContentDialog, WeatherIconPreviewContentDialog>();
 
             // UseCase
             services.AddTransient<IFindScreenDeviceUseCase, FindScreenDeviceUseCase>();

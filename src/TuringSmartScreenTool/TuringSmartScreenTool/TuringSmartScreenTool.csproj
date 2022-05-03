@@ -15,16 +15,6 @@
     <NoWarn>1701;1702;CA1416</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="Views\CommonEditor.xaml" />
-    <None Remove="Views\EditorControls\DateTimeTextEditor.xaml" />
-    <None Remove="Views\EditorControls\HardwareNameEditor.xaml" />
-    <None Remove="Views\EditorControls\HardwareSensorIndicator.xaml" />
-    <None Remove="Views\EditorControls\HardwareSensorTextEditor.xaml" />
-    <None Remove="Views\EditorControls\StaticTextBlockEditor.xaml" />
-    <None Remove="Views\HardwareSelectContentDialog.xaml" />
-    <None Remove="Views\ImageEditor.xaml" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Humanizer" Version="2.14.1" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="6.0.0" />
@@ -39,12 +29,13 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.1" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
     <PackageReference Include="ReactiveProperty.WPF" Version="8.1.0" />
+    <PackageReference Include="SharpVectors" Version="1.7.7" />
     <PackageReference Include="XamlAnimatedGif" Version="2.0.2" />
     <PackageReference Include="XamlRadialProgressBar" Version="1.0.3" />
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\openhardwaremonitor\OpenHardwareMonitorLib\OpenHardwareMonitorLib.csproj" />
+    <ProjectReference Include="..\..\3rdparty\openhardwaremonitor\OpenHardwareMonitorLib\OpenHardwareMonitorLib.csproj" />
     <ProjectReference Include="..\..\WeatherLib\WeatherLib.csproj" />
     <ProjectReference Include="..\..\TuringSmartScreenLibrary\TuringSmartScreenLibrary.csproj" />
   </ItemGroup>
@@ -55,5 +46,11 @@
     <None Update="NLog.Debug.config" Condition="'$(Configuration)'=='DEBUG'">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="..\..\3rdparty\weather_icons\yr-weather-symbols\dist\svg\*.svg" LinkBase="Assets\nrkno_yr-weather-symbols" />
+    <Resource Include="..\..\3rdparty\weather_icons\weather-icons\font\weathericons-regular-webfont.ttf" Link="Assets\erikflowers_weather-icons\icon.ttf" />
+    <Resource Include="..\..\3rdparty\weather_icons\noto-emoji\fonts\NotoColorEmoji_WindowsCompatible.ttf" Link="Assets\googlefonts_noto-emoji\icon.ttf" />
+    <Resource Include="..\..\3rdparty\weather_icons\Icons\font\fonts\qweather-icons.ttf" Link="Assets\qwd_icons\icon.ttf" />
   </ItemGroup>
 </Project>

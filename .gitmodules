@@ -1,18 +1,18 @@
 [submodule "src/openhardwaremonitor"]
-	path = src/openhardwaremonitor
+	path = src/3rdparty/openhardwaremonitor/
 	url = https://github.com/hexagon-oss/openhardwaremonitor.git
 [submodule "src/open-meteo"]
-	path = src/open-meteo
+	path = src/3rdparty/open-meteo/
 	url = https://github.com/open-meteo/open-meteo.git
 [submodule "src/weather-icons"]
-	path = src/weather_icons/weather-icons
+	path = src/3rdparty/weather_icons/weather-icons
 	url = https://github.com/erikflowers/weather-icons.git
 [submodule "src/weather_icons/Icons"]
-	path = src/weather_icons/Icons
+	path = src/3rdparty/weather_icons/Icons
 	url = https://github.com/qwd/Icons.git
 [submodule "src/weather_icons/yr-weather-symbols"]
-	path = src/weather_icons/yr-weather-symbols
+	path = src/3rdparty/weather_icons/yr-weather-symbols
 	url = https://github.com/nrkno/yr-weather-symbols.git
 [submodule "src/weather_icons/noto-emoji"]
-	path = src/weather_icons/noto-emoji
+	path = src/3rdparty/weather_icons/noto-emoji
 	url = https://github.com/googlefonts/noto-emoji.git

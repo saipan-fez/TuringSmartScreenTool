@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TuringSmartScreenTool", "Tu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TuringSmartScreenLibrary", "TuringSmartScreenLibrary\TuringSmartScreenLibrary.csproj", "{FCC7D6A1-555A-4C66-8A16-B906C2EEDFB2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenHardwareMonitorLib", "openhardwaremonitor\OpenHardwareMonitorLib\OpenHardwareMonitorLib.csproj", "{545E1B19-E378-47F0-9118-EC4999F2A07C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenHardwareMonitorLib", "3rdparty\openhardwaremonitor\OpenHardwareMonitorLib\OpenHardwareMonitorLib.csproj", "{545E1B19-E378-47F0-9118-EC4999F2A07C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeatherLib", "WeatherLib\WeatherLib.csproj", "{1E811E1A-FC81-4528-BB7C-E9ED2F42FFB9}"
 EndProject

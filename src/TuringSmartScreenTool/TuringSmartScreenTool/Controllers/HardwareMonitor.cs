@@ -101,13 +101,14 @@ namespace TuringSmartScreenTool.Controllers
         private readonly ILogger<HardwareMonitor> _logger;
         private readonly IValueUpdateManager _valueUpdateManager;
         private readonly HardwareMonitorParameter _hardwareMonitorParameter;
+
         private readonly Stopwatch _stopwatch;
         private readonly Computer _computer;
+        private readonly Dictionary<Identifier, SensorInfo> _sensorDictionary = new();
 
         private bool _isInitialized = false;
         private bool _isDisposed = false;
         private string _valueUpdateManagerId = null;
-        private Dictionary<Identifier, SensorInfo> _sensorDictionary = new();
 
         public HardwareMonitor(
             ILoggerFactory loggerFactory,

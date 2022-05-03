@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <OpenApiReference Include="..\open-meteo\openapi.yml" Namespace="OpenMeteoLib" ClassName="OpenMeteoClient">
+    <OpenApiReference Include="..\3rdparty\open-meteo\openapi.yml" Namespace="OpenMeteoLib" ClassName="OpenMeteoClient">
       <Options>/GenerateClientInterfaces:true</Options>
     </OpenApiReference>
   </ItemGroup>

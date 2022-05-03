@@ -25,6 +25,15 @@
                     </ui:ThemeResources.ThemeDictionaries>
                 </ui:ThemeResources>
             </ResourceDictionary.MergedDictionaries>
+
+            <FontFamily x:Key="Font_qwd_icons">
+                ./Assets/qwd_icons/#qweather-icons
+            </FontFamily>
+
+            <FontFamily x:Key="Font_erikflowers_weather_icons">
+                ./Assets/erikflowers_weather-icons/#Weather Icons
+            </FontFamily>
+
             <cvt:BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
             <cvt:BooleanToVisibilityConverter x:Key="InverseBooleanToVisibility" TrueValue="Collapsed" FalseValue="Visible"/>
             <cvt:InverseBooleanConverter x:Key="InverseBoolean"/>
