@@ -55,6 +55,10 @@ namespace TuringSmartScreenTool.ViewModels.Editors
 
         public override ReactiveProperty<string> Name { get; } = new("Weather");
         public override ReadOnlyReactiveProperty<string> Text { get; }
+        public override IReadOnlyReactiveProperty<bool> CanSelectFontFamily { get; }
+        public override IReadOnlyReactiveProperty<bool> CanSelectForeground { get; }
+        public override IReadOnlyReactiveProperty<bool> CanSelectFontSize { get; }
+        public override IReadOnlyReactiveProperty<bool> CanSelectFontWeight { get; }
 
         public ReadOnlyReactiveProperty<bool> IsText { get; }
         public ReadOnlyReactiveProperty<bool> IsTextIcon { get; }
@@ -208,6 +212,29 @@ namespace TuringSmartScreenTool.ViewModels.Editors
                 .ToReadOnlyReactiveProperty()
                 .AddTo(_disposables);
 
+            CanSelectFontFamily =
+                Observable.CombineLatest(
+                    IsTextIcon,
+                    IsSvgIcon,
+                    (t, s) => !t && !s)
+                .ToReadOnlyReactiveProperty()
+                .AddTo(_disposables);
+
+            CanSelectFontSize = IsSvgIcon
+                .Select(x => !x)
+                .ToReadOnlyReactiveProperty()
+                .AddTo(_disposables);
+
+            CanSelectForeground = IsSvgIcon
+                .Select(x => !x)
+                .ToReadOnlyReactiveProperty()
+                .AddTo(_disposables);
+
+            CanSelectFontWeight = IsSvgIcon
+                .Select(x => !x)
+                .ToReadOnlyReactiveProperty()
+                .AddTo(_disposables);
+
             SelectGeolocationCommand = new RelayCommand(async () =>
             {
                 var result = await locationSelectContentDialog.ShowAsync();
@@ -232,18 +259,7 @@ namespace TuringSmartScreenTool.ViewModels.Editors
 
         string ConvertToTextIconFont(WeatherDisplayType d)
         {
-            if (d == WeatherDisplayType.TextIcon1)
-            {
-                return "/Assets/erikflowers_weather-icons/icon.ttf #Weather Icons";
-            }
-            else if (d == WeatherDisplayType.TextIcon2)
-            {
-                return "/Assets/qwd_icons/icon.ttf #qweather-icons";
-            }
-            else
-            {
-                return null;
-            }
+            return d.ToTextIconFont();
         }
 
         string ConvertToSvgPath(
@@ -252,73 +268,15 @@ namespace TuringSmartScreenTool.ViewModels.Editors
         {
             if (w == WeatherInfoType.TodayWeather)
             {
-                if (d == WeatherDisplayType.ColorIcon1)
-                {
-                    return ToColorIcon1SvgPath(todayWeather);
-                }
-                else if (d == WeatherDisplayType.ColorIcon2)
-                {
-                    return ToColorIcon2SvgPath(todayWeather);
-                }
+                if (todayWeather.HasValue)
+                    return d.ToSvgPath(todayWeather.Value);
             }
             else if (w == WeatherInfoType.TomorrowWeather)
             {
-                if (d == WeatherDisplayType.ColorIcon1)
-                {
-                    return ToColorIcon1SvgPath(tommorowWeather);
-                }
-                else if (d == WeatherDisplayType.ColorIcon2)
-                {
-                    return ToColorIcon2SvgPath(tommorowWeather);
-                }
+                if (tommorowWeather.HasValue)
+                    return d.ToSvgPath(tommorowWeather.Value);
             }
             return null;
-
-            string ToColorIcon1SvgPath(WeatherType? type)
-            {
-                if (!type.HasValue)
-                    return null;
-
-                return type.Value switch
-                {
-                    WeatherType.Sunny => "/Assets/nrkno_yr-weather-symbols/01d.svg",
-                    WeatherType.PartlyCloudy => "/Assets/nrkno_yr-weather-symbols/03d.svg",
-                    WeatherType.Cloudy => "/Assets/nrkno_yr-weather-symbols/04.svg",
-                    WeatherType.Foggy => "/Assets/nrkno_yr-weather-symbols/15.svg",
-                    WeatherType.Drizzle => "/Assets/nrkno_yr-weather-symbols/09.svg",
-                    WeatherType.HeavyDrizzle => "/Assets/nrkno_yr-weather-symbols/10.svg",
-                    WeatherType.Rain => "/Assets/nrkno_yr-weather-symbols/09.svg",
-                    WeatherType.HeavyRain => "/Assets/nrkno_yr-weather-symbols/10.svg",
-                    WeatherType.SnowFall => "/Assets/nrkno_yr-weather-symbols/49.svg",
-                    WeatherType.HeavySnowFall => "/Assets/nrkno_yr-weather-symbols/50.svg",
-                    WeatherType.Thunderstorm => "/Assets/nrkno_yr-weather-symbols/11.svg",
-                    WeatherType.Unknown => null,
-                    _ => null,
-                };
-            }
-
-            string ToColorIcon2SvgPath(WeatherType? type)
-            {
-                if (!type.HasValue)
-                    return null;
-
-                return type.Value switch
-                {
-                    WeatherType.Sunny => "/Assets/basmilius_weather-icons/clear-day.svg",
-                    WeatherType.PartlyCloudy => "/Assets/basmilius_weather-icons/partly-cloudy-day.svg",
-                    WeatherType.Cloudy => "/Assets/basmilius_weather-icons/cloudy.svg",
-                    WeatherType.Foggy => "/Assets/basmilius_weather-icons/fog.svg",
-                    WeatherType.Drizzle => "/Assets/basmilius_weather-icons/drizzle.svg",
-                    WeatherType.HeavyDrizzle => "/Assets/basmilius_weather-icons/extreme-drizzle.svg",
-                    WeatherType.Rain => "/Assets/basmilius_weather-icons/rain.svg",
-                    WeatherType.HeavyRain => "/Assets/basmilius_weather-icons/extreme-rain.svg",
-                    WeatherType.SnowFall => "/Assets/basmilius_weather-icons/snow.svg",
-                    WeatherType.HeavySnowFall => "/Assets/basmilius_weather-icons/extreme-snow.svg",
-                    WeatherType.Thunderstorm => "/Assets/basmilius_weather-icons/thunderstorms.svg",
-                    WeatherType.Unknown => "/Assets/basmilius_weather-icons/not-available.svg",
-                    _ => "/Assets/basmilius_weather-icons/not-available.svg",
-                };
-            }
         }
 
         string ConvertToText(
@@ -333,76 +291,7 @@ namespace TuringSmartScreenTool.ViewModels.Editors
                 if (!target.HasValue)
                     return "";
 
-                if (d == WeatherDisplayType.ColorIcon1 ||
-                    d == WeatherDisplayType.ColorIcon2)
-                    return "";
-
-                return d switch
-                {
-                    WeatherDisplayType.Text => ToText(),
-                    WeatherDisplayType.TextIcon1 => ToTextIcon1(),
-                    WeatherDisplayType.TextIcon2 => ToTextIcon2(),
-                    _ => ""
-                };
-
-                string ToText()
-                {
-                    // TODO: localize
-                    return target.Value switch
-                    {
-                        WeatherType.Sunny => "Sunny",
-                        WeatherType.PartlyCloudy => "PartlyCloudy",
-                        WeatherType.Cloudy => "Cloudy",
-                        WeatherType.Foggy => "Foggy",
-                        WeatherType.Drizzle => "Drizzle",
-                        WeatherType.HeavyDrizzle => "HeavyDrizzle",
-                        WeatherType.Rain => "Rain",
-                        WeatherType.HeavyRain => "HeavyRain",
-                        WeatherType.SnowFall => "SnowFall",
-                        WeatherType.HeavySnowFall => "HeavySnowFall",
-                        WeatherType.Thunderstorm => "Thunderstorm",
-                        WeatherType.Unknown => "N/A",
-                        _ => "N/A",
-                    };
-                }
-                string ToTextIcon1()
-                {
-                    return target.Value switch
-                    {
-                        WeatherType.Sunny => "\U0000f00d",
-                        WeatherType.PartlyCloudy => "\U0000f002",
-                        WeatherType.Cloudy => "\U0000f013",
-                        WeatherType.Foggy => "\U0000f014",
-                        WeatherType.Drizzle => "\U0000f01a",
-                        WeatherType.HeavyDrizzle => "\U0000f01a",
-                        WeatherType.Rain => "\U0000f019",
-                        WeatherType.HeavyRain => "\U0000f019",
-                        WeatherType.SnowFall => "\U0000f01b",
-                        WeatherType.HeavySnowFall => "\U0000f01b",
-                        WeatherType.Thunderstorm => "\U0000f01e",
-                        WeatherType.Unknown => "\U0000f07b",
-                        _ => "\U0000f07b",
-                    };
-                }
-                string ToTextIcon2()
-                {
-                    return target.Value switch
-                    {
-                        WeatherType.Sunny => "\U0000f101",
-                        WeatherType.PartlyCloudy => "\U0000f102",
-                        WeatherType.Cloudy => "\U0000f105",
-                        WeatherType.Foggy => "\U0000f135",
-                        WeatherType.Drizzle => "\U0000f113",
-                        WeatherType.HeavyDrizzle => "\U0000f113",
-                        WeatherType.Rain => "\U0000f110",
-                        WeatherType.HeavyRain => "\U0000f111",
-                        WeatherType.SnowFall => "\U0000f121",
-                        WeatherType.HeavySnowFall => "\U0000f122",
-                        WeatherType.Thunderstorm => "\U0000f10d",
-                        WeatherType.Unknown => "\U0000f146",
-                        _ => "\U0000f146",
-                    };
-                }
+                return d.ToText(target.Value);
             }
 
             string ToTemperatureText(double? target)

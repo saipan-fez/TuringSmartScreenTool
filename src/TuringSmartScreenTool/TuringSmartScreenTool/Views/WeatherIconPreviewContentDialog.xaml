@@ -24,11 +24,9 @@
             <Setter Property="Margin" Value="10"/>
         </Style>
         <Style x:Key="TI1" TargetType="ui:FontIcon">
-            <Setter Property="FontFamily" Value="{StaticResource Font_erikflowers_weather_icons}"/>
             <Setter Property="FontSize" Value="30"/>
         </Style>
         <Style x:Key="TI2" TargetType="ui:FontIcon">
-            <Setter Property="FontFamily" Value="{StaticResource Font_qwd_icons}"/>
             <Setter Property="FontSize" Value="35"/>
         </Style>
     </ui:ContentDialog.Resources>
@@ -56,74 +54,75 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <TextBlock Grid.Row="1" Grid.Column="0" Text="Sunny"/>
-            <TextBlock Grid.Row="2" Grid.Column="0" Text="PartlyCloudy"/>
-            <TextBlock Grid.Row="3" Grid.Column="0" Text="Cloudy"/>
-            <TextBlock Grid.Row="4" Grid.Column="0" Text="Foggy"/>
-            <TextBlock Grid.Row="5" Grid.Column="0" Text="Drizzle"/>
-            <TextBlock Grid.Row="6" Grid.Column="0" Text="HeavyDrizzle"/>
-            <TextBlock Grid.Row="7" Grid.Column="0" Text="Rain"/>
-            <TextBlock Grid.Row="8" Grid.Column="0" Text="HeavyRain"/>
-            <TextBlock Grid.Row="9" Grid.Column="0" Text="SnowFall"/>
-            <TextBlock Grid.Row="10" Grid.Column="0" Text="HeavySnowFall"/>
-            <TextBlock Grid.Row="11" Grid.Column="0" Text="Thunderstorm"/>
-            <TextBlock Grid.Row="12" Grid.Column="0" Text="Unknown"/>
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Text"/>
+            <TextBlock Name="Text_Sunny"         Grid.Row="1" Grid.Column="0"/>
+            <TextBlock Name="Text_PartlyCloudy"  Grid.Row="2" Grid.Column="0"/>
+            <TextBlock Name="Text_Cloudy"        Grid.Row="3" Grid.Column="0"/>
+            <TextBlock Name="Text_Foggy"         Grid.Row="4" Grid.Column="0"/>
+            <TextBlock Name="Text_Drizzle"       Grid.Row="5" Grid.Column="0"/>
+            <TextBlock Name="Text_HeavyDrizzle"  Grid.Row="6" Grid.Column="0"/>
+            <TextBlock Name="Text_Rain"          Grid.Row="7" Grid.Column="0"/>
+            <TextBlock Name="Text_HeavyRain"     Grid.Row="8" Grid.Column="0"/>
+            <TextBlock Name="Text_SnowFall"      Grid.Row="9" Grid.Column="0"/>
+            <TextBlock Name="Text_HeavySnowFall" Grid.Row="10" Grid.Column="0"/>
+            <TextBlock Name="Text_Thunderstorm"  Grid.Row="11" Grid.Column="0"/>
+            <TextBlock Name="Text_Unknown"       Grid.Row="12" Grid.Column="0"/>
 
             <TextBlock Grid.Row="0" Grid.Column="1" Text="ColorIcon1"/>
-            <svgc:SvgViewbox Grid.Row="1" Grid.Column="1" Source="/Assets/nrkno_yr-weather-symbols/01d.svg"/>
-            <svgc:SvgViewbox Grid.Row="2" Grid.Column="1" Source="/Assets/nrkno_yr-weather-symbols/03d.svg"/>
-            <svgc:SvgViewbox Grid.Row="3" Grid.Column="1" Source="/Assets/nrkno_yr-weather-symbols/04.svg"/>
-            <svgc:SvgViewbox Grid.Row="4" Grid.Column="1" Source="/Assets/nrkno_yr-weather-symbols/15.svg"/>
-            <svgc:SvgViewbox Grid.Row="5" Grid.Column="1" Source="/Assets/nrkno_yr-weather-symbols/09.svg"/>
-            <svgc:SvgViewbox Grid.Row="6" Grid.Column="1" Source="/Assets/nrkno_yr-weather-symbols/10.svg"/>
-            <svgc:SvgViewbox Grid.Row="7" Grid.Column="1" Source="/Assets/nrkno_yr-weather-symbols/09.svg"/>
-            <svgc:SvgViewbox Grid.Row="8" Grid.Column="1" Source="/Assets/nrkno_yr-weather-symbols/10.svg"/>
-            <svgc:SvgViewbox Grid.Row="9" Grid.Column="1" Source="/Assets/nrkno_yr-weather-symbols/49.svg"/>
-            <svgc:SvgViewbox Grid.Row="10" Grid.Column="1" Source="/Assets/nrkno_yr-weather-symbols/50.svg"/>
-            <svgc:SvgViewbox Grid.Row="11" Grid.Column="1" Source="/Assets/nrkno_yr-weather-symbols/11.svg"/>
-            <TextBlock Grid.Row="12" Grid.Column="1" Text="-" HorizontalAlignment="Center"/>
+            <svgc:SvgViewbox Name="ColorIcon1_Sunny"         Grid.Row="1" Grid.Column="1"/>
+            <svgc:SvgViewbox Name="ColorIcon1_PartlyCloudy"  Grid.Row="2" Grid.Column="1"/>
+            <svgc:SvgViewbox Name="ColorIcon1_Cloudy"        Grid.Row="3" Grid.Column="1"/>
+            <svgc:SvgViewbox Name="ColorIcon1_Foggy"         Grid.Row="4" Grid.Column="1"/>
+            <svgc:SvgViewbox Name="ColorIcon1_Drizzle"       Grid.Row="5" Grid.Column="1"/>
+            <svgc:SvgViewbox Name="ColorIcon1_HeavyDrizzle"  Grid.Row="6" Grid.Column="1"/>
+            <svgc:SvgViewbox Name="ColorIcon1_Rain"          Grid.Row="7" Grid.Column="1"/>
+            <svgc:SvgViewbox Name="ColorIcon1_HeavyRain"     Grid.Row="8" Grid.Column="1"/>
+            <svgc:SvgViewbox Name="ColorIcon1_SnowFall"      Grid.Row="9" Grid.Column="1"/>
+            <svgc:SvgViewbox Name="ColorIcon1_HeavySnowFall" Grid.Row="10" Grid.Column="1"/>
+            <svgc:SvgViewbox Name="ColorIcon1_Thunderstorm"  Grid.Row="11" Grid.Column="1"/>
+            <svgc:SvgViewbox Name="ColorIcon1_Unknown"       Grid.Row="12" Grid.Column="1"/>
 
             <TextBlock Grid.Row="0" Grid.Column="2" Text="ColorIcon2"/>
-            <svgc:SvgViewbox Grid.Row="1" Grid.Column="2" Source="/Assets/basmilius_weather-icons/clear-day.svg"/>
-            <svgc:SvgViewbox Grid.Row="2" Grid.Column="2" Source="/Assets/basmilius_weather-icons/partly-cloudy-day.svg"/>
-            <svgc:SvgViewbox Grid.Row="3" Grid.Column="2" Source="/Assets/basmilius_weather-icons/cloudy.svg"/>
-            <svgc:SvgViewbox Grid.Row="4" Grid.Column="2" Source="/Assets/basmilius_weather-icons/fog.svg"/>
-            <svgc:SvgViewbox Grid.Row="5" Grid.Column="2" Source="/Assets/basmilius_weather-icons/drizzle.svg"/>
-            <svgc:SvgViewbox Grid.Row="6" Grid.Column="2" Source="/Assets/basmilius_weather-icons/extreme-drizzle.svg"/>
-            <svgc:SvgViewbox Grid.Row="7" Grid.Column="2" Source="/Assets/basmilius_weather-icons/rain.svg"/>
-            <svgc:SvgViewbox Grid.Row="8" Grid.Column="2" Source="/Assets/basmilius_weather-icons/extreme-rain.svg"/>
-            <svgc:SvgViewbox Grid.Row="9" Grid.Column="2" Source="/Assets/basmilius_weather-icons/snow.svg"/>
-            <svgc:SvgViewbox Grid.Row="10" Grid.Column="2" Source="/Assets/basmilius_weather-icons/extreme-snow.svg"/>
-            <svgc:SvgViewbox Grid.Row="11" Grid.Column="2" Source="/Assets/basmilius_weather-icons/thunderstorms.svg"/>
-            <svgc:SvgViewbox Grid.Row="12" Grid.Column="2" Source="/Assets/basmilius_weather-icons/not-available.svg"/>
+            <svgc:SvgViewbox Name="ColorIcon2_Sunny"         Grid.Row="1" Grid.Column="2"/>
+            <svgc:SvgViewbox Name="ColorIcon2_PartlyCloudy"  Grid.Row="2" Grid.Column="2"/>
+            <svgc:SvgViewbox Name="ColorIcon2_Cloudy"        Grid.Row="3" Grid.Column="2"/>
+            <svgc:SvgViewbox Name="ColorIcon2_Foggy"         Grid.Row="4" Grid.Column="2"/>
+            <svgc:SvgViewbox Name="ColorIcon2_Drizzle"       Grid.Row="5" Grid.Column="2"/>
+            <svgc:SvgViewbox Name="ColorIcon2_HeavyDrizzle"  Grid.Row="6" Grid.Column="2"/>
+            <svgc:SvgViewbox Name="ColorIcon2_Rain"          Grid.Row="7" Grid.Column="2"/>
+            <svgc:SvgViewbox Name="ColorIcon2_HeavyRain"     Grid.Row="8" Grid.Column="2"/>
+            <svgc:SvgViewbox Name="ColorIcon2_SnowFall"      Grid.Row="9" Grid.Column="2"/>
+            <svgc:SvgViewbox Name="ColorIcon2_HeavySnowFall" Grid.Row="10" Grid.Column="2"/>
+            <svgc:SvgViewbox Name="ColorIcon2_Thunderstorm"  Grid.Row="11" Grid.Column="2"/>
+            <svgc:SvgViewbox Name="ColorIcon2_Unknown"       Grid.Row="12" Grid.Column="2"/>
 
             <TextBlock Grid.Row="0" Grid.Column="3" Text="TextIcon1"/>
-            <ui:FontIcon Grid.Row="1" Grid.Column="3" Glyph="&#xf00d;" Style="{StaticResource TI1}"/>
-            <ui:FontIcon Grid.Row="2" Grid.Column="3" Glyph="&#xf002;" Style="{StaticResource TI1}"/>
-            <ui:FontIcon Grid.Row="3" Grid.Column="3" Glyph="&#xf013;" Style="{StaticResource TI1}"/>
-            <ui:FontIcon Grid.Row="4" Grid.Column="3" Glyph="&#xf014;" Style="{StaticResource TI1}"/>
-            <ui:FontIcon Grid.Row="5" Grid.Column="3" Glyph="&#xf01a;" Style="{StaticResource TI1}"/>
-            <ui:FontIcon Grid.Row="6" Grid.Column="3" Glyph="&#xf01a;" Style="{StaticResource TI1}"/>
-            <ui:FontIcon Grid.Row="7" Grid.Column="3" Glyph="&#xf019;" Style="{StaticResource TI1}"/>
-            <ui:FontIcon Grid.Row="8" Grid.Column="3" Glyph="&#xf019;" Style="{StaticResource TI1}"/>
-            <ui:FontIcon Grid.Row="9" Grid.Column="3" Glyph="&#xf01b;" Style="{StaticResource TI1}"/>
-            <ui:FontIcon Grid.Row="10" Grid.Column="3" Glyph="&#xf01b;" Style="{StaticResource TI1}"/>
-            <ui:FontIcon Grid.Row="11" Grid.Column="3" Glyph="&#xf01e;" Style="{StaticResource TI1}"/>
-            <ui:FontIcon Grid.Row="12" Grid.Column="3" Glyph="&#xf07b;" Style="{StaticResource TI1}"/>
+            <ui:FontIcon Name="TextIcon1_Sunny"         Grid.Row="1" Grid.Column="3" Style="{StaticResource TI1}"/>
+            <ui:FontIcon Name="TextIcon1_PartlyCloudy"  Grid.Row="2" Grid.Column="3" Style="{StaticResource TI1}"/>
+            <ui:FontIcon Name="TextIcon1_Cloudy"        Grid.Row="3" Grid.Column="3" Style="{StaticResource TI1}"/>
+            <ui:FontIcon Name="TextIcon1_Foggy"         Grid.Row="4" Grid.Column="3" Style="{StaticResource TI1}"/>
+            <ui:FontIcon Name="TextIcon1_Drizzle"       Grid.Row="5" Grid.Column="3" Style="{StaticResource TI1}"/>
+            <ui:FontIcon Name="TextIcon1_HeavyDrizzle"  Grid.Row="6" Grid.Column="3" Style="{StaticResource TI1}"/>
+            <ui:FontIcon Name="TextIcon1_Rain"          Grid.Row="7" Grid.Column="3" Style="{StaticResource TI1}"/>
+            <ui:FontIcon Name="TextIcon1_HeavyRain"     Grid.Row="8" Grid.Column="3" Style="{StaticResource TI1}"/>
+            <ui:FontIcon Name="TextIcon1_SnowFall"      Grid.Row="9" Grid.Column="3" Style="{StaticResource TI1}"/>
+            <ui:FontIcon Name="TextIcon1_HeavySnowFall" Grid.Row="10" Grid.Column="3" Style="{StaticResource TI1}"/>
+            <ui:FontIcon Name="TextIcon1_Thunderstorm"  Grid.Row="11" Grid.Column="3" Style="{StaticResource TI1}"/>
+            <ui:FontIcon Name="TextIcon1_Unknown"       Grid.Row="12" Grid.Column="3" Style="{StaticResource TI1}"/>
 
             <TextBlock Grid.Row="0" Grid.Column="4" Text="TextIcon2"/>
-            <ui:FontIcon Grid.Row="1" Grid.Column="4" Glyph="&#xf101;" Style="{StaticResource TI2}"/>
-            <ui:FontIcon Grid.Row="2" Grid.Column="4" Glyph="&#xf102;" Style="{StaticResource TI2}"/>
-            <ui:FontIcon Grid.Row="3" Grid.Column="4" Glyph="&#xf105;" Style="{StaticResource TI2}"/>
-            <ui:FontIcon Grid.Row="4" Grid.Column="4" Glyph="&#xf135;" Style="{StaticResource TI2}"/>
-            <ui:FontIcon Grid.Row="5" Grid.Column="4" Glyph="&#xf113;" Style="{StaticResource TI2}"/>
-            <ui:FontIcon Grid.Row="6" Grid.Column="4" Glyph="&#xf113;" Style="{StaticResource TI2}"/>
-            <ui:FontIcon Grid.Row="7" Grid.Column="4" Glyph="&#xf110;" Style="{StaticResource TI2}"/>
-            <ui:FontIcon Grid.Row="8" Grid.Column="4" Glyph="&#xf111;" Style="{StaticResource TI2}"/>
-            <ui:FontIcon Grid.Row="9" Grid.Column="4" Glyph="&#xf121;" Style="{StaticResource TI2}"/>
-            <ui:FontIcon Grid.Row="10" Grid.Column="4" Glyph="&#xf122;" Style="{StaticResource TI2}"/>
-            <ui:FontIcon Grid.Row="11" Grid.Column="4" Glyph="&#xf10d;" Style="{StaticResource TI2}"/>
-            <ui:FontIcon Grid.Row="12" Grid.Column="4" Glyph="&#xf146;" Style="{StaticResource TI2}"/>
+            <ui:FontIcon Name="TextIcon2_Sunny"         Grid.Row="1" Grid.Column="4" Style="{StaticResource TI2}"/>
+            <ui:FontIcon Name="TextIcon2_PartlyCloudy"  Grid.Row="2" Grid.Column="4" Style="{StaticResource TI2}"/>
+            <ui:FontIcon Name="TextIcon2_Cloudy"        Grid.Row="3" Grid.Column="4" Style="{StaticResource TI2}"/>
+            <ui:FontIcon Name="TextIcon2_Foggy"         Grid.Row="4" Grid.Column="4" Style="{StaticResource TI2}"/>
+            <ui:FontIcon Name="TextIcon2_Drizzle"       Grid.Row="5" Grid.Column="4" Style="{StaticResource TI2}"/>
+            <ui:FontIcon Name="TextIcon2_HeavyDrizzle"  Grid.Row="6" Grid.Column="4" Style="{StaticResource TI2}"/>
+            <ui:FontIcon Name="TextIcon2_Rain"          Grid.Row="7" Grid.Column="4" Style="{StaticResource TI2}"/>
+            <ui:FontIcon Name="TextIcon2_HeavyRain"     Grid.Row="8" Grid.Column="4" Style="{StaticResource TI2}"/>
+            <ui:FontIcon Name="TextIcon2_SnowFall"      Grid.Row="9" Grid.Column="4" Style="{StaticResource TI2}"/>
+            <ui:FontIcon Name="TextIcon2_HeavySnowFall" Grid.Row="10" Grid.Column="4" Style="{StaticResource TI2}"/>
+            <ui:FontIcon Name="TextIcon2_Thunderstorm"  Grid.Row="11" Grid.Column="4" Style="{StaticResource TI2}"/>
+            <ui:FontIcon Name="TextIcon2_Unknown"       Grid.Row="12" Grid.Column="4" Style="{StaticResource TI2}"/>
         </Grid>
     </ui:ScrollViewerEx>
 </ui:ContentDialog>

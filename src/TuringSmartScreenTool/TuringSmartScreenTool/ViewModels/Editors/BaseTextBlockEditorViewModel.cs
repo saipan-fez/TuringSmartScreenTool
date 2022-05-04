@@ -25,15 +25,19 @@ namespace TuringSmartScreenTool.ViewModels.Editors
 
         public override ReactiveProperty<string> Name { get; } = new("TextBlock");
 
+        public virtual IReadOnlyReactiveProperty<bool> CanSelectFontSize { get; } = new ReactiveProperty<bool>(true);
         public ReactiveProperty<double> FontSize { get; } = new(12);
 
+        public virtual IReadOnlyReactiveProperty<bool> CanSelectFontWeight { get; } = new ReactiveProperty<bool>(true);
         public IReadOnlyCollection<FontWeightData> FontWeightDataCollection { get; } = s_fontWeightDataList;
         public ReactiveProperty<FontWeightData> SelectedFontWeightData { get; } = new(s_fontWeightDataList.FirstOrDefault(x => x.Name == "Normal"));
         public ReadOnlyReactiveProperty<FontWeight> SelectedFontWeight { get; }
 
+        public virtual IReadOnlyReactiveProperty<bool> CanSelectFontFamily { get; } = new ReactiveProperty<bool>(true);
         public ICollection<FontFamily> FontFamilyCollection { get; } = GetFontFamilyCollection();
         public ReactiveProperty<FontFamily> SelectedFontFamily { get; } = new(GetSystemDefaultFont());
 
+        public virtual IReadOnlyReactiveProperty<bool> CanSelectForeground { get; } = new ReactiveProperty<bool>(true);
         public ReactiveProperty<Color> Foreground { get; } = new(Colors.White);
 
         public ICommand SelectForegroundCommand { get; }

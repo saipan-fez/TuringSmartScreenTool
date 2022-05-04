@@ -10,23 +10,31 @@
              d:Background="White"
              d:DataContext="{d:DesignInstance evm:BaseTextBlockEditorViewModel}">
     <ui:SimpleStackPanel Orientation="Vertical" Style="{StaticResource PageSimpleStackPanel}">
-        <TextBlock Text="Font" Style="{StaticResource ContentTitleTextBlock}"/>
+        <TextBlock Text="Font" Style="{StaticResource ContentTitleTextBlock}"
+                   Visibility="{Binding CanSelectFontFamily.Value, Converter={StaticResource BooleanToVisibility}}"/>
         <ComboBox ItemsSource="{Binding FontFamilyCollection}"
                   SelectedItem="{Binding SelectedFontFamily.Value}"
+                  Visibility="{Binding CanSelectFontFamily.Value, Converter={StaticResource BooleanToVisibility}}"
                   MinWidth="200"/>
-        <TextBlock Text="Color" Style="{StaticResource ContentTitleTextBlock}"/>
-        <ui:SimpleStackPanel Orientation="Horizontal" Spacing="10">
+        <TextBlock Text="Color" Style="{StaticResource ContentTitleTextBlock}"
+                   Visibility="{Binding CanSelectForeground.Value, Converter={StaticResource BooleanToVisibility}}"/>
+        <ui:SimpleStackPanel Orientation="Horizontal" Spacing="10"
+                             Visibility="{Binding CanSelectForeground.Value, Converter={StaticResource BooleanToVisibility}}">
             <Button Content="Select" Command="{Binding SelectForegroundCommand}"/>
             <Border BorderThickness="1" Width="100" Height="30"
                     Background="{Binding Foreground.Value, Converter={StaticResource ObjectToBrush}}"/>
             <TextBlock Text="{Binding Foreground.Value}" VerticalAlignment="Center"/>
         </ui:SimpleStackPanel>
-        <TextBlock Text="Font Size" Style="{StaticResource ContentTitleTextBlock}"/>
+        <TextBlock Text="Font Size" Style="{StaticResource ContentTitleTextBlock}"
+                   Visibility="{Binding CanSelectFontSize.Value, Converter={StaticResource BooleanToVisibility}}"/>
         <ui:NumberBox Value="{Binding FontSize.Value}"
+                      Visibility="{Binding CanSelectFontSize.Value, Converter={StaticResource BooleanToVisibility}}"
                       HorizontalAlignment="Left" Minimum="1"/>
-        <TextBlock Text="Weight" Style="{StaticResource ContentTitleTextBlock}"/>
+        <TextBlock Text="Weight" Style="{StaticResource ContentTitleTextBlock}"
+                   Visibility="{Binding CanSelectFontWeight.Value, Converter={StaticResource BooleanToVisibility}}"/>
         <ComboBox ItemsSource="{Binding FontWeightDataCollection}"
                   SelectedItem="{Binding SelectedFontWeightData.Value}"
+                  Visibility="{Binding CanSelectFontWeight.Value, Converter={StaticResource BooleanToVisibility}}"
                   DisplayMemberPath="Name" MinWidth="200"/>
         <editor:BaseEditor/>
     </ui:SimpleStackPanel>
