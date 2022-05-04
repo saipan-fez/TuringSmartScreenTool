@@ -42,34 +42,28 @@ namespace TuringSmartScreenTool.ViewModels
                     (lat, log) => -90 <= lat && lat <= 90 && -180 <= log && log <= 180)
                 .ToReadOnlyReactiveProperty();
 
-            ConvertAddressToLocationCommand = new RelayCommand(async () =>
-            {
-                try
+            ConvertAddressToLocationCommand = new AsyncReactiveCommand()
+                .WithSubscribe(async () =>
                 {
-                    IsConvertFailed.Value = false;
+                    try
+                    {
+                        IsConvertFailed.Value = false;
 
-                    // TODO: 検索中は押下不可&くるくる表示
-                    var geocode = await geocoder.SearchAsync(
-                        SelectedRegionInfo.Value,
-                        InputState.Value,
-                        InputCity.Value);
-                    if (geocode is not null)
-                    {
-                        Latitude.Value = geocode.Latitude;
-                        Longitude.Value = geocode.Longitude;
+                        var geocode = await geocoder.SearchAsync(
+                            SelectedRegionInfo.Value,
+                            InputState.Value,
+                            InputCity.Value);
+
+                        Latitude.Value = geocode?.Latitude;
+                        Longitude.Value = geocode?.Longitude;
+
+                        IsConvertFailed.Value = geocode == null;
                     }
-                    else
+                    catch
                     {
-                        Latitude.Value = null;
-                        Longitude.Value = null;
                         IsConvertFailed.Value = true;
                     }
-                }
-                catch
-                {
-                    IsConvertFailed.Value = true;
-                }
-            });
+                });
         }
 
         public void Dispose()

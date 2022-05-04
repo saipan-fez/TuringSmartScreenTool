@@ -23,7 +23,7 @@
         <TextBlock Text="City" Style="{StaticResource ContentSubTitleTextBlock}"/>
         <TextBox Text="{Binding InputCity.Value}"/>
         <StackPanel Margin="0,10,0,0">
-            <TextBlock Text="Location not found.&#xa;Input another location or input directly latitude/longitude."
+            <TextBlock Text="Location not found.&#xa;Input another location or input directly."
                        Foreground="Red" Margin="0,0,0,10" TextAlignment="Center" HorizontalAlignment="Center"
                        Visibility="{Binding IsConvertFailed.Value, Converter={StaticResource BooleanToVisibility}}"/>
             <Button Content="Convert to Latitude / Longitude" HorizontalAlignment="Center"
