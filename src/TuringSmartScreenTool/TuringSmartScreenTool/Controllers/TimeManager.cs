@@ -8,7 +8,7 @@ namespace TuringSmartScreenTool.Controllers
 {
     public class TimeParameter
     {
-        public TimeSpan Interval { get; init; } = TimeSpan.FromSeconds(1);
+        public TimeSpan Interval { get; init; } = TimeSpan.FromMilliseconds(100);
     }
 
     public class TimeManager : IDisposable, ITimeManager

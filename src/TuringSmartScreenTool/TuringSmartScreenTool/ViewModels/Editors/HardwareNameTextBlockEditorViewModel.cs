@@ -1,8 +1,11 @@
 ﻿using System.Linq;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Toolkit.Mvvm.Input;
 using ModernWpf.Controls;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using TuringSmartScreenTool.Controllers;
@@ -59,5 +62,41 @@ namespace TuringSmartScreenTool.ViewModels.Editors
                 }
             });
         }
+
+        #region IEditor
+        public class HardwareNameTextBlockEditorViewModelParameter
+        {
+            public static readonly string Key = "HardwareNameText";
+
+            [JsonProperty]
+            public string HardwareId { get; init; } = null;
+        }
+
+        public override async Task<JObject> SaveAsync(SaveAccessory accessory)
+        {
+            var jobject = await base.SaveAsync(accessory);
+            var param = new HardwareNameTextBlockEditorViewModelParameter()
+            {
+                HardwareId = _hardwareId.Value
+            };
+            jobject[HardwareNameTextBlockEditorViewModelParameter.Key] = JToken.FromObject(param);
+
+            return jobject;
+        }
+
+        public override async Task LoadAsync(LoadAccessory accessory, JObject jobject)
+        {
+            await base.LoadAsync(accessory, jobject);
+
+            if (!jobject.TryGetValue(HardwareNameTextBlockEditorViewModelParameter.Key, out var val))
+                return;
+
+            var param = val.ToObject<HardwareNameTextBlockEditorViewModelParameter>();
+            if (param is null)
+                return;
+
+            _hardwareId.Value = param.HardwareId;
+        }
+        #endregion
     }
 }

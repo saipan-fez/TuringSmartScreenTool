@@ -1,16 +1,73 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using TuringSmartScreenTool.Entities;
 
 namespace TuringSmartScreenTool.ViewModels.Editors
 {
-    public abstract class BaseEditorViewModel : IDisposable
+    public class SaveAccessory
+    {
+        private readonly DirectoryInfo _assetsDirectory;
+
+        public SaveAccessory(DirectoryInfo assetsDirectory)
+        {
+            _assetsDirectory = assetsDirectory;
+        }
+
+        public string SaveAssetFile(string srcFilePath)
+        {
+            if (string.IsNullOrEmpty(srcFilePath) || !File.Exists(srcFilePath))
+                return null;
+
+            var destFileName = Guid.NewGuid().ToString("N") + Path.GetExtension(srcFilePath);
+            var destFileFullPath = Path.Combine(_assetsDirectory.FullName, destFileName);
+
+            File.Copy(srcFilePath, destFileFullPath);
+
+            return $"/{_assetsDirectory.Name}/{destFileName}";
+        }
+    }
+
+    public class LoadAccessory
+    {
+        private readonly DirectoryInfo _directory;
+
+        public LoadAccessory(DirectoryInfo directory)
+        {
+            _directory = directory;
+        }
+
+        public string GetFilePath(string filePath)
+        {
+            if (string.IsNullOrEmpty(filePath))
+                return null;
+
+            var replacedFilePath = filePath.Replace('/', Path.DirectorySeparatorChar);
+            var fileFullPath = _directory.FullName + replacedFilePath;
+            if (string.IsNullOrEmpty(fileFullPath) || !File.Exists(fileFullPath))
+                return null;
+
+            return fileFullPath;
+        }
+    }
+
+    public interface IEditor
+    {
+        Task<JObject> SaveAsync(SaveAccessory accessory);
+        Task LoadAsync(LoadAccessory accessory, JObject jobject);
+    }
+
+    public abstract class BaseEditorViewModel : IDisposable, IEditor
     {
         protected readonly CompositeDisposable _disposables = new CompositeDisposable();
 
@@ -164,5 +221,85 @@ namespace TuringSmartScreenTool.ViewModels.Editors
                 target.Value = fileDialog.FileName;
             }
         }
+
+        #region IEditor
+        public class BaseEditorViewModelParameter
+        {
+            public static readonly string Key = "Base";
+
+            [JsonProperty]
+            public string Id { get; init; } = "";
+            [JsonProperty]
+            public string Name { get; init; } = "";
+            [JsonProperty]
+            [JsonConverter(typeof(StringEnumConverter))]
+            public HorizontalAlignment CanvasHorizontalAlignment { get; init; } = HorizontalAlignment.Left;
+            [JsonProperty]
+            [JsonConverter(typeof(StringEnumConverter))]
+            public VerticalAlignment CanvasVerticalAlignment { get; init; } = VerticalAlignment.Top;
+            [JsonProperty]
+            public double? InputCanvasLeft { get; init; } = 0d;
+            [JsonProperty]
+            public double? InputCanvasRight { get; init; } = 0d;
+            [JsonProperty]
+            public double? InputCanvasTop { get; init; } = 0d;
+            [JsonProperty]
+            public double? InputCanvasBottom { get; init; } = 0d;
+            [JsonProperty]
+            public bool IsAutoSize { get; init; } = true;
+            [JsonProperty]
+            public double? InputWidth { get; init; } = 0d;
+            [JsonProperty]
+            public double? InputHeight { get; init; } = 0d;
+        }
+
+        public virtual Task<JObject> SaveAsync(SaveAccessory accessory)
+        {
+            var vmParam = new BaseEditorViewModelParameter()
+            {
+                Id                        = Id.Value,
+                Name                      = Name.Value,
+                CanvasHorizontalAlignment = CanvasHorizontalAlignment.Value,
+                CanvasVerticalAlignment   = CanvasVerticalAlignment.Value,
+                InputCanvasLeft           = InputCanvasLeft.Value,
+                InputCanvasRight          = InputCanvasRight.Value,
+                InputCanvasTop            = InputCanvasTop.Value,
+                InputCanvasBottom         = InputCanvasBottom.Value,
+                IsAutoSize                = IsAutoSize.Value,
+                InputWidth                = InputWidth.Value,
+                InputHeight               = InputHeight.Value,
+            };
+
+            var jobject = new JObject
+            {
+                [BaseEditorViewModelParameter.Key] = JToken.FromObject(vmParam)
+            };
+            return Task.FromResult(jobject);
+        }
+
+        public virtual Task LoadAsync(LoadAccessory accessory, JObject jobject)
+        {
+            if (!jobject.TryGetValue(BaseEditorViewModelParameter.Key, out var val))
+                return Task.CompletedTask;
+
+            var param = val.ToObject<BaseEditorViewModelParameter>();
+            if (param is null)
+                return Task.CompletedTask;
+
+            Id.Value                        = param.Id;
+            Name.Value                      = param.Name;
+            CanvasHorizontalAlignment.Value = param.CanvasHorizontalAlignment;
+            CanvasVerticalAlignment.Value   = param.CanvasVerticalAlignment;
+            InputCanvasLeft.Value           = param.InputCanvasLeft;
+            InputCanvasRight.Value          = param.InputCanvasRight;
+            InputCanvasTop.Value            = param.InputCanvasTop;
+            InputCanvasBottom.Value         = param.InputCanvasBottom;
+            IsAutoSize.Value                = param.IsAutoSize;
+            InputWidth.Value                = param.InputWidth;
+            InputHeight.Value               = param.InputHeight;
+
+            return Task.CompletedTask;
+        }
+        #endregion
     }
 }

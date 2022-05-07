@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using TuringSmartScreenTool.Controllers.Interfaces;
@@ -12,6 +15,7 @@ namespace TuringSmartScreenTool.ViewModels.Editors
 
     public class DateTimeTextEditorViewModel : BaseTextBlockEditorViewModel
     {
+        private static readonly TimeZoneInfo[] s_timeZoneInfoCollection = TimeZoneInfo.GetSystemTimeZones().ToArray();
         private static readonly DateTimeFormat[] s_dateTimeFormatCollection = new DateTimeFormat[]
         {
             new DateTimeFormat("Date (Short)", "d"),
@@ -33,7 +37,7 @@ namespace TuringSmartScreenTool.ViewModels.Editors
         public override ReactiveProperty<string> Name { get; } = new("DateTime");
         public override ReadOnlyReactiveProperty<string> Text { get; }
 
-        public IEnumerable<TimeZoneInfo> TimeZoneInfoCollection { get; } = TimeZoneInfo.GetSystemTimeZones();
+        public IEnumerable<TimeZoneInfo> TimeZoneInfoCollection { get; } = s_timeZoneInfoCollection;
         public ReactiveProperty<TimeZoneInfo> SelectedTimeZoneInfo { get; } = new(TimeZoneInfo.Local);
 
         public IEnumerable<DateTimeFormat> DateTimeFormatCollection { get; } = s_dateTimeFormatCollection;
@@ -61,5 +65,45 @@ namespace TuringSmartScreenTool.ViewModels.Editors
             var time = TimeZoneInfo.ConvertTime(dateTimeOffset, timeZoneInfo);
             return time.ToString(dateTimeFormat);
         }
+
+        #region IEditor
+        public class DateTimeTextEditorViewModelParameter
+        {
+            public static readonly string Key = "DateTimeText";
+
+            [JsonProperty]
+            public string SelectedTimeZoneInfo { get; init; } = TimeZoneInfo.Local.Id;
+            [JsonProperty]
+            public string SelectedDateTimeFormat { get; init; } = s_dateTimeFormatCollection[0].Format;
+        }
+
+        public override async Task<JObject> SaveAsync(SaveAccessory accessory)
+        {
+            var jobject = await base.SaveAsync(accessory);
+            var param = new DateTimeTextEditorViewModelParameter()
+            {
+                SelectedTimeZoneInfo   = SelectedTimeZoneInfo.Value.Id,
+                SelectedDateTimeFormat = SelectedDateTimeFormat.Value.Format
+            };
+            jobject[DateTimeTextEditorViewModelParameter.Key] = JToken.FromObject(param);
+
+            return jobject;
+        }
+
+        public override async Task LoadAsync(LoadAccessory accessory, JObject jobject)
+        {
+            await base.LoadAsync(accessory, jobject);
+
+            if (!jobject.TryGetValue(DateTimeTextEditorViewModelParameter.Key, out var val))
+                return;
+
+            var param = val.ToObject<DateTimeTextEditorViewModelParameter>();
+            if (param is null)
+                return;
+
+            SelectedTimeZoneInfo.Value = s_timeZoneInfoCollection.FirstOrDefault(x => x.Id == param.SelectedTimeZoneInfo) ?? TimeZoneInfo.Local;
+            SelectedDateTimeFormat.Value = s_dateTimeFormatCollection.FirstOrDefault(x => x.Format == param.SelectedDateTimeFormat) ?? s_dateTimeFormatCollection[0];
+        }
+        #endregion
     }
 }

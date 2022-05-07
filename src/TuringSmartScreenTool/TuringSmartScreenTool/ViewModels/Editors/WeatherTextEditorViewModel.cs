@@ -2,9 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Toolkit.Mvvm.Input;
 using ModernWpf.Controls;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using TuringSmartScreenTool.Controllers.Interfaces;
@@ -44,7 +48,7 @@ namespace TuringSmartScreenTool.ViewModels.Editors
 
     public class WeatherTextEditorViewModel : BaseTextBlockEditorViewModel
     {
-        private readonly ReactiveProperty<IWeatherInfo> _weatherInfo = new();
+        private readonly ReadOnlyReactiveProperty<IWeatherInfo> _weatherInfo;
         private readonly ReadOnlyReactiveProperty<WeatherType?> _todayWeather;
         private readonly ReadOnlyReactiveProperty<WeatherType?> _tommorowWeather;
         private readonly ReadOnlyReactiveProperty<double?> _todayMinCelsiusTemp;
@@ -90,36 +94,56 @@ namespace TuringSmartScreenTool.ViewModels.Editors
             ILocationSelectContentDialog locationSelectContentDialog,
             IWeatherIconPreviewContentDialog weatherIconPreviewContentDialog)
         {
+            _weatherInfo =
+                Observable.CombineLatest(
+                    Latitude,
+                    Longitude,
+                    (latitude, longitude) =>
+                    {
+                        if (latitude.HasValue && longitude.HasValue)
+                            return weatherManager.Get(new Geocode(latitude.Value, longitude.Value));
+                        else
+                            return null;
+                    })
+                .ToReadOnlyReactiveProperty()
+                .AddTo(_disposables);
+
             _todayWeather = _weatherInfo
                 .Select(x => x?.TodayWeather ?? Observable.Empty<WeatherType?>())
                 .Switch()
                 .ToReadOnlyReactiveProperty()
                 .AddTo(_disposables);
+
             _tommorowWeather = _weatherInfo
                 .Select(x => x?.TommorowWeather ?? Observable.Empty<WeatherType?>())
                 .Switch()
                 .ToReadOnlyReactiveProperty()
                 .AddTo(_disposables);
+
             _todayMinCelsiusTemp = _weatherInfo
                 .Select(x => x?.TodayMinCelsiusTemp ?? Observable.Empty<double?>())
                 .Switch()
                 .ToReadOnlyReactiveProperty()
                 .AddTo(_disposables);
+
             _todayMaxCelsiusTemp = _weatherInfo
                 .Select(x => x?.TodayMaxCelsiusTemp ?? Observable.Empty<double?>())
                 .Switch()
                 .ToReadOnlyReactiveProperty()
                 .AddTo(_disposables);
+
             _tommorowMinCelsiusTemp = _weatherInfo
                 .Select(x => x?.TommorowMinCelsiusTemp ?? Observable.Empty<double?>())
                 .Switch()
                 .ToReadOnlyReactiveProperty()
                 .AddTo(_disposables);
+
             _tommorowMaxCelsiusTemp = _weatherInfo
                 .Select(x => x?.TommorowMaxCelsiusTemp ?? Observable.Empty<double?>())
                 .Switch()
                 .ToReadOnlyReactiveProperty()
                 .AddTo(_disposables);
+
             _currentCelsiusTemp = _weatherInfo
                 .Select(x => x?.CurrentCelsiusTemp ?? Observable.Empty<double?>())
                 .Switch()
@@ -245,9 +269,11 @@ namespace TuringSmartScreenTool.ViewModels.Editors
                 var longitude = locationSelectContentDialog.Longitude;
                 if (latitude.HasValue && longitude.HasValue)
                 {
+                    Latitude.Value  = null;
+                    Longitude.Value = null;
+
                     Latitude.Value  = latitude;
                     Longitude.Value = longitude;
-                    _weatherInfo.Value = weatherManager.Get(new Geocode(latitude.Value, longitude.Value));
                 }
             });
 
@@ -257,12 +283,12 @@ namespace TuringSmartScreenTool.ViewModels.Editors
             });
         }
 
-        string ConvertToTextIconFont(WeatherDisplayType d)
+        private string ConvertToTextIconFont(WeatherDisplayType d)
         {
             return d.ToTextIconFont();
         }
 
-        string ConvertToSvgPath(
+        private string ConvertToSvgPath(
             WeatherInfoType w, WeatherDisplayType d,
             WeatherType? todayWeather, WeatherType? tommorowWeather)
         {
@@ -279,7 +305,7 @@ namespace TuringSmartScreenTool.ViewModels.Editors
             return null;
         }
 
-        string ConvertToText(
+        private string ConvertToText(
             WeatherInfoType w, WeatherDisplayType d, TemperatureUnit t,
             WeatherType? todayWeather, WeatherType? tommorowWeather,
             double? todayMinCelsiusTemp, double? todayMaxCelsiusTemp,
@@ -346,5 +372,60 @@ namespace TuringSmartScreenTool.ViewModels.Editors
                 _ => false
             };
         }
+
+        #region IEditor
+        public class WeatherTextEditorViewModelParameter
+        {
+            public static readonly string Key = "WeatherText";
+
+            [JsonProperty]
+            public double? Latitude { get; init; } = null;
+            [JsonProperty]
+            public double? Longitude { get; init; } = null;
+            [JsonProperty]
+            [JsonConverter(typeof(StringEnumConverter))]
+            public WeatherInfoType DisplayWeatherInfoType { get; init; } = WeatherInfoType.TodayWeather;
+            [JsonProperty]
+            [JsonConverter(typeof(StringEnumConverter))]
+            public WeatherDisplayType SelectedWeatherDisplayType { get; init; } = WeatherDisplayType.Text;
+            [JsonProperty]
+            [JsonConverter(typeof(StringEnumConverter))]
+            public TemperatureUnit SelectedTemperatureUnit { get; init; } = TemperatureUnit.CelsiusWithUnit;
+        }
+
+        public override async Task<JObject> SaveAsync(SaveAccessory accessory)
+        {
+            var jobject = await base.SaveAsync(accessory);
+            var param = new WeatherTextEditorViewModelParameter()
+            {
+                Latitude                   = Latitude.Value,
+                Longitude                  = Longitude.Value,
+                DisplayWeatherInfoType     = DisplayWeatherInfoType.Value,
+                SelectedWeatherDisplayType = SelectedWeatherDisplayType.Value,
+                SelectedTemperatureUnit    = SelectedTemperatureUnit.Value,
+            };
+            jobject[WeatherTextEditorViewModelParameter.Key] = JToken.FromObject(param);
+
+            return jobject;
+        }
+
+        public override async Task LoadAsync(LoadAccessory accessory, JObject jobject)
+        {
+            await base.LoadAsync(accessory, jobject);
+
+            if (!jobject.TryGetValue(WeatherTextEditorViewModelParameter.Key, out var val))
+                return;
+
+            var param = val.ToObject<WeatherTextEditorViewModelParameter>();
+            if (param is null)
+                return;
+
+            Latitude.Value                   = param.Latitude;
+            Longitude.Value                  = param.Longitude;
+            DisplayWeatherInfoType.Value     = param.DisplayWeatherInfoType;
+            SelectedWeatherDisplayType.Value = param.SelectedWeatherDisplayType;
+            SelectedTemperatureUnit.Value    = param.SelectedTemperatureUnit;
+        }
+        #endregion
     }
 }

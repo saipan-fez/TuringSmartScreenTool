@@ -31,7 +31,7 @@
                       SelectedItem="{Binding DisplayWeatherInfoType.Value}"
                       MinWidth="200"/>
             <TextBlock Text="Weather Visual" Style="{StaticResource ContentTitleTextBlock}"
-                      Visibility="{Binding CanSelectWeatherType.Value, Converter={StaticResource BooleanToVisibility}}"/>
+                       Visibility="{Binding CanSelectWeatherType.Value, Converter={StaticResource BooleanToVisibility}}"/>
             <StackPanel Visibility="{Binding CanSelectWeatherType.Value, Converter={StaticResource BooleanToVisibility}}"
                         HorizontalAlignment="Left">
                 <ComboBox ItemsSource="{Binding WeatherDisplayTypeCollection}"

@@ -2,14 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Media;
 using Microsoft.Toolkit.Mvvm.Input;
 using ModernWpf.Controls;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using TuringSmartScreenTool.Controllers.Interfaces;
 using TuringSmartScreenTool.Entities;
+using TuringSmartScreenTool.Helpers;
 using TuringSmartScreenTool.Views;
 
 namespace TuringSmartScreenTool.ViewModels.Editors
@@ -111,5 +116,70 @@ namespace TuringSmartScreenTool.ViewModels.Editors
                 .WithSubscribe(() => SelectColor(Background))
                 .AddTo(_disposables);
         }
+
+        #region IEditor
+        public class HardwareSensorIndicatorEditorViewModelParameter
+        {
+            public static readonly string Key = "HardwareSensorIndicator";
+
+            [JsonProperty]
+            public string SensorId { get; init; } = null;
+            [JsonProperty]
+            public double? Max { get; init; } = 100d;
+            [JsonProperty]
+            public double? Min { get; init; } = 0d;
+            [JsonProperty]
+            public string Foreground { get; init; } = ColorHelper.ToString(Colors.Red);
+            [JsonProperty]
+            public string Background { get; init; } = ColorHelper.ToString(Colors.Blue);
+            [JsonProperty]
+            public bool IsBackgroundTransparent { get; init; } = false;
+            [JsonProperty]
+            [JsonConverter(typeof(StringEnumConverter))]
+            public IndicatorType Indicator { get; init; } = IndicatorType.Ring;
+            [JsonProperty]
+            public double IndicatorArcWidth { get; init; } = 10;
+        }
+
+        public override async Task<JObject> SaveAsync(SaveAccessory accessory)
+        {
+            var jobject = await base.SaveAsync(accessory);
+            var param = new HardwareSensorIndicatorEditorViewModelParameter()
+            {
+                SensorId                = _sensorId.Value,
+                Max                     = Max.Value,
+                Min                     = Min.Value,
+                Foreground              = ColorHelper.ToString(Foreground.Value),
+                Background              = ColorHelper.ToString(Background.Value),
+                IsBackgroundTransparent = IsBackgroundTransparent.Value,
+                Indicator               = Indicator.Value,
+                IndicatorArcWidth       = IndicatorArcWidth.Value
+            };
+            jobject[HardwareSensorIndicatorEditorViewModelParameter.Key] = JToken.FromObject(param);
+
+            return jobject;
+        }
+
+        public override async Task LoadAsync(LoadAccessory accessory, JObject jobject)
+        {
+            await base.LoadAsync(accessory, jobject);
+
+            if (!jobject.TryGetValue(HardwareSensorIndicatorEditorViewModelParameter.Key, out var val))
+                return;
+
+            var param = val.ToObject<HardwareSensorIndicatorEditorViewModelParameter>();
+            if (param is null)
+                return;
+
+            _sensorId.Value               = param.SensorId;
+            Max.Value                     = param.Max;
+            Min.Value                     = param.Min;
+            Foreground.Value              = ColorHelper.FromString(param.Foreground);
+            Background.Value              = ColorHelper.FromString(param.Background);
+            IsBackgroundTransparent.Value = param.IsBackgroundTransparent;
+            Indicator.Value               = param.Indicator;
+            IndicatorArcWidth.Value       = param.IndicatorArcWidth;
+        }
+        #endregion
     }
 }

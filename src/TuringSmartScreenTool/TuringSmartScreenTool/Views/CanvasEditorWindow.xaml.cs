@@ -22,6 +22,11 @@ namespace TuringSmartScreenTool.Views
             DataContext = mainWindowViewModel;
         }
 
+        private void CloseWindow(object sender, ExecutedRoutedEventArgs e)
+        {
+            SystemCommands.CloseWindow(this);
+        }
+
         // Any mouse events handled by Thumb, so ListBox selected item not changed.
         // For that reason, change selected item by myself when raise PreviewMouseDown event.
         private void Editor_PreviewMouseDown(object sender, MouseButtonEventArgs e)
@@ -40,7 +45,7 @@ namespace TuringSmartScreenTool.Views
         {
             // TODO: System.Runtime.InteropServices.COMException
             //       Right数値をキーボードで変更してこのイベントを発生させると例外が発生する（原因不明）
-            //_mainWindowViewModel.SelectedEditorViewModelIndex.Value = -1;
+            _mainWindowViewModel.SelectedEditorViewModelIndex.Value = -1;
         }
     }
 }

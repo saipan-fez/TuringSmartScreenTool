@@ -3,10 +3,14 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Humanizer;
 using Microsoft.Toolkit.Mvvm.Input;
 using ModernWpf.Controls;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using TuringSmartScreenTool.Controllers.Interfaces;
@@ -292,5 +296,54 @@ namespace TuringSmartScreenTool.ViewModels.Editors
                 _ => throw new InvalidOperationException(),
             };
         }
+
+        #region IEditor
+        public class HardwareSensorTextBlockEditorViewModelParameter
+        {
+            public static readonly string Key = "HardwareSensorText";
+
+            [JsonProperty]
+            public string SensorId { get; init; } = null;
+            [JsonProperty]
+            public string Unit { get; init; } = null;
+            [JsonProperty]
+            public bool IncludeUnit { get; init; } = true;
+            [JsonProperty]
+            [JsonConverter(typeof(StringEnumConverter))]
+            public DecimalPlaces DisplayDecimalPlaces { get; init; } = DecimalPlaces.None;
+        }
+
+        public override async Task<JObject> SaveAsync(SaveAccessory accessory)
+        {
+            var jobject = await base.SaveAsync(accessory);
+            var param = new HardwareSensorTextBlockEditorViewModelParameter()
+            {
+                SensorId             = _sensorId.Value,
+                Unit                 = Unit.Value,
+                IncludeUnit          = IncludeUnit.Value,
+                DisplayDecimalPlaces = DisplayDecimalPlaces.Value,
+            };
+            jobject[HardwareSensorTextBlockEditorViewModelParameter.Key] = JToken.FromObject(param);
+
+            return jobject;
+        }
+
+        public override async Task LoadAsync(LoadAccessory accessory, JObject jobject)
+        {
+            await base.LoadAsync(accessory, jobject);
+
+            if (!jobject.TryGetValue(HardwareSensorTextBlockEditorViewModelParameter.Key, out var val))
+                return;
+
+            var param = val.ToObject<HardwareSensorTextBlockEditorViewModelParameter>();
+            if (param is null)
+                return;
+
+            _sensorId.Value = param.SensorId;
+            Unit.Value = param.Unit;
+            IncludeUnit.Value = param.IncludeUnit;
+            DisplayDecimalPlaces.Value = param.DisplayDecimalPlaces;
+        }
+        #endregion
     }
 }

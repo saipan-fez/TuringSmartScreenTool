@@ -12,7 +12,7 @@ namespace TuringSmartScreenTool.Controllers
 {
     public record ValueUpdateParameter
     {
-        public TimeSpan Interval { get; } = TimeSpan.FromSeconds(1);
+        public TimeSpan Interval { get; } = TimeSpan.FromMilliseconds(100);
     }
 
     public class ValueUpdateManager : IDisposable, IValueUpdateManager

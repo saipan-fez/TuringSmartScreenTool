@@ -36,11 +36,11 @@ namespace TuringSmartScreenTool
         {
             AppDomain.CurrentDomain.FirstChanceException += (s, e) =>
             {
-                _logger.LogError(e.Exception, "");
+                _logger.LogTrace(e.Exception, "FirstChanceException");
             };
             DispatcherUnhandledException += (s, e) =>
             {
-                _logger.LogError(e.Exception, "");
+                _logger.LogError(e.Exception, "DispatcherUnhandledException");
             };
         }
     }

@@ -49,6 +49,7 @@ namespace TuringSmartScreenTool
             services.AddSingleton<IScreenDeviceManager, ScreenDeviceManager>();
             services.AddSingleton<ITimeManager, TimeManager>();
             services.AddSingleton<IWeatherManager, WeatherManager>();
+            services.AddTransient<IEditorFileManager, EditorFileManager>();
 
             return services;
         }

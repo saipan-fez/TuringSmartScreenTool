@@ -10,7 +10,7 @@
              d:DataContext="{d:DesignInstance evm:BaseEditorViewModel}">
     <ui:SimpleStackPanel Orientation="Vertical" Style="{StaticResource PageSimpleStackPanel}">
         <TextBlock Text="Name" Style="{StaticResource ContentTitleTextBlock}"/>
-        <TextBox Text="{Binding Name.Value, UpdateSourceTrigger=PropertyChanged}"/>
+        <TextBox Width="200" HorizontalAlignment="Left" Text="{Binding Name.Value, UpdateSourceTrigger=PropertyChanged}"/>
         <TextBlock Text="Position" Style="{StaticResource ContentTitleTextBlock}"/>
         <ui:SimpleStackPanel Orientation="Vertical" Style="{StaticResource ContentSimpleStackPanel}">
             <TextBlock Text="Horizontal" Style="{StaticResource ContentSubTitleTextBlock}"/>
