@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -11,62 +10,11 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using TuringSmartScreenTool.Controllers.Interfaces;
 using TuringSmartScreenTool.Entities;
 
 namespace TuringSmartScreenTool.ViewModels.Editors
 {
-    public class SaveAccessory
-    {
-        private readonly DirectoryInfo _assetsDirectory;
-
-        public SaveAccessory(DirectoryInfo assetsDirectory)
-        {
-            _assetsDirectory = assetsDirectory;
-        }
-
-        public string SaveAssetFile(string srcFilePath)
-        {
-            if (string.IsNullOrEmpty(srcFilePath) || !File.Exists(srcFilePath))
-                return null;
-
-            var destFileName = Guid.NewGuid().ToString("N") + Path.GetExtension(srcFilePath);
-            var destFileFullPath = Path.Combine(_assetsDirectory.FullName, destFileName);
-
-            File.Copy(srcFilePath, destFileFullPath);
-
-            return $"/{_assetsDirectory.Name}/{destFileName}";
-        }
-    }
-
-    public class LoadAccessory
-    {
-        private readonly DirectoryInfo _directory;
-
-        public LoadAccessory(DirectoryInfo directory)
-        {
-            _directory = directory;
-        }
-
-        public string GetFilePath(string filePath)
-        {
-            if (string.IsNullOrEmpty(filePath))
-                return null;
-
-            var replacedFilePath = filePath.Replace('/', Path.DirectorySeparatorChar);
-            var fileFullPath = _directory.FullName + replacedFilePath;
-            if (string.IsNullOrEmpty(fileFullPath) || !File.Exists(fileFullPath))
-                return null;
-
-            return fileFullPath;
-        }
-    }
-
-    public interface IEditor
-    {
-        Task<JObject> SaveAsync(SaveAccessory accessory);
-        Task LoadAsync(LoadAccessory accessory, JObject jobject);
-    }
-
     public abstract class BaseEditorViewModel : IDisposable, IEditor
     {
         protected readonly CompositeDisposable _disposables = new CompositeDisposable();
@@ -95,9 +43,8 @@ namespace TuringSmartScreenTool.ViewModels.Editors
         public ReadOnlyReactiveProperty<double?> Width { get; }
         public ReadOnlyReactiveProperty<double?> Height { get; }
 
-        public ReactiveCommand<DragStartedEventArgs> DragStartedCommand { get; }
-        public ReactiveCommand<DragCompletedEventArgs> DragCompletedCommand { get; }
         public ReactiveCommand<DragDeltaEventArgs> DragDeltaCommand { get; }
+        public ReactiveCommand<DragCompletedEventArgs> DragCompletedCommand { get; }
 
         public BaseEditorViewModel()
         {
@@ -146,12 +93,6 @@ namespace TuringSmartScreenTool.ViewModels.Editors
                 .ToReadOnlyReactiveProperty()
                 .AddTo(_disposables);
 
-            DragStartedCommand = new ReactiveCommand<DragStartedEventArgs>()
-                .WithSubscribe(e => e.Handled = false)
-                .AddTo(_disposables);
-            DragCompletedCommand = new ReactiveCommand<DragCompletedEventArgs>()
-                .WithSubscribe(e => e.Handled = false)
-                .AddTo(_disposables);
             DragDeltaCommand = new ReactiveCommand<DragDeltaEventArgs>()
                 .WithSubscribe(e =>
                 {
@@ -181,6 +122,22 @@ namespace TuringSmartScreenTool.ViewModels.Editors
                     }
 
                     // not handled for listbox selected event
+                    e.Handled = false;
+                })
+                .AddTo(_disposables);
+
+            DragCompletedCommand = new ReactiveCommand<DragCompletedEventArgs>()
+                .WithSubscribe(e =>
+                {
+                    if (InputCanvasLeft.Value.HasValue)
+                        InputCanvasLeft.Value   = Math.Round(InputCanvasLeft.Value.Value);
+                    if (InputCanvasRight.Value.HasValue)
+                        InputCanvasRight.Value  = Math.Round(InputCanvasRight.Value.Value);
+                    if (InputCanvasTop.Value.HasValue)
+                        InputCanvasTop.Value    = Math.Round(InputCanvasTop.Value.Value);
+                    if (InputCanvasBottom.Value.HasValue)
+                        InputCanvasBottom.Value = Math.Round(InputCanvasBottom.Value.Value);
+
                     e.Handled = false;
                 })
                 .AddTo(_disposables);

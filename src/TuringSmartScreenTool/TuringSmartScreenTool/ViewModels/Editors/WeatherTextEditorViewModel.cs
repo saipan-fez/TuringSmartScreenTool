@@ -12,6 +12,7 @@ using Newtonsoft.Json.Linq;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using TuringSmartScreenTool.Controllers.Interfaces;
+using TuringSmartScreenTool.Entities;
 using TuringSmartScreenTool.Helpers;
 using TuringSmartScreenTool.Views;
 using WeatherLib.Entities;
@@ -20,6 +21,7 @@ namespace TuringSmartScreenTool.ViewModels.Editors
 {
     public enum WeatherInfoType
     {
+        // TODO: DisplayAttribute
         TodayWeather,
         TomorrowWeather,
         CurrentTemperature,
@@ -31,6 +33,7 @@ namespace TuringSmartScreenTool.ViewModels.Editors
 
     public enum WeatherDisplayType
     {
+        // TODO: DisplayAttribute
         Text,
         TextIcon1,
         TextIcon2,
@@ -40,6 +43,7 @@ namespace TuringSmartScreenTool.ViewModels.Editors
 
     public enum TemperatureUnit
     {
+        // TODO: DisplayAttribute
         Celsius,
         CelsiusWithUnit,
         Fahrenheit,

@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using TuringSmartScreenTool.Entities;
 using TuringSmartScreenTool.Helpers;
 
 namespace TuringSmartScreenTool.ViewModels.Editors

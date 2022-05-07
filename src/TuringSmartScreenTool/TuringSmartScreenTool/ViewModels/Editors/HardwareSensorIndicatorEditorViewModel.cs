@@ -21,6 +21,7 @@ namespace TuringSmartScreenTool.ViewModels.Editors
 {
     public enum IndicatorType
     {
+        // TODO: DisplayAttribute
         Ring,
         Pie,
         Bar

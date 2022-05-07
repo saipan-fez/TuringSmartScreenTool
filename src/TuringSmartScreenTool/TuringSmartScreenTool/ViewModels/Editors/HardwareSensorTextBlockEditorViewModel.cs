@@ -22,6 +22,7 @@ namespace TuringSmartScreenTool.ViewModels.Editors
 {
     public enum DecimalPlaces
     {
+        // TODO: DisplayAttribute
         None,
         One,
         Two,

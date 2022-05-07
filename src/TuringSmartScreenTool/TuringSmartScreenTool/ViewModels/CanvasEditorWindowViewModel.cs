@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -12,9 +11,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using Microsoft.Extensions.Logging;
 using Microsoft.Toolkit.Mvvm.Input;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Linq;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using TuringSmartScreenTool.Controllers.Interfaces;
@@ -25,17 +21,6 @@ using TuringSmartScreenTool.Views;
 
 namespace TuringSmartScreenTool.ViewModels
 {
-    public enum EditorType
-    {
-        Text,
-        Image,
-        HardwareName,
-        HardwareValueText,
-        HardwareValueIndicator,
-        DateTime,
-        Weather,
-    }
-
     public class CanvasEditorWindowViewModel : IDisposable
     {
         private static readonly IEnumerable<EditorType> s_editorTypeCollection = Enum.GetValues(typeof(EditorType)).Cast<EditorType>();
@@ -72,6 +57,7 @@ namespace TuringSmartScreenTool.ViewModels
         public ICommand SelectBackgroundImageCommand { get; }
 
         public ICommand AddEditorCommand { get; }
+        public ICommand DuplicateCommand { get; }
         public ICommand MoveUpEditorCommand { get; }
         public ICommand MoveDownEditorCommand { get; }
         public ICommand DeleteSelectedEditorCommand { get; }
@@ -132,6 +118,11 @@ namespace TuringSmartScreenTool.ViewModels
                 .WithSubscribe(_ => SelectImageFilePath(InputCanvasBackgroundImagePath))
                 .AddTo(_disposables);
             AddEditorCommand = new RelayCommand(() => AddEditor());
+            DuplicateCommand = SelectedEditorViewModel
+                .Select(x => x != null)
+                .ToReactiveCommand()
+                .WithSubscribe(_ => DupilicateSelectedEditor())
+                .AddTo(_disposables);
             MoveUpEditorCommand = SelectedEditorViewModelIndex
                 .Select(idx => idx != -1 && idx > 0)
                 .ToReactiveCommand()
@@ -185,6 +176,22 @@ namespace TuringSmartScreenTool.ViewModels
                 EditorType.Weather                => new WeatherTextEditorViewModel(_weatherManager, _locationSelectContentDialog, _weatherIconPreviewContentDialog),
                 _                                 => throw new InvalidOperationException(),
             };
+        }
+
+        private async void DupilicateSelectedEditor()
+        {
+            var vm = SelectedEditorViewModel.Value;
+            if (vm is null)
+                return;
+
+            var jobject  = await vm.SaveAsync(null);
+            var type     = ConvertToEditorType(vm);
+            var copiedVm = CreateEditorViewModel(type);
+            await copiedVm.LoadAsync(null, jobject);
+            copiedVm.Name.Value = copiedVm.Name.Value + " - Copy";
+
+            EditorViewModels.Add(copiedVm);
+            SelectedEditorViewModelIndex.Value = EditorViewModels.Count - 1;
         }
 
         private void MoveUpSelectedEditor()
@@ -317,10 +324,9 @@ namespace TuringSmartScreenTool.ViewModels
 
         private async Task SaveAsFileEditor()
         {
-            var editorFileManager = new EditorFileManager(null);
             var saveFileDialog = new SaveFileDialog()
             {
-                DefaultExt       = editorFileManager.GetFileExtension(),
+                DefaultExt       = _editorFileManager.GetFileExtension(),
                 FileName         = DateTime.Now.ToString("yyyyMMddhhmm"),
                 RestoreDirectory = true,
                 InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
@@ -344,164 +350,6 @@ namespace TuringSmartScreenTool.ViewModels
                 CanvasBackgroundImagePath = InputCanvasBackgroundImagePath.Value
             };
             await _editorFileManager.SaveEditorAsFileAsync(filePath, editorFileData);
-        }
-    }
-
-    public class EditorFileData
-    {
-        public IReadOnlyList<(EditorType editorType, IEditor editor)> Editors { get; init; }
-        public CanvasBackgroundType CanvasBackgroundType { get; init; }
-        public string CanvasBackgroundColor { get; init; }
-        public string CanvasBackgroundImagePath { get; init; }
-    }
-
-    public interface IEditorFileManager
-    {
-        string GetFileExtension();
-        Task<EditorFileData> LoadFromFileAsync(FileInfo loadFileInfo, DirectoryInfo destinationDirectoryInfo, Func<EditorType, IEditor> editorCreateFunction);
-        Task SaveEditorAsFileAsync(FileInfo saveFileInfo, EditorFileData editorFileData);
-    }
-
-    public class EditorFileManager : IEditorFileManager
-    {
-        private class CanvasEditorData
-        {
-            [JsonProperty]
-            public string Version { get; init; }
-            [JsonProperty]
-            public List<(EditorType editorType, JObject jobject)> Editors { get; init; }
-            [JsonProperty]
-            [JsonConverter(typeof(StringEnumConverter))]
-            public CanvasBackgroundType CanvasBackgroundType { get; init; } = CanvasBackgroundType.SolidColor;
-            [JsonProperty]
-            public string CanvasBackgroundColor { get; init; } = ColorHelper.ToString(Colors.Black);
-            [JsonProperty]
-            public string CanvasBackgroundImagePath { get; init; } = null;
-        }
-
-        private static readonly string s_canvasJsonFileName = "canvas.json";
-        private static readonly string s_fileExtension      = ".tss";
-        private static readonly string s_assetsDirName      = "assets";
-
-        private readonly ILogger<EditorFileManager> _logger;
-
-        public EditorFileManager(
-            ILogger<EditorFileManager> logger)
-        {
-            _logger = logger;
-        }
-
-        public string GetFileExtension()
-        {
-            return s_fileExtension;
-        }
-
-        public async Task SaveEditorAsFileAsync(FileInfo saveFileInfo, EditorFileData editorFileData)
-        {
-            DirectoryInfo tempDirectory = null;
-
-            try
-            {
-                await Task.Run(async () =>
-                {
-                    tempDirectory = DirectoryInfoHelper.GetTempDirectory();
-
-                    var assetsDirectory = tempDirectory.CreateSubdirectory(s_assetsDirName);
-                    var saveAccessory   = new SaveAccessory(assetsDirectory);
-                    var editorJsons     = new List<(EditorType, JObject)>();
-                    foreach (var (type, editor) in editorFileData.Editors)
-                    {
-                        var j = await editor.SaveAsync(saveAccessory);
-                        editorJsons.Add((type, j));
-                    }
-
-                    var backgroundImageFilePath = saveAccessory.SaveAssetFile(editorFileData.CanvasBackgroundImagePath);
-                    var param = new CanvasEditorData()
-                    {
-                        Version                   = "1.0",
-                        Editors                   = editorJsons,
-                        CanvasBackgroundType      = editorFileData.CanvasBackgroundType,
-                        CanvasBackgroundColor     = editorFileData.CanvasBackgroundColor,
-                        CanvasBackgroundImagePath = backgroundImageFilePath
-                    };
-                    var json = JsonConvert.SerializeObject(param, Formatting.Indented);
-                    var jsonFilePath = Path.Combine(tempDirectory.FullName, s_canvasJsonFileName);
-                    using (var sw = new StreamWriter(jsonFilePath))
-                    {
-                        sw.Write(json);
-                    }
-
-                    ZipFile.CreateFromDirectory(tempDirectory.FullName, saveFileInfo.FullName);
-                });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "failed to save the file. saveTo:{filePath}", saveFileInfo.FullName);
-                throw;
-            }
-            finally
-            {
-                try
-                {
-                    if (tempDirectory is not null)
-                        tempDirectory.DeleteRecursive();
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "failed to delete temp directory.");
-                }
-            }
-        }
-
-        public async Task<EditorFileData> LoadFromFileAsync(FileInfo loadFileInfo, DirectoryInfo destinationDirectoryInfo, Func<EditorType, IEditor> editorCreateFunction)
-        {
-            if (!loadFileInfo.Exists)
-                throw new FileNotFoundException("file not found.", loadFileInfo.FullName);
-
-            try
-            {
-                ZipFile.ExtractToDirectory(loadFileInfo.FullName, destinationDirectoryInfo.FullName);
-
-                string json;
-                var jsonFilePath = Path.Combine(destinationDirectoryInfo.FullName, s_canvasJsonFileName);
-                using (var sr = new StreamReader(jsonFilePath))
-                {
-                    json = await sr.ReadToEndAsync();
-                }
-
-                var parameter     = JsonConvert.DeserializeObject<CanvasEditorData>(json);
-                var loadAccessory = new LoadAccessory(destinationDirectoryInfo);
-                var editors       = new List<(EditorType editorTyp, IEditor editor)>();
-                foreach (var (editorType, jobject) in parameter.Editors)
-                {
-                    var editor = editorCreateFunction(editorType);
-                    await editor.LoadAsync(loadAccessory, jobject);
-                    editors.Add((editorType, editor));
-                }
-
-                return new()
-                {
-                    Editors                   = editors,
-                    CanvasBackgroundType      = parameter.CanvasBackgroundType,
-                    CanvasBackgroundColor     = parameter.CanvasBackgroundColor,
-                    CanvasBackgroundImagePath = loadAccessory.GetFilePath(parameter.CanvasBackgroundImagePath),
-                };
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "failed to load the file. loadFrom:{filePath} destTo:{directoryPath}", loadFileInfo.FullName, destinationDirectoryInfo.FullName);
-                try
-                {
-                    if (destinationDirectoryInfo is not null)
-                        destinationDirectoryInfo.DeleteRecursive();
-                }
-                catch (Exception ex2)
-                {
-                    _logger.LogError(ex2, "failed to delete directory.");
-                }
-
-                throw;
-            }
         }
     }
 }

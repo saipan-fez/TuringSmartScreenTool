@@ -1,10 +1,10 @@
-﻿using System.IO;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Toolkit.Mvvm.Input;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Reactive.Bindings;
+using TuringSmartScreenTool.Entities;
 
 namespace TuringSmartScreenTool.ViewModels.Editors
 {
@@ -31,7 +31,9 @@ namespace TuringSmartScreenTool.ViewModels.Editors
 
         public override async Task<JObject> SaveAsync(SaveAccessory accessory)
         {
-            var destImageFilePath = accessory.SaveAssetFile(ImageFilePath.Value);
+            var destImageFilePath = accessory is not null ?
+                accessory.SaveAssetFile(ImageFilePath.Value) :
+                ImageFilePath.Value;
 
             var jobject = await base.SaveAsync(accessory);
             var param = new ImageEditorViewModelParameter()
@@ -54,7 +56,9 @@ namespace TuringSmartScreenTool.ViewModels.Editors
             if (param is null)
                 return;
 
-            ImageFilePath.Value = accessory.GetFilePath(param.ImageFilePath);
+            ImageFilePath.Value = accessory is not null ?
+                accessory.GetFilePath(param.ImageFilePath) :
+                param.ImageFilePath;
         }
         #endregion
     }

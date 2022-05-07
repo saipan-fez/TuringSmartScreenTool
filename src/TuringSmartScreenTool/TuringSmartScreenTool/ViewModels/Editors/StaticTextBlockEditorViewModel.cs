@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Reactive.Bindings;
+using TuringSmartScreenTool.Entities;
 
 namespace TuringSmartScreenTool.ViewModels.Editors
 {
