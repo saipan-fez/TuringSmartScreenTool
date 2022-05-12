@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 using ModernWpf.Controls;
 using SharpVectors.Converters;
 using TuringSmartScreenTool.Helpers;
 using TuringSmartScreenTool.ViewModels.Editors;
+using TuringSmartScreenTool.Views.ContentDialogs.Interdfaces;
 using WeatherLib.Entities;
 
-namespace TuringSmartScreenTool.Views
+namespace TuringSmartScreenTool.Views.ContentDialogs
 {
     public partial class WeatherIconPreviewContentDialog : ContentDialog, IWeatherIconPreviewContentDialog
     {
@@ -102,10 +102,5 @@ namespace TuringSmartScreenTool.Views
         public record TextData(string Text);
         public record SvgData(string Source);
         public record FontIconData(string Glyph, string FontFamily);
-    }
-
-    public interface IWeatherIconPreviewContentDialog
-    {
-        Task<ContentDialogResult> ShowAsync();
     }
 }

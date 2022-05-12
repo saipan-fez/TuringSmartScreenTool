@@ -4,122 +4,22 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:ui="http://schemas.modernwpf.com/2019"
-        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-        xmlns:vm="clr-namespace:TuringSmartScreenTool.ViewModels"
         mc:Ignorable="d"
-        d:DataContext="{d:DesignInstance vm:MainWindowViewModel}"
         ui:WindowHelper.UseModernWindowStyle="True"
         Title="Turing Smart Screen Tool"
         Width="870" Height="680">
-    <i:Interaction.Triggers>
-        <i:EventTrigger EventName="Loaded">
-            <i:InvokeCommandAction Command="{Binding WindowLoadedCommand}"/>
-        </i:EventTrigger>
-    </i:Interaction.Triggers>
-    <Grid>
-        <ui:ScrollViewerEx Grid.Column="2" Padding="10">
-            <ui:SimpleStackPanel Orientation="Vertical" Spacing="10">
-                <!-- Device selector -->
-                <Grid IsEnabled="{Binding IsDeviceConnecting.Value, Converter={StaticResource InverseBoolean}}">
-                    <ui:SimpleStackPanel Orientation="Vertical" Spacing="3">
-                        <TextBlock Text="Target Device" Style="{StaticResource ContentTitleTextBlock}"/>
-                        <ui:SimpleStackPanel Orientation="Horizontal" Spacing="10">
-                            <ComboBox ItemsSource="{Binding ScreenDeviceCollection.Value}"
-                                      SelectedValue="{Binding SelectedScreenDevice.Value}"
-                                      HorizontalAlignment="Stretch"
-                                      VerticalAlignment="Center"
-                                      DisplayMemberPath="Name"
-                                      Width="300"/>
-                            <ui:AppBarButton Icon="Refresh" Command="{Binding RefreshScreenDeviceCollectionCommand}"/>
-                        </ui:SimpleStackPanel>
-                    </ui:SimpleStackPanel>
-                </Grid>
-                <!-- Device orientation selector -->
-                <Grid IsEnabled="{Binding IsDeviceConnecting.Value, Converter={StaticResource InverseBoolean}}">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <ui:SimpleStackPanel Grid.Column="0" Orientation="Vertical" Spacing="3">
-                        <TextBlock Text="Device Orientation" Style="{StaticResource ContentTitleTextBlock}"/>
-                        <RadioButton Name="PortraitRadioButton" Content="Portrait" d:IsChecked="True"
-                                     IsChecked="{Binding Orientation.Value, ConverterParameter=Portrait, Mode=TwoWay, Converter={StaticResource EnumToBoolean}}"/>
-                        <RadioButton Name="LandscapeRadioButton" Content="Landscape"
-                                     IsChecked="{Binding Orientation.Value, ConverterParameter=Landscape, Mode=TwoWay, Converter={StaticResource EnumToBoolean}}"/>
-                        <RadioButton Name="PortraitRevRadioButton" Content="Portrait(Reverse)"
-                                     IsChecked="{Binding Orientation.Value, ConverterParameter=PortraitReverse, Mode=TwoWay, Converter={StaticResource EnumToBoolean}}"/>
-                        <RadioButton Name="LandscapeRevRadioButton" Content="Landscape(Reverse)"
-                                     IsChecked="{Binding Orientation.Value, ConverterParameter=LandscapeReverse, Mode=TwoWay, Converter={StaticResource EnumToBoolean}}"/>
-                    </ui:SimpleStackPanel>
-                    <Grid Grid.Column="1">
-                        <!-- port on right -->
-                        <Canvas Width="80" Height="110" Visibility="{Binding IsChecked, ElementName=PortraitRadioButton, Converter={StaticResource BooleanToVisibility}}">
-                            <Border Canvas.Left="10" Canvas.Top="10"
-                                    BorderThickness="1" BorderBrush="Black" Width="60" Height="90"/>
-                            <Rectangle Canvas.Right="5" Canvas.Top="47.5"
-                                        Fill="Red" Width="10" Height="15"/>
-                        </Canvas>
-                        <!-- port on top -->
-                        <Canvas Width="110" Height="80" Visibility="{Binding IsChecked, ElementName=LandscapeRadioButton, Converter={StaticResource BooleanToVisibility}}">
-                            <Border Canvas.Left="10" Canvas.Top="10"
-                                BorderThickness="1" BorderBrush="Black" Width="90" Height="60"/>
-                            <Rectangle Canvas.Left="47.5" Canvas.Top="5"
-                                        Fill="Red" Width="15" Height="10"/>
-                        </Canvas>
-                        <!-- port on left -->
-                        <Canvas Width="80" Height="110" Visibility="{Binding IsChecked, ElementName=PortraitRevRadioButton, Converter={StaticResource BooleanToVisibility}}">
-                            <Border Canvas.Left="10" Canvas.Top="10"
-                                    BorderThickness="1" BorderBrush="Black" Width="60" Height="90"/>
-                            <Rectangle Canvas.Left="5" Canvas.Top="47.5"
-                                        Fill="Red" Width="10" Height="15"/>
-                        </Canvas>
-                        <!-- port on bottom -->
-                        <Canvas Width="110" Height="80" Visibility="{Binding IsChecked, ElementName=LandscapeRevRadioButton, Converter={StaticResource BooleanToVisibility}}">
-                            <Border Canvas.Left="10" Canvas.Top="10"
-                                    BorderThickness="1" BorderBrush="Black" Width="90" Height="60"/>
-                            <Rectangle Canvas.Left="47.5" Canvas.Bottom="5"
-                                        Fill="Red" Width="15" Height="10"/>
-                        </Canvas>
-                        <Grid VerticalAlignment="Bottom" HorizontalAlignment="Center">
-                            <StackPanel Orientation="Horizontal">
-                                <Rectangle Fill="Red" Width="15" Height="10"/>
-                                <TextBlock Text=" : USB Type-C port"/>
-                            </StackPanel>
-                        </Grid>
-                    </Grid>
-                </Grid>
-                <!-- Device connect/disconnect -->
-                <ui:SimpleStackPanel Orientation="Horizontal" Spacing="10">
-                    <Button Width="100" Content="Connect" Command="{Binding ConnectDeviceCommand}"/>
-                    <Button Width="100" Content="Disconnect" Command="{Binding DisconnectDeviceCommand}"/>
-                </ui:SimpleStackPanel>
-                <!-- Device setting -->
-                <ui:SimpleStackPanel Orientation="Vertical" Spacing="10"
-                                     IsEnabled="{Binding IsDeviceConnecting.Value}">
-                    <TextBlock Text="Device Setting" Style="{StaticResource ContentTitleTextBlock}"/>
-                    <TextBlock Text="Screen Resolution" Style="{StaticResource ContentSubTitleTextBlock}"/>
-                    <ui:SimpleStackPanel Orientation="Horizontal" Spacing="3">
-                        <TextBlock Text="Width :" Width="50"/>
-                        <TextBlock Text="{Binding CanvasWidth.Value}"/>
-                    </ui:SimpleStackPanel>
-                    <ui:SimpleStackPanel Orientation="Horizontal" Spacing="3">
-                        <TextBlock Text="Height :" Width="50"/>
-                        <TextBlock Text="{Binding CanvasHeight.Value}"/>
-                    </ui:SimpleStackPanel>
-                    <TextBlock Text="Brightness" Style="{StaticResource ContentSubTitleTextBlock}"/>
-                    <Slider MaxWidth="300" MinWidth="300" HorizontalAlignment="Left"
-                            Minimum="{Binding MinBrightness.Value}" Maximum="{Binding MaxBrightness.Value}" TickFrequency="{Binding StepBrightness.Value}"
-                            Value="{Binding Brightness.Value, Mode=TwoWay, Delay=100}"/>
-                    <TextBlock Text="Screen" Style="{StaticResource ContentSubTitleTextBlock}"/>
-                    <ui:ToggleSwitch IsOn="{Binding IsScreenTurnedOn.Value, Mode=TwoWay}" OnContent="On" OffContent="Off"/>
-                </ui:SimpleStackPanel>
-                <!-- Screen update control -->
-                <ui:SimpleStackPanel Orientation="Vertical" Spacing="10">
-                    <TextBlock Text="Screen Control" Style="{StaticResource ContentTitleTextBlock}"/>
-                    <Button Content="Start" Command="{Binding StartScreenUpdateCommand}" CommandParameter="{Binding ElementName=DrawingCanvas}"/>
-                    <Button Content="Stop" Command="{Binding StopScreenUpdateComman}"/>
-                </ui:SimpleStackPanel>
-            </ui:SimpleStackPanel>
-        </ui:ScrollViewerEx>
-    </Grid>
+    <ui:NavigationView x:Name="RootNavigationView"
+                       PaneDisplayMode="Left"
+                       IsTabStop="False"
+                       IsSettingsVisible="False"
+                       IsBackButtonVisible="Collapsed"
+                       SelectionChanged="NavigationView_SelectionChanged">
+        <ui:NavigationView.MenuItems>
+            <ui:NavigationViewItem Icon="60656" Tag="DeviceControl" Content="Device Control"/>
+            <ui:NavigationViewItem Icon="60286" Tag="CanvasEditor" Content="Canvas Editor"/>
+            <ui:NavigationViewItemSeparator/>
+            <ui:NavigationViewItem Icon="Setting" Tag="Setting" Content="Setting"/>
+        </ui:NavigationView.MenuItems>
+        <ui:Frame x:Name="ContentFrame"/>
+    </ui:NavigationView>
 </Window>

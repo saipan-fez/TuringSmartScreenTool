@@ -1,8 +1,8 @@
-﻿using System.Threading.Tasks;
-using ModernWpf.Controls;
-using TuringSmartScreenTool.ViewModels;
+﻿using ModernWpf.Controls;
+using TuringSmartScreenTool.ViewModels.ContentDialogs;
+using TuringSmartScreenTool.Views.ContentDialogs.Interdfaces;
 
-namespace TuringSmartScreenTool.Views
+namespace TuringSmartScreenTool.Views.ContentDialogs
 {
     public partial class LocationSelectContentDialog : ContentDialog, ILocationSelectContentDialog
     {
@@ -19,13 +19,5 @@ namespace TuringSmartScreenTool.Views
             DataContext = viewModel;
             _viewModel = viewModel;
         }
-    }
-
-    public interface ILocationSelectContentDialog
-    {
-        double? Latitude { get; }
-        double? Longitude { get; }
-
-        Task<ContentDialogResult> ShowAsync();
     }
 }

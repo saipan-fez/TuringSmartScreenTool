@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 using ModernWpf.Controls;
-using TuringSmartScreenTool.ViewModels;
+using TuringSmartScreenTool.ViewModels.ContentDialogs;
+using TuringSmartScreenTool.Views.ContentDialogs.Interdfaces;
 
-namespace TuringSmartScreenTool.Views
+namespace TuringSmartScreenTool.Views.ContentDialogs
 {
     public partial class HardwareSelectContentDialog : ContentDialog, IHardwareSelectContentDialog
     {
@@ -30,18 +31,5 @@ namespace TuringSmartScreenTool.Views
             };
             return await ShowAsync();
         }
-    }
-
-    public enum HardwareSelectType
-    {
-        Hardware,
-        Sensor
-    }
-
-    public interface IHardwareSelectContentDialog
-    {
-        string SelectedId { get; }
-
-        Task<ContentDialogResult> ShowAsync(HardwareSelectType type);
     }
 }
