@@ -14,13 +14,13 @@ using TuringSmartScreenTool.Entities;
 using TuringSmartScreenTool.Helpers;
 using TuringSmartScreenTool.UseCases;
 
-namespace TuringSmartScreenTool.ViewModels
+namespace TuringSmartScreenTool.ViewModels.Pages
 {
-    public class MainWindowViewModel : IDisposable
+    public class DeviceControlPageViewModel : INavigationAware, IDisposable
     {
         private readonly CompositeDisposable _disposables = new CompositeDisposable();
 
-        private readonly ILogger<MainWindowViewModel> _logger;
+        private readonly ILogger<DeviceControlPageViewModel> _logger;
         private readonly IFindScreenDeviceUseCase _findScreenDeviceUseCase;
         private readonly IControlScreenDeviceUseCase _controlScreenDeviceUseCase;
         private readonly IUpdateScreenUseCase _updateScreenUseCase;
@@ -44,8 +44,8 @@ namespace TuringSmartScreenTool.ViewModels
         public ICommand StartScreenUpdateCommand { get; }
         public ICommand StopScreenUpdateComman { get; }
 
-        public MainWindowViewModel(
-            ILogger<MainWindowViewModel> logger,
+        public DeviceControlPageViewModel(
+            ILogger<DeviceControlPageViewModel> logger,
             IFindScreenDeviceUseCase findScreenDeviceUseCase,
             IControlScreenDeviceUseCase controlScreenDeviceUseCase,
             IUpdateScreenUseCase updateScreenUseCase)
@@ -108,6 +108,16 @@ namespace TuringSmartScreenTool.ViewModels
         public void Dispose()
         {
             _disposables.Dispose();
+        }
+
+        public void OnNavigatedTo(NavigationContext navigationContext)
+        {
+
+        }
+
+        public void OnNavigatedFrom(NavigationContext navigationContext)
+        {
+
         }
 
         private void WindowLoaded()

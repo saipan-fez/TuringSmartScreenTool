@@ -28,7 +28,7 @@ namespace TuringSmartScreenTool
         {
             ReactivePropertyScheduler.SetDefaultSchedulerFactory(() => new DispatcherScheduler(Dispatcher));
 
-            var mainWindow = _serviceProvider.GetService<CanvasEditorWindow>();
+            var mainWindow = _serviceProvider.GetService<MainWindow>();
             mainWindow.Show();
         }
 

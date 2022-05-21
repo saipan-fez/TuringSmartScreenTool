@@ -16,7 +16,7 @@ using Reactive.Bindings.Extensions;
 using TuringSmartScreenTool.Controllers.Interfaces;
 using TuringSmartScreenTool.Entities;
 using TuringSmartScreenTool.Helpers;
-using TuringSmartScreenTool.Views;
+using TuringSmartScreenTool.Views.ContentDialogs.Interdfaces;
 
 namespace TuringSmartScreenTool.ViewModels.Editors
 {

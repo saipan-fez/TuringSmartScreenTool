@@ -1,0 +1,185 @@
+﻿<ListBox x:Class="TuringSmartScreenTool.Views.Controls.CanvasEditorListBox"
+         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+         xmlns:vm="clr-namespace:TuringSmartScreenTool.ViewModels.Pages"
+         xmlns:evm="clr-namespace:TuringSmartScreenTool.ViewModels.Editors"
+         xmlns:ui="http://schemas.modernwpf.com/2019"
+         xmlns:xrpb="http://XamlRadialProgressBar/DotNet"
+         xmlns:svgc="http://sharpvectors.codeplex.com/svgc/"
+         mc:Ignorable="d"
+         d:DataContext="{d:DesignInstance vm:CanvasEditorPageViewModel}"
+         MouseDown="DrawingCanvas_MouseDown"
+         Width="{Binding CanvasWidth.Value}" Height="{Binding CanvasHeight.Value}"
+         ItemsSource="{Binding EditorViewModels}"
+         SelectedIndex="{Binding SelectedEditorViewModelIndex.Value}"
+         Background="{Binding CanvasBackground.Value, Converter={StaticResource ObjectToBrush}}">
+    <ListBox.Resources>
+        <DataTemplate DataType="{x:Type evm:BaseTextBlockEditorViewModel}">
+            <Thumb PreviewMouseDown="Editor_PreviewMouseDown">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="DragDelta">
+                        <i:InvokeCommandAction Command="{Binding DragDeltaCommand}" PassEventArgsToCommand="True"/>
+                    </i:EventTrigger>
+                    <i:EventTrigger EventName="DragCompleted">
+                        <i:InvokeCommandAction Command="{Binding DragCompletedCommand}" PassEventArgsToCommand="True"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+                <Thumb.Template>
+                    <ControlTemplate TargetType="Thumb">
+                        <Grid Background="Transparent">
+                            <Viewbox Stretch="{Binding IsAutoSize.Value, Converter={StaticResource BooleanToStretch}}"
+                                     Width="{Binding Width.Value, Converter={StaticResource NullToNotDependency}}"
+                                     Height="{Binding Height.Value, Converter={StaticResource NullToNotDependency}}">
+                                <TextBlock FontSize="{Binding FontSize.Value, Converter={StaticResource NullToNotDependency}}"
+                                           FontWeight="{Binding SelectedFontWeight.Value, Converter={StaticResource NullToNotDependency}}"
+                                           FontFamily="{Binding SelectedFontFamily.Value, Converter={StaticResource NullToNotDependency}}"
+                                           Foreground="{Binding Foreground.Value, Converter={StaticResource ObjectToBrush}}"
+                                           Text="{Binding Text.Value, Converter={StaticResource NullToNotDependency}}" />
+                            </Viewbox>
+                        </Grid>
+                    </ControlTemplate>
+                </Thumb.Template>
+            </Thumb>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type evm:HardwareSensorIndicatorEditorViewModel}">
+            <Thumb PreviewMouseDown="Editor_PreviewMouseDown">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="DragDelta">
+                        <i:InvokeCommandAction Command="{Binding DragDeltaCommand}" PassEventArgsToCommand="True"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+                <Thumb.Template>
+                    <ControlTemplate TargetType="Thumb">
+                        <Grid Background="Transparent">
+                            <xrpb:RadialProgressBar Value="{Binding Value.Value, Mode=OneWay}"
+                                                    Maximum="{Binding Max.Value}"
+                                                    Minimum="{Binding Min.Value}"
+                                                    Foreground="{Binding Foreground.Value, Converter={StaticResource ObjectToBrush}}"
+                                                    OuterBackgroundBrush="{Binding Background.Value, Converter={StaticResource ObjectToBrush}}"
+                                                    Visibility="{Binding Indicator.Value, ConverterParameter=Pie, Converter={StaticResource EnumToVisibility}}"
+                                                    Width="{Binding Width.Value, Converter={StaticResource NullToNotDependency}}"
+                                                    Height="{Binding Height.Value, Converter={StaticResource NullToNotDependency}}"
+                                                    ArcMode="Pie"/>
+                            <xrpb:RadialProgressBar Value="{Binding Value.Value, Mode=OneWay}"
+                                                    Maximum="{Binding Max.Value}"
+                                                    Minimum="{Binding Min.Value}"
+                                                    Foreground="{Binding Foreground.Value, Converter={StaticResource ObjectToBrush}}"
+                                                    OuterBackgroundBrush="{Binding Background.Value, Converter={StaticResource ObjectToBrush}}"
+                                                    ArcBackgroundWidth="{Binding IndicatorArcWidth.Value}"
+                                                    ArcWidth="{Binding IndicatorArcWidth.Value}"
+                                                    Visibility="{Binding Indicator.Value, ConverterParameter=Ring, Converter={StaticResource EnumToVisibility}}"
+                                                    Width="{Binding Width.Value, Converter={StaticResource NullToNotDependency}}"
+                                                    Height="{Binding Height.Value, Converter={StaticResource NullToNotDependency}}"
+                                                    ArcMode="Fill"/>
+                            <ui:ProgressBar CornerRadius="0"
+                                            Value="{Binding Value.Value, Mode=OneWay}"
+                                            Maximum="{Binding Max.Value}"
+                                            Minimum="{Binding Min.Value}"
+                                            Foreground="{Binding Foreground.Value, Converter={StaticResource ObjectToBrush}}"
+                                            Background="{Binding Background.Value, Converter={StaticResource ObjectToBrush}}"
+                                            Visibility="{Binding Indicator.Value, ConverterParameter=Bar, Converter={StaticResource EnumToVisibility}}"
+                                            Width="{Binding Width.Value, Converter={StaticResource NullToNotDependency}}"
+                                            Height="{Binding Height.Value, Converter={StaticResource NullToNotDependency}}"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Thumb.Template>
+            </Thumb>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type evm:ImageEditorViewModel}">
+            <Thumb PreviewMouseDown="Editor_PreviewMouseDown">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="DragDelta">
+                        <i:InvokeCommandAction Command="{Binding DragDeltaCommand}" PassEventArgsToCommand="True"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+                <Thumb.Template>
+                    <ControlTemplate>
+                        <Grid Background="Transparent">
+                            <Image Source="{Binding ImageFilePath.Value, Converter={StaticResource NullToNotDependency}}"
+                                   Stretch="{Binding IsAutoSize.Value, Converter={StaticResource BooleanToStretch}}"
+                                   Width="{Binding Width.Value, Converter={StaticResource NullToNotDependency}}"
+                                   Height="{Binding Height.Value, Converter={StaticResource NullToNotDependency}}"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Thumb.Template>
+            </Thumb>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type evm:WeatherTextEditorViewModel}">
+            <Thumb PreviewMouseDown="Editor_PreviewMouseDown">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="DragDelta">
+                        <i:InvokeCommandAction Command="{Binding DragDeltaCommand}" PassEventArgsToCommand="True"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+                <Thumb.Template>
+                    <ControlTemplate TargetType="Thumb">
+                        <Grid Background="Transparent">
+                            <!-- Text -->
+                            <Viewbox Stretch="{Binding IsAutoSize.Value, Converter={StaticResource BooleanToStretch}}"
+                                     Width="{Binding Width.Value, Converter={StaticResource NullToNotDependency}}"
+                                     Height="{Binding Height.Value, Converter={StaticResource NullToNotDependency}}"
+                                     Visibility="{Binding IsText.Value, Converter={StaticResource BooleanToVisibility}}">
+                                <TextBlock FontSize="{Binding FontSize.Value, Converter={StaticResource NullToNotDependency}}"
+                                           FontWeight="{Binding SelectedFontWeight.Value, Converter={StaticResource NullToNotDependency}}"
+                                           FontFamily="{Binding SelectedFontFamily.Value, Converter={StaticResource NullToNotDependency}}"
+                                           Foreground="{Binding Foreground.Value, Converter={StaticResource ObjectToBrush}}"
+                                           Text="{Binding Text.Value, Converter={StaticResource NullToNotDependency}}"/>
+                            </Viewbox>
+                            <!-- SvgIcon -->
+                            <svgc:SvgViewbox Stretch="{Binding IsAutoSize.Value, Converter={StaticResource BooleanToStretch}}"
+                                             Width="{Binding Width.Value, Converter={StaticResource NullToNotDependency}}"
+                                             Height="{Binding Height.Value, Converter={StaticResource NullToNotDependency}}"
+                                             Source="{Binding SvgPath.Value, Converter={StaticResource NullToNotDependency}}"
+                                             Visibility="{Binding IsSvgIcon.Value, Converter={StaticResource BooleanToVisibility}}"/>
+                            <!-- TextIcon -->
+                            <Viewbox Stretch="{Binding IsAutoSize.Value, Converter={StaticResource BooleanToStretch}}"
+                                     Width="{Binding Width.Value, Converter={StaticResource NullToNotDependency}}"
+                                     Height="{Binding Height.Value, Converter={StaticResource NullToNotDependency}}"
+                                     Visibility="{Binding IsTextIcon.Value, Converter={StaticResource BooleanToVisibility}}">
+                                <TextBlock FontSize="{Binding FontSize.Value, Converter={StaticResource NullToNotDependency}}"
+                                           FontWeight="{Binding SelectedFontWeight.Value, Converter={StaticResource NullToNotDependency}}"
+                                           FontFamily="{Binding TextIconFont.Value, Converter={StaticResource NullToNotDependency}}"
+                                           Foreground="{Binding Foreground.Value, Converter={StaticResource ObjectToBrush}}"
+                                           Text="{Binding Text.Value, Converter={StaticResource NullToNotDependency}}"/>
+                            </Viewbox>
+                        </Grid>
+                    </ControlTemplate>
+                </Thumb.Template>
+            </Thumb>
+        </DataTemplate>
+    </ListBox.Resources>
+    <ListBox.ItemsPanel>
+        <ItemsPanelTemplate>
+            <Canvas/>
+        </ItemsPanelTemplate>
+    </ListBox.ItemsPanel>
+    <ListBox.ItemContainerStyle>
+        <Style TargetType="ListBoxItem">
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="BorderBrush" Value="Red"/>
+                    <Setter Property="BorderThickness" Value="1"/>
+                    <Setter Property="Cursor" Value="SizeAll"/>
+                </Trigger>
+            </Style.Triggers>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Cursor="{TemplateBinding Cursor}">
+                            <ContentPresenter />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Canvas.Left" Value="{Binding CanvasLeft.Value, Converter={StaticResource NullToNotDependency}}" />
+            <Setter Property="Canvas.Top" Value="{Binding CanvasTop.Value, Converter={StaticResource NullToNotDependency}}" />
+            <Setter Property="Canvas.Right" Value="{Binding CanvasRight.Value, Converter={StaticResource NullToNotDependency}}" />
+            <Setter Property="Canvas.Bottom" Value="{Binding CanvasBottom.Value, Converter={StaticResource NullToNotDependency}}" />
+        </Style>
+    </ListBox.ItemContainerStyle>
+</ListBox>

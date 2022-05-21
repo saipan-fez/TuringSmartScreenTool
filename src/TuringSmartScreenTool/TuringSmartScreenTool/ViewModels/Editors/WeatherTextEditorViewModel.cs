@@ -14,7 +14,7 @@ using Reactive.Bindings.Extensions;
 using TuringSmartScreenTool.Controllers.Interfaces;
 using TuringSmartScreenTool.Entities;
 using TuringSmartScreenTool.Helpers;
-using TuringSmartScreenTool.Views;
+using TuringSmartScreenTool.Views.ContentDialogs.Interdfaces;
 using WeatherLib.Entities;
 
 namespace TuringSmartScreenTool.ViewModels.Editors

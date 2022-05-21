@@ -17,25 +17,36 @@ using TuringSmartScreenTool.Controllers.Interfaces;
 using TuringSmartScreenTool.Entities;
 using TuringSmartScreenTool.Helpers;
 using TuringSmartScreenTool.ViewModels.Editors;
-using TuringSmartScreenTool.Views;
+using TuringSmartScreenTool.Views.ContentDialogs.Interdfaces;
 
-namespace TuringSmartScreenTool.ViewModels
+namespace TuringSmartScreenTool.ViewModels.Pages
 {
-    public class CanvasEditorWindowViewModel : IDisposable
+    public class CanvasViewModel : IDisposable
+    {
+        public void Dispose()
+        {
+        }
+    }
+
+    public class CanvasEditorPageViewModel : INavigationAware, IDisposable
     {
         private static readonly IEnumerable<EditorType> s_editorTypeCollection = Enum.GetValues(typeof(EditorType)).Cast<EditorType>();
 
         private readonly CompositeDisposable _disposables = new CompositeDisposable();
 
-        private readonly ILogger<CanvasEditorWindowViewModel> _logger;
-        private readonly IHardwareSelectContentDialog _hardwareSelectContentDialog;
-        private readonly ILocationSelectContentDialog _locationSelectContentDialog;
-        private readonly IWeatherIconPreviewContentDialog _weatherIconPreviewContentDialog;
-        private readonly IHardwareFinder _hardwareFinder;
-        private readonly ISensorFinder _sensorFinder;
-        private readonly ITimeManager _timeManager;
-        private readonly IWeatherManager _weatherManager;
-        private readonly IEditorFileManager _editorFileManager;
+        private readonly ILogger<CanvasEditorPageViewModel> _logger;
+        private readonly IHardwareSelectContentDialog       _hardwareSelectContentDialog;
+        private readonly ILocationSelectContentDialog       _locationSelectContentDialog;
+        private readonly IWeatherIconPreviewContentDialog   _weatherIconPreviewContentDialog;
+        private readonly IScreenDeviceManager               _screenDeviceManager;
+        private readonly IHardwareFinder                    _hardwareFinder;
+        private readonly ISensorFinder                      _sensorFinder;
+        private readonly ITimeManager                       _timeManager;
+        private readonly IWeatherManager                    _weatherManager;
+        private readonly IEditorFileManager                 _editorFileManager;
+
+        public ReactiveProperty<IEnumerable<ScreenDevice>> ScreenDeviceCollection { get; } = new();
+        public ReactiveProperty<int> SelectedScreenDeviceIndex { get; } = new(-1);
 
         public ObservableCollection<BaseEditorViewModel> EditorViewModels { get; } = new();
         public ReactiveProperty<int> SelectedEditorViewModelIndex { get; } = new(-1);
@@ -64,12 +75,13 @@ namespace TuringSmartScreenTool.ViewModels
         public ICommand SaveAsFileCommand { get; }
         public ICommand LoadFromFileCommand { get; }
 
-        public CanvasEditorWindowViewModel(
-            ILogger<CanvasEditorWindowViewModel> logger,
+        public CanvasEditorPageViewModel(
+            ILogger<CanvasEditorPageViewModel> logger,
             IHardwareSelectContentDialog hardwareSelectContentDialog,
             ILocationSelectContentDialog locationSelectContentDialog,
             IWeatherIconPreviewContentDialog weatherIconPreviewContentDialog,
             // TODO: usecase
+            IScreenDeviceManager screenDeviceManager,
             IHardwareFinder hardwareFinder,
             ISensorFinder sensorFinder,
             ITimeManager timeManager,
@@ -80,6 +92,7 @@ namespace TuringSmartScreenTool.ViewModels
             _hardwareSelectContentDialog     = hardwareSelectContentDialog;
             _locationSelectContentDialog     = locationSelectContentDialog;
             _weatherIconPreviewContentDialog = weatherIconPreviewContentDialog;
+            _screenDeviceManager             = screenDeviceManager;
             _hardwareFinder                  = hardwareFinder;
             _sensorFinder                    = sensorFinder;
             _timeManager                     = timeManager;
@@ -139,21 +152,31 @@ namespace TuringSmartScreenTool.ViewModels
                 .WithSubscribe(_ => DeleteSelectedEditor())
                 .AddTo(_disposables);
             SaveAsFileCommand = new AsyncReactiveCommand()
-                .WithSubscribe(x => SaveAsFileEditor())
+                .WithSubscribe(x => SaveAsFileEditorAsync())
                 .AddTo(_disposables);
             LoadFromFileCommand = new AsyncReactiveCommand()
-                .WithSubscribe(x => LoadFromFile())
+                .WithSubscribe(x => LoadFromFileAsync())
                 .AddTo(_disposables);
 
             // TODO: delete
             CanvasWidth.Value = 320;
             CanvasHeight.Value = 480;
-            SelectedEditorViewModelIndex.Value = EditorViewModels.Count > 0 ? 0 : -1;
         }
 
         public void Dispose()
         {
             _disposables.Dispose();
+        }
+
+        public void OnNavigatedTo(NavigationContext navigationContext)
+        {
+            var screenDeviceCollection = _screenDeviceManager.GetOpenedDevices();
+            ScreenDeviceCollection.Value = screenDeviceCollection;
+            SelectedScreenDeviceIndex.Value = screenDeviceCollection.Any() ? 0 : -1;
+        }
+
+        public void OnNavigatedFrom(NavigationContext navigationContext)
+        {
         }
 
         private void AddEditor()
@@ -294,21 +317,26 @@ namespace TuringSmartScreenTool.ViewModels
             };
         }
 
-        private async Task LoadFromFile()
+        private async Task LoadFromFileAsync()
         {
             var fileDialog = new OpenFileDialog()
             {
-                Filter           = "TSS Files(*.tss)|*.tss" + "|All Files(*.*)|*.*",
+                Filter = "TSS Files(*.tss)|*.tss" + "|All Files(*.*)|*.*",
                 InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                Multiselect      = false
+                Multiselect = false
             };
 
             if (fileDialog.ShowDialog() != DialogResult.OK)
                 return;
 
-            var filePath = new FileInfo(fileDialog.FileName);
+            await LoadFromFileAsync(fileDialog.FileName);
+        }
+
+        private async Task LoadFromFileAsync(string filePath)
+        {
+            var fileInfo = new FileInfo(filePath);
             var tempDirectory = DirectoryInfoHelper.GetTempDirectory();
-            var editorFileData = await _editorFileManager.LoadFromFileAsync(filePath, tempDirectory, CreateEditorViewModel);
+            var editorFileData = await _editorFileManager.LoadFromFileAsync(fileInfo, tempDirectory, CreateEditorViewModel);
             EditorViewModels.Clear();
             foreach (var (_, editor) in editorFileData.Editors)
             {
@@ -320,24 +348,30 @@ namespace TuringSmartScreenTool.ViewModels
             InputCanvasBackgroundType.Value      = editorFileData.CanvasBackgroundType;
             InputCanvasBackgroundColor.Value     = ColorHelper.FromString(editorFileData.CanvasBackgroundColor);
             InputCanvasBackgroundImagePath.Value = editorFileData.CanvasBackgroundImagePath;
+            SelectedEditorViewModelIndex.Value   = EditorViewModels.Count > 0 ? 0 : -1;
         }
 
-        private async Task SaveAsFileEditor()
+        private async Task SaveAsFileEditorAsync()
         {
             var saveFileDialog = new SaveFileDialog()
             {
-                DefaultExt       = _editorFileManager.GetFileExtension(),
-                FileName         = DateTime.Now.ToString("yyyyMMddhhmm"),
+                DefaultExt = _editorFileManager.GetFileExtension(),
+                FileName = DateTime.Now.ToString("yyyyMMddhhmm"),
                 RestoreDirectory = true,
                 InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                Filter           = "TSS Files(*.tss)|*.tss" + "|All Files(*.*)|*.*",
-                OverwritePrompt  = true
+                Filter = "TSS Files(*.tss)|*.tss" + "|All Files(*.*)|*.*",
+                OverwritePrompt = true
             };
 
             if (saveFileDialog.ShowDialog() != DialogResult.OK)
                 return;
 
-            var filePath = new FileInfo(saveFileDialog.FileName);
+            await SaveAsFileEditorAsync(saveFileDialog.FileName);
+        }
+
+        private async Task SaveAsFileEditorAsync(string filePath)
+        {
+            var fileInfo = new FileInfo(filePath);
 
             var editors = EditorViewModels
                 .Select(x => (ConvertToEditorType(x), (IEditor)x))
@@ -349,7 +383,7 @@ namespace TuringSmartScreenTool.ViewModels
                 CanvasBackgroundColor     = ColorHelper.ToString(InputCanvasBackgroundColor.Value),
                 CanvasBackgroundImagePath = InputCanvasBackgroundImagePath.Value
             };
-            await _editorFileManager.SaveEditorAsFileAsync(filePath, editorFileData);
+            await _editorFileManager.SaveEditorAsFileAsync(fileInfo, editorFileData);
         }
     }
 }

@@ -48,7 +48,38 @@ namespace TuringSmartScreenTool.Controllers
             return s_fileExtension;
         }
 
-        public async Task SaveEditorAsFileAsync(FileInfo saveFileInfo, EditorFileData editorFileData)
+        public async Task SaveEditorAsDirectoryAsync(DirectoryInfo saveDirectoryInfo, EditorFileData editorFileData)
+        {
+            DirectoryInfo tempDirectory = null;
+
+            try
+            {
+                await Task.Run(async () =>
+                {
+                    tempDirectory = await SaveEditorAsTempDirectoryAsync(editorFileData);
+                    tempDirectory.CopyRecursive(saveDirectoryInfo, true);
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "failed to save to dir. saveDir:{saveDirectoryInfo}", saveDirectoryInfo.FullName);
+                throw;
+            }
+            finally
+            {
+                try
+                {
+                    if (tempDirectory is not null)
+                        tempDirectory.DeleteRecursive();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "failed to delete temp directory.");
+                }
+            }
+        }
+
+        private async Task<DirectoryInfo> SaveEditorAsTempDirectoryAsync(EditorFileData editorFileData)
         {
             DirectoryInfo tempDirectory = null;
 
@@ -82,7 +113,35 @@ namespace TuringSmartScreenTool.Controllers
                     {
                         sw.Write(json);
                     }
+                });
+            }
+            catch (Exception ex)
+            {
+                try
+                {
+                    _logger.LogError(ex, "failed to save the file. saveTo:{tempDirectory}", tempDirectory?.FullName);
+                    if (tempDirectory is not null)
+                        tempDirectory.DeleteRecursive();
+                }
+                catch (Exception ex2)
+                {
+                    _logger.LogError(ex2, "failed to delete temp directory.");
+                }
+                throw;
+            }
 
+            return tempDirectory;
+        }
+
+        public async Task SaveEditorAsFileAsync(FileInfo saveFileInfo, EditorFileData editorFileData)
+        {
+            DirectoryInfo tempDirectory = null;
+
+            try
+            {
+                await Task.Run(async () =>
+                {
+                    tempDirectory = await SaveEditorAsTempDirectoryAsync(editorFileData);
                     ZipFile.CreateFromDirectory(tempDirectory.FullName, saveFileInfo.FullName);
                 });
             }
@@ -105,25 +164,20 @@ namespace TuringSmartScreenTool.Controllers
             }
         }
 
-        public async Task<EditorFileData> LoadFromFileAsync(FileInfo loadFileInfo, DirectoryInfo destinationDirectoryInfo, Func<EditorType, IEditor> editorCreateFunction)
+        public async Task<EditorFileData> LoadFromDirectoryAsync(DirectoryInfo srcDirectoryInfo, Func<EditorType, IEditor> editorCreateFunction)
         {
-            if (!loadFileInfo.Exists)
-                throw new FileNotFoundException("file not found.", loadFileInfo.FullName);
-
             try
             {
-                ZipFile.ExtractToDirectory(loadFileInfo.FullName, destinationDirectoryInfo.FullName);
-
                 string json;
-                var jsonFilePath = Path.Combine(destinationDirectoryInfo.FullName, s_canvasJsonFileName);
+                var jsonFilePath = Path.Combine(srcDirectoryInfo.FullName, s_canvasJsonFileName);
                 using (var sr = new StreamReader(jsonFilePath))
                 {
                     json = await sr.ReadToEndAsync();
                 }
 
-                var parameter     = JsonConvert.DeserializeObject<CanvasEditorData>(json);
-                var loadAccessory = new LoadAccessory(destinationDirectoryInfo);
-                var editors       = new List<(EditorType editorTyp, IEditor editor)>();
+                var parameter = JsonConvert.DeserializeObject<CanvasEditorData>(json);
+                var loadAccessory = new LoadAccessory(srcDirectoryInfo);
+                var editors = new List<(EditorType editorTyp, IEditor editor)>();
                 foreach (var (editorType, jobject) in parameter.Editors)
                 {
                     var editor = editorCreateFunction(editorType);
@@ -133,11 +187,28 @@ namespace TuringSmartScreenTool.Controllers
 
                 return new()
                 {
-                    Editors                   = editors,
-                    CanvasBackgroundType      = parameter.CanvasBackgroundType,
-                    CanvasBackgroundColor     = parameter.CanvasBackgroundColor,
+                    Editors = editors,
+                    CanvasBackgroundType = parameter.CanvasBackgroundType,
+                    CanvasBackgroundColor = parameter.CanvasBackgroundColor,
                     CanvasBackgroundImagePath = loadAccessory.GetFilePath(parameter.CanvasBackgroundImagePath),
                 };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "failed to load the directory. srcDir:{directoryPath}", srcDirectoryInfo.FullName);
+                throw;
+            }
+        }
+
+        public async Task<EditorFileData> LoadFromFileAsync(FileInfo loadFileInfo, DirectoryInfo destinationDirectoryInfo, Func<EditorType, IEditor> editorCreateFunction)
+        {
+            if (!loadFileInfo.Exists)
+                throw new FileNotFoundException("file not found.", loadFileInfo.FullName);
+
+            try
+            {
+                ZipFile.ExtractToDirectory(loadFileInfo.FullName, destinationDirectoryInfo.FullName);
+                return await LoadFromDirectoryAsync(destinationDirectoryInfo, editorCreateFunction);
             }
             catch (Exception ex)
             {

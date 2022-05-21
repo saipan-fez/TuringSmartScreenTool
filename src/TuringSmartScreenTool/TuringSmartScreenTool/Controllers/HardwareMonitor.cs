@@ -11,6 +11,7 @@ using TuringSmartScreenTool.Entities;
 using Humanizer;
 using TuringSmartScreenTool.Helpers;
 using TuringSmartScreenTool.Controllers.Interfaces;
+using System.Threading;
 
 namespace TuringSmartScreenTool.Controllers
 {
@@ -106,6 +107,7 @@ namespace TuringSmartScreenTool.Controllers
         private readonly Computer _computer;
         private readonly Dictionary<Identifier, SensorInfo> _sensorDictionary = new();
 
+        private Task _task = null;
         private bool _isInitialized = false;
         private bool _isDisposed = false;
         private string _valueUpdateManagerId = null;
@@ -140,6 +142,7 @@ namespace TuringSmartScreenTool.Controllers
 
             try
             {
+                _task.Wait();
                 StopToMonitor();
 
                 _computer.Close();
@@ -148,6 +151,7 @@ namespace TuringSmartScreenTool.Controllers
             { }
             finally
             {
+                _task = null;
                 _isDisposed = true;
             }
         }
@@ -176,6 +180,8 @@ namespace TuringSmartScreenTool.Controllers
                 return null;
             }
 
+            WaitToInitializeAsync().Wait();
+
             return _sensorDictionary.Values.FirstOrDefault(x => x.Id == id);
         }
 
@@ -200,18 +206,20 @@ namespace TuringSmartScreenTool.Controllers
                 return null;
             }
 
+            WaitToInitializeAsync().Wait();
+
             var h  = searchHardware(id, _computer.Hardware);
             return h is not null ? new HardwareInfo(h) : null;
         }
 
-        public async ValueTask InitializeAsync()
+        public void StartToInitialize()
         {
             ThrowExceptionIfDisposed();
 
             if (_isInitialized)
                 return;
 
-            await Task.Run(() =>
+            _task = Task.Run(() =>
             {
                 _computer.Open();
 
@@ -226,9 +234,24 @@ namespace TuringSmartScreenTool.Controllers
             });
         }
 
-        public IMonitorTarget[] GetMonitorTargets(params MonitorTargetType[] types)
+        public async Task WaitToInitializeAsync()
         {
             ThrowExceptionIfDisposed();
+
+            if (_task == null)
+                StartToInitialize();
+
+            if (_task.IsCompleted)
+                return;
+
+            await _task.WaitAsync(default(CancellationToken));
+        }
+
+        public async Task<IMonitorTarget[]> GetMonitorTargetsAsync(params MonitorTargetType[] types)
+        {
+            ThrowExceptionIfDisposed();
+
+            await WaitToInitializeAsync();
 
             return _computer.Hardware
                 .Select(x => new MonitorTarget(x, types))

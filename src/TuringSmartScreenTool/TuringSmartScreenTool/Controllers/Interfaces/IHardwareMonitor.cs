@@ -6,7 +6,8 @@ namespace TuringSmartScreenTool.Controllers.Interfaces
     public interface IHardwareMonitorController
     {
         void Dispose();
-        ValueTask InitializeAsync();
-        IMonitorTarget[] GetMonitorTargets(params MonitorTargetType[] types);
+        void StartToInitialize();
+        Task WaitToInitializeAsync();
+        Task<IMonitorTarget[]> GetMonitorTargetsAsync(params MonitorTargetType[] types);
     }
 }

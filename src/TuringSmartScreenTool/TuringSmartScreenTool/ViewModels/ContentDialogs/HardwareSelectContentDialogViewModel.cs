@@ -7,7 +7,7 @@ using Reactive.Bindings.Extensions;
 using TuringSmartScreenTool.Entities;
 using TuringSmartScreenTool.Controllers.Interfaces;
 
-namespace TuringSmartScreenTool.ViewModels
+namespace TuringSmartScreenTool.ViewModels.ContentDialogs
 {
     public class HardwareSelectContentDialogViewModel : IDisposable
     {
@@ -29,7 +29,7 @@ namespace TuringSmartScreenTool.ViewModels
             // TODO: usecase
             IHardwareMonitorController hardwareMonitorController)
         {
-            Mode.Subscribe(mode =>
+            Mode.Subscribe(async mode =>
                 {
                     // not include Sensor in MonitorTarges when SelectionMode.Hardware
                     // include Hardware/Sensor in MonitorTarges when SelectionMode.Sensor
@@ -37,7 +37,7 @@ namespace TuringSmartScreenTool.ViewModels
                         new MonitorTargetType[] { MonitorTargetType.Hardware, MonitorTargetType.Sensor } :
                         new MonitorTargetType[] { MonitorTargetType.Hardware };
 
-                    MonitorTargets.Value = hardwareMonitorController.GetMonitorTargets(targetTypes);
+                    MonitorTargets.Value = await hardwareMonitorController.GetMonitorTargetsAsync(targetTypes);
                 })
                 .AddTo(_disposables);
 

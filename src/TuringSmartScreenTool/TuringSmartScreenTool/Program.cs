@@ -19,9 +19,8 @@ namespace TuringSmartScreenTool
 
             using (var serviceProvider = serviceCollection.BuildServiceProvider())
             {
-                // TODO: async
                 var hardwareMonitor = serviceProvider.GetService<IHardwareMonitorController>();
-                hardwareMonitor.InitializeAsync().AsTask().Wait();
+                hardwareMonitor.StartToInitialize();
 
                 var app = new App(serviceProvider);
                 app.Run();

@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 using OpenCvSharp;
 using TuringSmartScreenTool.Controllers.Interfaces;
 using TuringSmartScreenTool.Entities;
@@ -66,6 +68,21 @@ namespace TuringSmartScreenTool.UseCases
         public void TurnOffScreen(ScreenDevice screenDevice)
         {
             _deviceController.TurnOffScreen(screenDevice);
+        }
+
+        public IReadOnlyCollection<ScreenDevice> Find()
+        {
+            return _deviceController.FindDevices();
+        }
+
+        public void Start(ScreenDevice screenDevice, Action<Mat<Vec3b>> updateScreenAction)
+        {
+            _deviceController.StartToUpdateScreen(screenDevice, updateScreenAction);
+        }
+
+        public void Stop(ScreenDevice screenDevice)
+        {
+            _deviceController.StopToUpdateScreen(screenDevice);
         }
     }
 }

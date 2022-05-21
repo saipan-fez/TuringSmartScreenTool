@@ -10,6 +10,8 @@ namespace TuringSmartScreenTool.Controllers.Interfaces
         void Dispose();
 
         IReadOnlyCollection<ScreenDevice> FindDevices();
+        IReadOnlyCollection<ScreenDevice> GetOpenedDevices();
+
         void Open(ScreenDevice screenDevice, OrientationType orientation);
         void Close(ScreenDevice screenDevice);
 

@@ -8,7 +8,12 @@ using TuringSmartScreenTool.Controllers;
 using TuringSmartScreenTool.Controllers.Interfaces;
 using TuringSmartScreenTool.UseCases;
 using TuringSmartScreenTool.ViewModels;
+using TuringSmartScreenTool.ViewModels.ContentDialogs;
+using TuringSmartScreenTool.ViewModels.Pages;
 using TuringSmartScreenTool.Views;
+using TuringSmartScreenTool.Views.ContentDialogs;
+using TuringSmartScreenTool.Views.ContentDialogs.Interdfaces;
+using TuringSmartScreenTool.Views.Pages;
 
 namespace TuringSmartScreenTool
 {
@@ -25,12 +30,18 @@ namespace TuringSmartScreenTool
 
             services.AddTuringSmartScreenServices();
 
+            // UI
             services.AddTransient<MainWindow>();
-            services.AddTransient<CanvasEditorWindow>();
-            services.AddTransient<MainWindowViewModel>();
-            services.AddTransient<CanvasEditorWindowViewModel>();
+            services.AddSingleton<CanvasEditorPage>();
+            services.AddSingleton<DeviceControlPage>();
+
+            // ViewModel
+            services.AddTransient<DeviceControlPageViewModel>();
+            services.AddTransient<CanvasEditorPageViewModel>();
             services.AddTransient<HardwareSelectContentDialogViewModel>();
             services.AddTransient<LocationSelectContentDialogViewModel>();
+
+            // ContentDialog
             services.AddTransient<IHardwareSelectContentDialog, HardwareSelectContentDialog>();
             services.AddTransient<ILocationSelectContentDialog, LocationSelectContentDialog>();
             services.AddTransient<IWeatherIconPreviewContentDialog, WeatherIconPreviewContentDialog>();

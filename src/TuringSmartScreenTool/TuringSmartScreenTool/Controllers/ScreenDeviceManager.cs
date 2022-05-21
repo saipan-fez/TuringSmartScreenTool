@@ -84,6 +84,14 @@ namespace TuringSmartScreenTool.Controllers
                 .ToList();
         }
 
+        public IReadOnlyCollection<ScreenDevice> GetOpenedDevices()
+        {
+            return _serialPortDeviceFinder.Find()
+                .Select(x => new ScreenDevice(x.PortName))
+                .Where(x => _devices.Any(y => y.Key == x))
+                .ToList();
+        }
+
         public void Open(ScreenDevice screenDevice, OrientationType orientation)
         {
             if (screenDevice is null)
@@ -383,6 +391,7 @@ namespace TuringSmartScreenTool.Controllers
 
             try
             {
+                // TODO: error count
                 var stopwatch = new Stopwatch();
                 while (!token.IsCancellationRequested)
                 {

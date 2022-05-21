@@ -6,10 +6,9 @@ using Reactive.Bindings.Extensions;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Input;
-using Microsoft.Toolkit.Mvvm.Input;
 using WeatherLib;
 
-namespace TuringSmartScreenTool.ViewModels
+namespace TuringSmartScreenTool.ViewModels.ContentDialogs
 {
     public class LocationSelectContentDialogViewModel : IDisposable
     {

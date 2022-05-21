@@ -35,5 +35,33 @@ namespace TuringSmartScreenTool.Helpers
             }
             directoryInfo.Delete();
         }
+
+        public static void CopyRecursive(this DirectoryInfo sourceDir, DirectoryInfo destinationDir, bool recursive)
+        {
+            if (!sourceDir.Exists)
+                throw new DirectoryNotFoundException($"Source directory not found: {sourceDir.FullName}");
+
+            var srcSubDirectories = sourceDir.GetDirectories();
+
+            if (!destinationDir.Exists)
+            {
+                destinationDir.Create();
+            }
+
+            foreach (var file in sourceDir.GetFiles())
+            {
+                var filePath = Path.Combine(destinationDir.FullName, file.Name);
+                file.CopyTo(filePath);
+            }
+
+            if (recursive)
+            {
+                foreach (var srcSubDir in srcSubDirectories)
+                {
+                    var destSubDir = Path.Combine(destinationDir.FullName, srcSubDir.Name);
+                    srcSubDir.CopyRecursive(new DirectoryInfo(destSubDir), true);
+                }
+            }
+        }
     }
 }

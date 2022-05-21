@@ -1,8 +1,6 @@
-﻿using System.Windows;
-using System.Windows.Input;
+﻿using System.Windows.Navigation;
 using Microsoft.Extensions.Logging;
 using ModernWpf.Controls;
-using TuringSmartScreenTool.ViewModels.Editors;
 using TuringSmartScreenTool.ViewModels.Pages;
 
 namespace TuringSmartScreenTool.Views.Pages
@@ -23,25 +21,16 @@ namespace TuringSmartScreenTool.Views.Pages
             DataContext = _viewModel;
         }
 
-        // Any mouse events handled by Thumb, so ListBox selected item not changed.
-        // For that reason, change selected item by myself when raise PreviewMouseDown event.
-        private void Editor_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            if (sender is not FrameworkElement elem)
-                return;
-            if (elem.DataContext is not BaseEditorViewModel vm)
-                return;
-
-            var index = _viewModel.EditorViewModels.IndexOf(vm);
-            if (index != -1)
-                _viewModel.SelectedEditorViewModelIndex.Value = index;
+            base.OnNavigatedTo(e);
+            _viewModel.OnNavigatedTo(default);
         }
 
-        private void DrawingCanvas_MouseDown(object sender, MouseButtonEventArgs e)
+        protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
-            // FIXME: System.Runtime.InteropServices.COMException
-            // Right数値をキーボードで変更してこのイベントを発生させると例外が発生する（原因不明）
-            _viewModel.SelectedEditorViewModelIndex.Value = -1;
+            base.OnNavigatedFrom(e);
+            _viewModel.OnNavigatedFrom(default);
         }
     }
 }

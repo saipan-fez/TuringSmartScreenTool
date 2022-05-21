@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Windows.Navigation;
+using Microsoft.Extensions.Logging;
 using ModernWpf.Controls;
 using TuringSmartScreenTool.ViewModels.Pages;
 
@@ -18,6 +19,18 @@ namespace TuringSmartScreenTool.Views.Pages
 
             InitializeComponent();
             DataContext = _viewModel;
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+            _viewModel.OnNavigatedTo(default);
+        }
+
+        protected override void OnNavigatedFrom(NavigationEventArgs e)
+        {
+            base.OnNavigatedFrom(e);
+            _viewModel.OnNavigatedFrom(default);
         }
     }
 }

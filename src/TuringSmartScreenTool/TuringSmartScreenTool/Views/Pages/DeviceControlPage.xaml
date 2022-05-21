@@ -9,13 +9,13 @@
          mc:Ignorable="d"
          d:Background="White"
          d:DataContext="{d:DesignInstance vm:DeviceControlPageViewModel}"
-         d:DesignHeight="450" d:DesignWidth="800">
+         d:DesignHeight="800" d:DesignWidth="800">
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding WindowLoadedCommand}"/>
         </i:EventTrigger>
     </i:Interaction.Triggers>
-    <Grid>
+    <Grid Margin="10">
         <ui:ScrollViewerEx Grid.Column="2" Padding="10">
             <ui:SimpleStackPanel Orientation="Vertical" Spacing="10">
                 <!-- Device selector -->
@@ -29,26 +29,16 @@
                                       VerticalAlignment="Center"
                                       DisplayMemberPath="Name"
                                       Width="300"/>
-                            <ui:AppBarButton Icon="Refresh" Command="{Binding RefreshScreenDeviceCollectionCommand}"/>
+                            <ui:AppBarButton Icon="Refresh" Command="{Binding RefreshScreenDeviceCollectionCommand}" Style="{StaticResource IconButtonStyle}"/>
                         </ui:SimpleStackPanel>
                     </ui:SimpleStackPanel>
                 </Grid>
 
-                <TextBlock Text="Select .tss file" Style="{StaticResource ContentTitleTextBlock}"/>
-                <ui:SimpleStackPanel Orientation="Horizontal" Spacing="5">
-                    <TextBox Width="300"/>
-                    <Button Content="Select" Command="{Binding SelectImageCommand}"/>
-                    <TextBlock Text="{Binding ImageFilePath.Value}" VerticalAlignment="Center"/>
-                </ui:SimpleStackPanel>
-
                 <!-- Device orientation selector -->
-                <Grid IsEnabled="{Binding IsDeviceConnecting.Value, Converter={StaticResource InverseBoolean}}">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <ui:SimpleStackPanel Grid.Column="0" Orientation="Vertical" Spacing="3">
-                        <TextBlock Text="Device Orientation" Style="{StaticResource ContentTitleTextBlock}"/>
+                <ui:SimpleStackPanel Orientation="Horizontal"
+                                     IsEnabled="{Binding IsDeviceConnecting.Value, Converter={StaticResource InverseBoolean}}">
+                    <ui:SimpleStackPanel Orientation="Vertical" Spacing="3">
+                        <TextBlock Text="Orientation" Style="{StaticResource ContentTitleTextBlock}"/>
                         <RadioButton Name="PortraitRadioButton" Content="Portrait" d:IsChecked="True"
                                      IsChecked="{Binding Orientation.Value, ConverterParameter=Portrait, Mode=TwoWay, Converter={StaticResource EnumToBoolean}}"/>
                         <RadioButton Name="LandscapeRadioButton" Content="Landscape"
@@ -58,7 +48,8 @@
                         <RadioButton Name="LandscapeRevRadioButton" Content="Landscape(Reverse)"
                                      IsChecked="{Binding Orientation.Value, ConverterParameter=LandscapeReverse, Mode=TwoWay, Converter={StaticResource EnumToBoolean}}"/>
                     </ui:SimpleStackPanel>
-                    <Grid Grid.Column="1">
+                    <Separator Width="100" Background="Transparent"/>
+                    <Grid>
                         <!-- port on right -->
                         <Canvas Width="80" Height="110" Visibility="{Binding IsChecked, ElementName=PortraitRadioButton, Converter={StaticResource BooleanToVisibility}}">
                             <Border Canvas.Left="10" Canvas.Top="10"
@@ -94,20 +85,23 @@
                             </StackPanel>
                         </Grid>
                     </Grid>
-                </Grid>
+                </ui:SimpleStackPanel>
                 <!-- Device connect/disconnect -->
                 <ui:SimpleStackPanel Orientation="Horizontal" Spacing="10">
                     <Button Width="100" Content="Connect" Command="{Binding ConnectDeviceCommand}"/>
                     <Button Width="100" Content="Disconnect" Command="{Binding DisconnectDeviceCommand}"/>
                 </ui:SimpleStackPanel>
                 <!-- Device setting -->
-                <ui:SimpleStackPanel Orientation="Vertical" Spacing="10"
+                <ui:SimpleStackPanel Orientation="Vertical" Spacing="10" Margin="0,30,0,0"
                                      IsEnabled="{Binding IsDeviceConnecting.Value}">
+                    <TextBlock Text="Device Settings" Style="{StaticResource ContentTitleTextBlock}"/>
                     <TextBlock Text="Brightness" Style="{StaticResource ContentSubTitleTextBlock}"/>
                     <Slider Width="300" HorizontalAlignment="Left"
                             Minimum="{Binding MinBrightness.Value}" Maximum="{Binding MaxBrightness.Value}" TickFrequency="{Binding StepBrightness.Value}"
                             Value="{Binding Brightness.Value, Mode=TwoWay, Delay=100}"/>
                     <TextBlock Text="Screen" Style="{StaticResource ContentSubTitleTextBlock}"/>
+                    <ui:ToggleSwitch IsOn="{Binding IsScreenTurnedOn.Value, Mode=TwoWay}" OnContent="On" OffContent="Off"/>
+                    <TextBlock Text="Connect on Windows Startup" Style="{StaticResource ContentSubTitleTextBlock}"/>
                     <ui:ToggleSwitch IsOn="{Binding IsScreenTurnedOn.Value, Mode=TwoWay}" OnContent="On" OffContent="Off"/>
                 </ui:SimpleStackPanel>
             </ui:SimpleStackPanel>
