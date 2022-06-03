@@ -8,8 +8,8 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
-using TuringSmartScreenTool.Controllers.Interfaces;
 using TuringSmartScreenTool.Entities;
+using TuringSmartScreenTool.UseCases.Interfaces;
 using TuringSmartScreenTool.Views.ContentDialogs.Interdfaces;
 
 namespace TuringSmartScreenTool.ViewModels.Editors
@@ -20,6 +20,7 @@ namespace TuringSmartScreenTool.ViewModels.Editors
         private readonly IHardwareSelectContentDialog _hardwareSelectContentDialog;
         private readonly ReadOnlyReactiveProperty<IHardwareInfo> _hardware;
 
+        public override EditorType EditorType => EditorType.HardwareName;
         public override ReactiveProperty<string> Name { get; } = new("Hardware Name");
         public override ReadOnlyReactiveProperty<string> Text { get; }
 
@@ -27,9 +28,8 @@ namespace TuringSmartScreenTool.ViewModels.Editors
 
         public HardwareNameTextBlockEditorViewModel(
             IHardwareSelectContentDialog hardwareSelectContentDialog,
-            // TODO: usecase
-            IHardwareFinder hardwareFinder)
-            : this(null, hardwareSelectContentDialog, hardwareFinder)
+            IFindHardwareInfoUseCase findHardwareUseCase)
+            : this(null, hardwareSelectContentDialog, findHardwareUseCase)
         {
             _hardwareSelectContentDialog = hardwareSelectContentDialog;
         }
@@ -37,13 +37,12 @@ namespace TuringSmartScreenTool.ViewModels.Editors
         public HardwareNameTextBlockEditorViewModel(
             string hardwareId,
             IHardwareSelectContentDialog hardwareSelectContentDialog,
-            // TODO: usecase
-            IHardwareFinder hardwareFinder)
+            IFindHardwareInfoUseCase findHardwareUseCase)
         {
             _hardwareId = new(hardwareId);
             _hardwareSelectContentDialog = hardwareSelectContentDialog;
             _hardware = _hardwareId
-                .Select(id => hardwareFinder.Find(id))
+                .Select(id => findHardwareUseCase.Find(id))
                 .ToReadOnlyReactiveProperty()
                 .AddTo(_disposables);
 

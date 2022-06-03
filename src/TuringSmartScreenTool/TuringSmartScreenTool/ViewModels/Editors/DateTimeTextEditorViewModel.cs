@@ -7,8 +7,8 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
-using TuringSmartScreenTool.Controllers.Interfaces;
 using TuringSmartScreenTool.Entities;
+using TuringSmartScreenTool.UseCases.Interfaces;
 
 namespace TuringSmartScreenTool.ViewModels.Editors
 {
@@ -35,6 +35,7 @@ namespace TuringSmartScreenTool.ViewModels.Editors
             new DateTimeFormat("HH:mm:ss", "HH:mm:ss"),
         };
 
+        public override EditorType EditorType => EditorType.DateTime;
         public override ReactiveProperty<string> Name { get; } = new("DateTime");
         public override ReadOnlyReactiveProperty<string> Text { get; }
 
@@ -45,14 +46,13 @@ namespace TuringSmartScreenTool.ViewModels.Editors
         public ReactiveProperty<DateTimeFormat> SelectedDateTimeFormat { get; } = new(s_dateTimeFormatCollection[0]);
 
         public DateTimeTextEditorViewModel(
-            // TODO: usecase
-            ITimeManager timeManager)
+            IGetTimeDataUseCase getTimeDataUseCase)
         {
-            var timeInfo = timeManager.Get();
+            var timeData = getTimeDataUseCase.Get();
 
             Text =
                 Observable.CombineLatest(
-                    timeInfo.Value,
+                    timeData.Value,
                     SelectedTimeZoneInfo,
                     SelectedDateTimeFormat,
                     (d, tz, f) => (dateTimeOffset: d, timeZoneInfo: tz, dateTimeFormat: f))

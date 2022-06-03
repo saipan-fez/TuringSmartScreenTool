@@ -8,6 +8,7 @@ namespace TuringSmartScreenTool.ViewModels.Editors
 {
     public class StaticTextBlockEditorViewModel : BaseTextBlockEditorViewModel
     {
+        public override EditorType EditorType => EditorType.Text;
         public override ReactiveProperty<string> Text { get; } = new("Text");
 
         #region IEditor

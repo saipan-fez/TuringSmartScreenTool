@@ -1,4 +1,7 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Reflection;
+using Windows.Storage;
 
 namespace TuringSmartScreenTool.Helpers
 {
@@ -61,6 +64,34 @@ namespace TuringSmartScreenTool.Helpers
                     var destSubDir = Path.Combine(destinationDir.FullName, srcSubDir.Name);
                     srcSubDir.CopyRecursive(new DirectoryInfo(destSubDir), true);
                 }
+            }
+        }
+
+        public static DirectoryInfo GetApplicationDataDirectory()
+        {
+            DirectoryInfo dir;
+            try
+            {
+                var localStateDirPath = ApplicationData.Current.LocalFolder.Path;
+                dir = new DirectoryInfo(localStateDirPath);
+            }
+            catch
+            {
+                dir = GetCurrentAssemblyDirectory();
+            }
+            return dir;
+        }
+
+        public static DirectoryInfo GetCurrentAssemblyDirectory()
+        {
+            try
+            {
+                var exeDirPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                return new DirectoryInfo(exeDirPath);
+            }
+            catch
+            {
+                return new DirectoryInfo(Environment.CurrentDirectory);
             }
         }
     }

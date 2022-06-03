@@ -16,6 +16,7 @@ using Reactive.Bindings.Extensions;
 using TuringSmartScreenTool.Controllers.Interfaces;
 using TuringSmartScreenTool.Entities;
 using TuringSmartScreenTool.Helpers;
+using TuringSmartScreenTool.UseCases.Interfaces;
 using TuringSmartScreenTool.Views.ContentDialogs.Interdfaces;
 
 namespace TuringSmartScreenTool.ViewModels.Editors
@@ -36,6 +37,7 @@ namespace TuringSmartScreenTool.ViewModels.Editors
         private readonly ReadOnlyReactiveProperty<double?> _value;
         private readonly IHardwareSelectContentDialog _hardwareSelectContentDialog;
 
+        public override EditorType EditorType => EditorType.HardwareValueText;
         public override ReactiveProperty<string> Name { get; } = new("Hardware Value (Text)");
         public override ReadOnlyReactiveProperty<string> Text { get; }
 
@@ -51,20 +53,18 @@ namespace TuringSmartScreenTool.ViewModels.Editors
 
         public HardwareSensorTextBlockEditorViewModel(
             IHardwareSelectContentDialog hardwareSelectContentDialog,
-            // TODO: usecase
-            ISensorFinder sensorFinder) :
-            this(null, hardwareSelectContentDialog, sensorFinder)
+            IFindSensorInfoUseCase findSensorInfoUseCase) :
+            this(null, hardwareSelectContentDialog, findSensorInfoUseCase)
         { }
 
         public HardwareSensorTextBlockEditorViewModel(
             string id,
             IHardwareSelectContentDialog hardwareSelectContentDialog,
-            // TODO: usecase
-            ISensorFinder sensorFinder)
+            IFindSensorInfoUseCase findSensorInfoUseCase)
         {
             _sensorId = new(id);
             _sensor = _sensorId
-                .Select(id => sensorFinder.Find(id))
+                .Select(id => findSensorInfoUseCase.Find(id))
                 .ToReadOnlyReactiveProperty()
                 .AddTo(_disposables);
             _hardwareSelectContentDialog = hardwareSelectContentDialog;

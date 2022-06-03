@@ -21,6 +21,7 @@ namespace TuringSmartScreenTool.ViewModels.Editors
 
         public ReactiveProperty<string> Id { get; } = new(Guid.NewGuid().ToString());
 
+        public abstract EditorType EditorType { get; }
         public abstract ReactiveProperty<string> Name { get; }
         public virtual bool IsAutoSizeSupported => true;
 

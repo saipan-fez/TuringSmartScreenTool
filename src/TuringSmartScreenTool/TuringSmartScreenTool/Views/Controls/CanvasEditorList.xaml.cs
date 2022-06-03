@@ -1,14 +1,14 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using TuringSmartScreenTool.ViewModels.Controls;
 using TuringSmartScreenTool.ViewModels.Editors;
-using TuringSmartScreenTool.ViewModels.Pages;
 
 namespace TuringSmartScreenTool.Views.Controls
 {
-    public partial class CanvasEditorListBox : ListBox
+    public partial class CanvasEditorList : ListBox
     {
-        public CanvasEditorListBox()
+        public CanvasEditorList()
         {
             InitializeComponent();
         }
@@ -22,7 +22,7 @@ namespace TuringSmartScreenTool.Views.Controls
             if (elem.DataContext is not BaseEditorViewModel vm)
                 return;
 
-            if (DataContext is not CanvasEditorPageViewModel viewModel)
+            if (DataContext is not CanvasEditorListViewModel viewModel)
                 return;
 
             var index = viewModel.EditorViewModels.IndexOf(vm);
@@ -32,7 +32,7 @@ namespace TuringSmartScreenTool.Views.Controls
 
         private void DrawingCanvas_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (DataContext is not CanvasEditorPageViewModel viewModel)
+            if (DataContext is not CanvasEditorListViewModel viewModel)
                 return;
 
             // TODO: System.Runtime.InteropServices.COMException

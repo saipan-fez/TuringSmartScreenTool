@@ -7,6 +7,7 @@ using System.Globalization;
 using System.Linq;
 using System.Windows.Input;
 using WeatherLib;
+using TuringSmartScreenTool.UseCases.Interfaces;
 
 namespace TuringSmartScreenTool.ViewModels.ContentDialogs
 {
@@ -31,8 +32,7 @@ namespace TuringSmartScreenTool.ViewModels.ContentDialogs
         public ICommand ConvertAddressToLocationCommand { get; }
 
         public LocationSelectContentDialogViewModel(
-            // TODO: usecase
-            IGeocoder geocoder)
+            ISearchGeocodeUseCase searchGeocodeUseCase)
         {
             IsInputed =
                 Observable.CombineLatest(
@@ -48,7 +48,7 @@ namespace TuringSmartScreenTool.ViewModels.ContentDialogs
                     {
                         IsConvertFailed.Value = false;
 
-                        var geocode = await geocoder.SearchAsync(
+                        var geocode = await searchGeocodeUseCase.SearchAsync(
                             SelectedRegionInfo.Value,
                             InputState.Value,
                             InputCity.Value);

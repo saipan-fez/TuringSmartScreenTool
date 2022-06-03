@@ -50,7 +50,7 @@
   <ItemGroup>
     <Resource Include="..\..\3rdparty\weather_icons\basmilius\design\fill-static\final\*.svg" LinkBase="Assets\basmilius_weather-icons" />
     <Resource Include="..\..\3rdparty\weather_icons\yr-weather-symbols\dist\svg\*.svg" LinkBase="Assets\nrkno_yr-weather-symbols" />
-    <None Remove="Views\Controls\CanvasEditorListBox.xaml" />
+    <None Remove="Views\Controls\CanvasEditorList.xaml" />
     <None Remove="Views\DrawCanvasWindow.xaml" />
     <None Remove="Views\Pages\CanvasEditorPage.xaml" />
     <None Remove="Views\Pages\DeviceControlPage.xaml" />

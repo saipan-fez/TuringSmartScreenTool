@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TuringSmartScreenTool.Controllers.Interfaces
+namespace TuringSmartScreenTool.Entities
 {
     public interface ITimeData
     {

@@ -12,9 +12,9 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
-using TuringSmartScreenTool.Controllers.Interfaces;
 using TuringSmartScreenTool.Entities;
 using TuringSmartScreenTool.Helpers;
+using TuringSmartScreenTool.UseCases.Interfaces;
 using TuringSmartScreenTool.Views.ContentDialogs.Interdfaces;
 
 namespace TuringSmartScreenTool.ViewModels.Editors
@@ -33,6 +33,7 @@ namespace TuringSmartScreenTool.ViewModels.Editors
         private readonly ReadOnlyReactiveProperty<ISensorInfo> _sensor;
         private readonly IHardwareSelectContentDialog _hardwareSelectContentDialog;
 
+        public override EditorType EditorType => EditorType.HardwareValueIndicator;
         public override ReactiveProperty<string> Name { get; } = new("Hardware Value (Indicator)");
         public override bool IsAutoSizeSupported => false;
 
@@ -56,20 +57,18 @@ namespace TuringSmartScreenTool.ViewModels.Editors
 
         public HardwareSensorIndicatorEditorViewModel(
             IHardwareSelectContentDialog hardwareSelectContentDialog,
-            // TODO: usecase
-            ISensorFinder sensorFinder) :
-            this(null, hardwareSelectContentDialog, sensorFinder)
+            IFindSensorInfoUseCase findSensorInfoUseCase) :
+            this(null, hardwareSelectContentDialog, findSensorInfoUseCase)
         { }
 
         public HardwareSensorIndicatorEditorViewModel(
             string id,
             IHardwareSelectContentDialog hardwareSelectContentDialog,
-            // TODO: usecase
-            ISensorFinder sensorFinder)
+            IFindSensorInfoUseCase findSensorInfoUseCase)
         {
             _sensorId = new(id);
             _sensor = _sensorId
-                .Select(id => sensorFinder.Find(id))
+                .Select(id => findSensorInfoUseCase.Find(id))
                 .ToReadOnlyReactiveProperty()
                 .AddTo(_disposables);
             _hardwareSelectContentDialog = hardwareSelectContentDialog;

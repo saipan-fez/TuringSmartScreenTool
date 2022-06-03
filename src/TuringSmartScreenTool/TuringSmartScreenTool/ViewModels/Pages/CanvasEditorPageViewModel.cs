@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reactive.Disposables;
@@ -13,56 +12,29 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Toolkit.Mvvm.Input;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
-using TuringSmartScreenTool.Controllers.Interfaces;
 using TuringSmartScreenTool.Entities;
-using TuringSmartScreenTool.Helpers;
-using TuringSmartScreenTool.ViewModels.Editors;
-using TuringSmartScreenTool.Views.ContentDialogs.Interdfaces;
+using TuringSmartScreenTool.UseCases.Interfaces;
+using TuringSmartScreenTool.ViewModels.Controls;
 
 namespace TuringSmartScreenTool.ViewModels.Pages
 {
-    public class CanvasViewModel : IDisposable
-    {
-        public void Dispose()
-        {
-        }
-    }
-
     public class CanvasEditorPageViewModel : INavigationAware, IDisposable
     {
+        private static readonly IEnumerable<CanvasSize> s_canvasTypeCollection = new[] { CanvasSize._320x480, CanvasSize._480x320 };
         private static readonly IEnumerable<EditorType> s_editorTypeCollection = Enum.GetValues(typeof(EditorType)).Cast<EditorType>();
 
-        private readonly CompositeDisposable _disposables = new CompositeDisposable();
+        private readonly CompositeDisposable _disposables = new();
 
         private readonly ILogger<CanvasEditorPageViewModel> _logger;
-        private readonly IHardwareSelectContentDialog       _hardwareSelectContentDialog;
-        private readonly ILocationSelectContentDialog       _locationSelectContentDialog;
-        private readonly IWeatherIconPreviewContentDialog   _weatherIconPreviewContentDialog;
-        private readonly IScreenDeviceManager               _screenDeviceManager;
-        private readonly IHardwareFinder                    _hardwareFinder;
-        private readonly ISensorFinder                      _sensorFinder;
-        private readonly ITimeManager                       _timeManager;
-        private readonly IWeatherManager                    _weatherManager;
-        private readonly IEditorFileManager                 _editorFileManager;
+        private readonly CanvasEditorListViewModel _listVM;
+        private readonly IEditCanvasUseCase _editCanvasUseCase;
 
-        public ReactiveProperty<IEnumerable<ScreenDevice>> ScreenDeviceCollection { get; } = new();
-        public ReactiveProperty<int> SelectedScreenDeviceIndex { get; } = new(-1);
-
-        public ObservableCollection<BaseEditorViewModel> EditorViewModels { get; } = new();
-        public ReactiveProperty<int> SelectedEditorViewModelIndex { get; } = new(-1);
-        public ReadOnlyReactiveProperty<BaseEditorViewModel> SelectedEditorViewModel { get; }
-        public ReadOnlyReactiveProperty<bool> IsEditorViewModelSelected { get; }
+        public IEnumerable<CanvasSize> CanvasSizeCollection { get; } = s_canvasTypeCollection;
 
         public IEnumerable<EditorType> EditorCollection { get; } = s_editorTypeCollection;
         public ReactiveProperty<EditorType> SelectedEditor { get; } = new(s_editorTypeCollection.FirstOrDefault());
 
-        public ReactiveProperty<int> CanvasWidth { get; } = new(0);
-        public ReactiveProperty<int> CanvasHeight { get; } = new(0);
-
-        public ReactiveProperty<CanvasBackgroundType> InputCanvasBackgroundType { get; } = new(CanvasBackgroundType.SolidColor);
-        public ReactiveProperty<Color> InputCanvasBackgroundColor { get; } = new(Colors.Black);
-        public ReactiveProperty<string> InputCanvasBackgroundImagePath { get; } = new();
-        public ReadOnlyReactiveProperty<object> CanvasBackground { get; }
+        public CanvasEditorListViewModel ListVM => _listVM;
 
         public ICommand SelectBackgroundColorCommand { get; }
         public ICommand SelectBackgroundImageCommand { get; }
@@ -74,82 +46,47 @@ namespace TuringSmartScreenTool.ViewModels.Pages
         public ICommand DeleteSelectedEditorCommand { get; }
         public ICommand SaveAsFileCommand { get; }
         public ICommand LoadFromFileCommand { get; }
+        public ICommand ClearCommand { get; }
 
         public CanvasEditorPageViewModel(
             ILogger<CanvasEditorPageViewModel> logger,
-            IHardwareSelectContentDialog hardwareSelectContentDialog,
-            ILocationSelectContentDialog locationSelectContentDialog,
-            IWeatherIconPreviewContentDialog weatherIconPreviewContentDialog,
-            // TODO: usecase
-            IScreenDeviceManager screenDeviceManager,
-            IHardwareFinder hardwareFinder,
-            ISensorFinder sensorFinder,
-            ITimeManager timeManager,
-            IWeatherManager weatherManager,
-            IEditorFileManager editorFileManager)
+            CanvasEditorListViewModel canvasEditorListViewModel,
+            IEditCanvasUseCase editCanvasUseCase)
         {
-            _logger                          = logger;
-            _hardwareSelectContentDialog     = hardwareSelectContentDialog;
-            _locationSelectContentDialog     = locationSelectContentDialog;
-            _weatherIconPreviewContentDialog = weatherIconPreviewContentDialog;
-            _screenDeviceManager             = screenDeviceManager;
-            _hardwareFinder                  = hardwareFinder;
-            _sensorFinder                    = sensorFinder;
-            _timeManager                     = timeManager;
-            _weatherManager                  = weatherManager;
-            _editorFileManager               = editorFileManager;
+            _logger = logger;
+            _listVM = canvasEditorListViewModel;
+            _editCanvasUseCase = editCanvasUseCase;
 
-            SelectedEditorViewModel = SelectedEditorViewModelIndex
-                .Select(idx => EditorViewModels.ElementAtOrDefault(idx))
-                .ToReadOnlyReactiveProperty()
-                .AddTo(_disposables);
-            IsEditorViewModelSelected = SelectedEditorViewModelIndex
-                .Select(idx => idx == -1)
-                .ToReadOnlyReactiveProperty()
-                .AddTo(_disposables);
-            CanvasBackground =
-                Observable.CombineLatest(
-                    InputCanvasBackgroundType,
-                    InputCanvasBackgroundColor,
-                    InputCanvasBackgroundImagePath,
-                    (type, color, path) => (object)(type switch
-                    {
-                        CanvasBackgroundType.SolidColor => color,
-                        CanvasBackgroundType.Image => path,
-                        _ => throw new InvalidOperationException(),
-                    }))
-                .ToReadOnlyReactiveProperty()
-                .AddTo(_disposables);
-            SelectBackgroundColorCommand = InputCanvasBackgroundType
+            SelectBackgroundColorCommand = _listVM.BackgroundType
                 .Select(x => x == CanvasBackgroundType.SolidColor)
                 .ToReactiveCommand()
-                .WithSubscribe(_ => SelectColor(InputCanvasBackgroundColor))
+                .WithSubscribe(_ => SelectColor(_listVM.BackgroundColor))
                 .AddTo(_disposables);
-            SelectBackgroundImageCommand = InputCanvasBackgroundType
+            SelectBackgroundImageCommand = _listVM.BackgroundType
                 .Select(x => x == CanvasBackgroundType.Image)
                 .ToReactiveCommand()
-                .WithSubscribe(_ => SelectImageFilePath(InputCanvasBackgroundImagePath))
+                .WithSubscribe(_ => SelectImageFilePath(_listVM.BackgroundImagePath))
                 .AddTo(_disposables);
-            AddEditorCommand = new RelayCommand(() => AddEditor());
-            DuplicateCommand = SelectedEditorViewModel
+            AddEditorCommand = new RelayCommand(() => _listVM.AddEditor(SelectedEditor.Value));
+            DuplicateCommand = _listVM.SelectedEditorViewModel
                 .Select(x => x != null)
                 .ToReactiveCommand()
-                .WithSubscribe(_ => DupilicateSelectedEditor())
+                .WithSubscribe(_ => _listVM.DupilicateSelectedEditor())
                 .AddTo(_disposables);
-            MoveUpEditorCommand = SelectedEditorViewModelIndex
+            MoveUpEditorCommand = _listVM.SelectedEditorViewModelIndex
                 .Select(idx => idx != -1 && idx > 0)
                 .ToReactiveCommand()
-                .WithSubscribe(_ => MoveUpSelectedEditor())
+                .WithSubscribe(_ => _listVM.MoveUpSelectedEditor())
                 .AddTo(_disposables);
-            MoveDownEditorCommand = SelectedEditorViewModelIndex
-                .Select(idx => idx != -1 && idx < EditorViewModels.Count - 1)
+            MoveDownEditorCommand = _listVM.SelectedEditorViewModelIndex
+                .Select(idx => idx != -1 && idx < _listVM.EditorViewModels.Count - 1)
                 .ToReactiveCommand()
-                .WithSubscribe(_ => MoveDownSelectedEditor())
+                .WithSubscribe(_ => _listVM.MoveDownSelectedEditor())
                 .AddTo(_disposables);
-            DeleteSelectedEditorCommand = SelectedEditorViewModel
+            DeleteSelectedEditorCommand = _listVM.SelectedEditorViewModel
                 .Select(x => x != null)
                 .ToReactiveCommand()
-                .WithSubscribe(_ => DeleteSelectedEditor())
+                .WithSubscribe(_ => _listVM.DeleteSelectedEditor())
                 .AddTo(_disposables);
             SaveAsFileCommand = new AsyncReactiveCommand()
                 .WithSubscribe(x => SaveAsFileEditorAsync())
@@ -157,118 +94,23 @@ namespace TuringSmartScreenTool.ViewModels.Pages
             LoadFromFileCommand = new AsyncReactiveCommand()
                 .WithSubscribe(x => LoadFromFileAsync())
                 .AddTo(_disposables);
-
-            // TODO: delete
-            CanvasWidth.Value = 320;
-            CanvasHeight.Value = 480;
+            ClearCommand = new ReactiveCommand()
+                .WithSubscribe(x => ClearEditor())
+                .AddTo(_disposables);
         }
 
         public void Dispose()
         {
+            _listVM.Dispose();
             _disposables.Dispose();
         }
 
         public void OnNavigatedTo(NavigationContext navigationContext)
         {
-            var screenDeviceCollection = _screenDeviceManager.GetOpenedDevices();
-            ScreenDeviceCollection.Value = screenDeviceCollection;
-            SelectedScreenDeviceIndex.Value = screenDeviceCollection.Any() ? 0 : -1;
         }
 
         public void OnNavigatedFrom(NavigationContext navigationContext)
         {
-        }
-
-        private void AddEditor()
-        {
-            var editorViewModel = CreateEditorViewModel(SelectedEditor.Value);
-            EditorViewModels.Add(editorViewModel);
-            SelectedEditorViewModelIndex.Value = EditorViewModels.Count - 1;
-        }
-
-        private BaseEditorViewModel CreateEditorViewModel(EditorType type)
-        {
-            return type switch
-            {
-                EditorType.Text                   => new StaticTextBlockEditorViewModel(),
-                EditorType.Image                  => new ImageEditorViewModel(),
-                EditorType.HardwareName           => new HardwareNameTextBlockEditorViewModel(_hardwareSelectContentDialog, _hardwareFinder),
-                EditorType.HardwareValueText      => new HardwareSensorTextBlockEditorViewModel(_hardwareSelectContentDialog, _sensorFinder),
-                EditorType.HardwareValueIndicator => new HardwareSensorIndicatorEditorViewModel(_hardwareSelectContentDialog, _sensorFinder),
-                EditorType.DateTime               => new DateTimeTextEditorViewModel(_timeManager),
-                EditorType.Weather                => new WeatherTextEditorViewModel(_weatherManager, _locationSelectContentDialog, _weatherIconPreviewContentDialog),
-                _                                 => throw new InvalidOperationException(),
-            };
-        }
-
-        private async void DupilicateSelectedEditor()
-        {
-            var vm = SelectedEditorViewModel.Value;
-            if (vm is null)
-                return;
-
-            var jobject  = await vm.SaveAsync(null);
-            var type     = ConvertToEditorType(vm);
-            var copiedVm = CreateEditorViewModel(type);
-            await copiedVm.LoadAsync(null, jobject);
-            copiedVm.Name.Value = copiedVm.Name.Value + " - Copy";
-
-            EditorViewModels.Add(copiedVm);
-            SelectedEditorViewModelIndex.Value = EditorViewModels.Count - 1;
-        }
-
-        private void MoveUpSelectedEditor()
-        {
-            var index = SelectedEditorViewModelIndex.Value;
-
-            // not found
-            if (index == -1)
-                return;
-
-            if (index > 0)
-            {
-                var item = EditorViewModels[index];
-                EditorViewModels.RemoveAt(index);
-                EditorViewModels.Insert(index - 1, item);
-                SelectedEditorViewModelIndex.Value = index - 1;
-            }
-        }
-
-        private void MoveDownSelectedEditor()
-        {
-            var index = SelectedEditorViewModelIndex.Value;
-
-            // not found
-            if (index == -1)
-                return;
-
-            if (index < EditorViewModels.Count - 1)
-            {
-                var item = EditorViewModels[index];
-                EditorViewModels.RemoveAt(index);
-                EditorViewModels.Insert(index + 1, item);
-                SelectedEditorViewModelIndex.Value = index + 1;
-            }
-        }
-
-        private void DeleteSelectedEditor()
-        {
-            var index = SelectedEditorViewModelIndex.Value;
-
-            // not found
-            if (index == -1)
-                return;
-
-            if (index <= EditorViewModels.Count - 1)
-            {
-                EditorViewModels.RemoveAt(index);
-
-                if (EditorViewModels.Count > 0)
-                    // select previous element
-                    SelectedEditorViewModelIndex.Value = index == 0 ? 0 : index - 1;
-                else
-                    SelectedEditorViewModelIndex.Value = -1;
-            }
         }
 
         private static void SelectColor(ReactiveProperty<Color> target)
@@ -302,21 +144,6 @@ namespace TuringSmartScreenTool.ViewModels.Pages
             }
         }
 
-        private static EditorType ConvertToEditorType(BaseEditorViewModel vm)
-        {
-            return vm switch
-            {
-                StaticTextBlockEditorViewModel         => EditorType.Text,
-                ImageEditorViewModel                   => EditorType.Image,
-                HardwareNameTextBlockEditorViewModel   => EditorType.HardwareName,
-                HardwareSensorTextBlockEditorViewModel => EditorType.HardwareValueText,
-                HardwareSensorIndicatorEditorViewModel => EditorType.HardwareValueIndicator,
-                DateTimeTextEditorViewModel            => EditorType.DateTime,
-                WeatherTextEditorViewModel             => EditorType.Weather,
-                _                                      => throw new InvalidOperationException(),
-            };
-        }
-
         private async Task LoadFromFileAsync()
         {
             var fileDialog = new OpenFileDialog()
@@ -329,33 +156,14 @@ namespace TuringSmartScreenTool.ViewModels.Pages
             if (fileDialog.ShowDialog() != DialogResult.OK)
                 return;
 
-            await LoadFromFileAsync(fileDialog.FileName);
-        }
-
-        private async Task LoadFromFileAsync(string filePath)
-        {
-            var fileInfo = new FileInfo(filePath);
-            var tempDirectory = DirectoryInfoHelper.GetTempDirectory();
-            var editorFileData = await _editorFileManager.LoadFromFileAsync(fileInfo, tempDirectory, CreateEditorViewModel);
-            EditorViewModels.Clear();
-            foreach (var (_, editor) in editorFileData.Editors)
-            {
-                if (editor is BaseEditorViewModel vm)
-                {
-                    EditorViewModels.Add(vm);
-                }
-            }
-            InputCanvasBackgroundType.Value      = editorFileData.CanvasBackgroundType;
-            InputCanvasBackgroundColor.Value     = ColorHelper.FromString(editorFileData.CanvasBackgroundColor);
-            InputCanvasBackgroundImagePath.Value = editorFileData.CanvasBackgroundImagePath;
-            SelectedEditorViewModelIndex.Value   = EditorViewModels.Count > 0 ? 0 : -1;
+            await _listVM.LoadFromFileAsync(fileDialog.FileName);
         }
 
         private async Task SaveAsFileEditorAsync()
         {
             var saveFileDialog = new SaveFileDialog()
             {
-                DefaultExt = _editorFileManager.GetFileExtension(),
+                DefaultExt = _editCanvasUseCase.GetFileExtension(),
                 FileName = DateTime.Now.ToString("yyyyMMddhhmm"),
                 RestoreDirectory = true,
                 InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
@@ -366,24 +174,16 @@ namespace TuringSmartScreenTool.ViewModels.Pages
             if (saveFileDialog.ShowDialog() != DialogResult.OK)
                 return;
 
-            await SaveAsFileEditorAsync(saveFileDialog.FileName);
+            await _listVM.SaveAsFileEditorAsync(saveFileDialog.FileName);
         }
 
-        private async Task SaveAsFileEditorAsync(string filePath)
+        private void ClearEditor()
         {
-            var fileInfo = new FileInfo(filePath);
-
-            var editors = EditorViewModels
-                .Select(x => (ConvertToEditorType(x), (IEditor)x))
-                .ToList();
-            var editorFileData = new EditorFileData()
+            // TODO: localize
+            if (MessageBox.Show("Dou you clear canvas?", "Confirm", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
             {
-                Editors                   = editors,
-                CanvasBackgroundType      = InputCanvasBackgroundType.Value,
-                CanvasBackgroundColor     = ColorHelper.ToString(InputCanvasBackgroundColor.Value),
-                CanvasBackgroundImagePath = InputCanvasBackgroundImagePath.Value
-            };
-            await _editorFileManager.SaveEditorAsFileAsync(fileInfo, editorFileData);
+                _listVM.ClearEditors();
+            }
         }
     }
 }

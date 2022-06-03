@@ -12,7 +12,7 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using TuringSmartScreenTool.Entities;
 using TuringSmartScreenTool.Helpers;
-using TuringSmartScreenTool.UseCases;
+using TuringSmartScreenTool.UseCases.Interfaces;
 
 namespace TuringSmartScreenTool.ViewModels.Pages
 {
@@ -21,9 +21,7 @@ namespace TuringSmartScreenTool.ViewModels.Pages
         private readonly CompositeDisposable _disposables = new CompositeDisposable();
 
         private readonly ILogger<DeviceControlPageViewModel> _logger;
-        private readonly IFindScreenDeviceUseCase _findScreenDeviceUseCase;
         private readonly IControlScreenDeviceUseCase _controlScreenDeviceUseCase;
-        private readonly IUpdateScreenUseCase _updateScreenUseCase;
 
         public ReactiveProperty<IEnumerable<ScreenDevice>> ScreenDeviceCollection { get; } = new();
         public ReactiveProperty<ScreenDevice> SelectedScreenDevice { get; } = new();
@@ -46,14 +44,10 @@ namespace TuringSmartScreenTool.ViewModels.Pages
 
         public DeviceControlPageViewModel(
             ILogger<DeviceControlPageViewModel> logger,
-            IFindScreenDeviceUseCase findScreenDeviceUseCase,
-            IControlScreenDeviceUseCase controlScreenDeviceUseCase,
-            IUpdateScreenUseCase updateScreenUseCase)
+            IControlScreenDeviceUseCase controlScreenDeviceUseCase)
         {
             _logger = logger;
-            _findScreenDeviceUseCase = findScreenDeviceUseCase;
             _controlScreenDeviceUseCase = controlScreenDeviceUseCase;
-            _updateScreenUseCase = updateScreenUseCase;
 
             WindowLoadedCommand = new RelayCommand(WindowLoaded);
             ConnectDeviceCommand =
@@ -127,7 +121,7 @@ namespace TuringSmartScreenTool.ViewModels.Pages
 
         private void RefreshScreenDeviceCollection()
         {
-            var screenDevices = _findScreenDeviceUseCase.Find();
+            var screenDevices = _controlScreenDeviceUseCase.Find();
             ScreenDeviceCollection.Value = screenDevices;
             SelectedScreenDevice.Value = screenDevices.FirstOrDefault();
         }
@@ -178,7 +172,7 @@ namespace TuringSmartScreenTool.ViewModels.Pages
             var d = SelectedScreenDevice.Value;
             var size = _controlScreenDeviceUseCase.GetScreenSize(d);
 
-            _updateScreenUseCase.Start(d, targetBgrMat =>
+            _controlScreenDeviceUseCase.Start(d, targetBgrMat =>
             {
                 // Convert UIElement to byte array(bgra)
                 using var bgraMat = new Mat<Vec4b>(size.Height, size.Width);
@@ -194,7 +188,7 @@ namespace TuringSmartScreenTool.ViewModels.Pages
         private void StopToUpdateScreen()
         {
             var d = SelectedScreenDevice.Value;
-            _updateScreenUseCase.Stop(d);
+            _controlScreenDeviceUseCase.Stop(d);
 
             IsScreenUpdating.Value = false;
         }

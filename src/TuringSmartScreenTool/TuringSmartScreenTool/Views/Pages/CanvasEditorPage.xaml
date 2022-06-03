@@ -37,21 +37,25 @@
                     <ui:AppBarButton Icon="Save" Label="Save" Command="{Binding SaveAsFileCommand}"/>
                     <ui:AppBarButton Icon="59621" Label="Open" Command="{Binding LoadFromFileCommand}"/>
                     <ui:AppBarSeparator/>
-                    <ui:AppBarButton Icon="57628" Label="Export" Command="{Binding SaveAsFileCommand}"/>
+                    <ui:AppBarButton Icon="60770" Label="Clear" Command="{Binding ClearCommand}"/>
                 </StackPanel>
-                <TextBlock Grid.Column="2" Text="Device" Margin="10,0" VerticalAlignment="Center"/>
-                <ComboBox Grid.Column="3" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="2" Text="Canvas" Margin="10,0" VerticalAlignment="Center"/>
+                <ComboBox Grid.Column="3" VerticalAlignment="Center"
+                          ItemsSource="{Binding CanvasSizeCollection}"
+                          SelectedItem="{Binding ListVM.SelectedCanvasSize.Value}"/>
             </Grid>
             <Viewbox Grid.Row="1">
                 <Border BorderThickness="0.5">
-                    <ctrl:CanvasEditorListBox/>
+                    <Grid Background="White">
+                        <ctrl:CanvasEditorList DataContext="{Binding ListVM}"/>
+                    </Grid>
                 </Border>
             </Viewbox>
             <TextBlock Grid.Row="2" HorizontalAlignment="Left" Margin="10,0,10,5">
                 <Run Text="Canvas Width:"/>
-                <Run Text="{Binding CanvasWidth.Value}"/>
+                <Run Text="{Binding ListVM.CanvasWidth.Value, Mode=OneWay}"/>
                 <Run Text=" Height:"/>
-                <Run Text="{Binding CanvasHeight.Value}"/>
+                <Run Text="{Binding ListVM.CanvasHeight.Value, Mode=OneWay}"/>
             </TextBlock>
         </Grid>
         <Grid Grid.Row="1" Grid.Column="2">
@@ -76,8 +80,8 @@
                     </ui:SimpleStackPanel>
                 </ui:SimpleStackPanel>
                 <ListBox Grid.Row="1" Margin="0,10,0,5" ns:ScrollViewerProperties.MouseWheelHandlingMode="OnlyScrollable"
-                         ItemsSource="{Binding EditorViewModels}"
-                         SelectedIndex="{Binding SelectedEditorViewModelIndex.Value}">
+                         ItemsSource="{Binding ListVM.EditorViewModels}"
+                         SelectedIndex="{Binding ListVM.SelectedEditorViewModelIndex.Value}">
                     <ListBox.ItemTemplate>
                         <DataTemplate DataType="{x:Type evm:BaseEditorViewModel}">
                             <TextBlock Text="{Binding Name.Value}"/>
@@ -108,29 +112,29 @@
             <ui:ScrollViewerEx Grid.Row="2" Padding="10">
                 <Grid>
                     <ui:SimpleStackPanel Style="{StaticResource PageSimpleStackPanel}"
-                                         Visibility="{Binding IsEditorViewModelSelected.Value, Converter={StaticResource BooleanToVisibility}}">
+                                         Visibility="{Binding ListVM.IsEditorViewModelSelected.Value, Converter={StaticResource BooleanToVisibility}}">
                         <TextBlock Text="Background" Style="{StaticResource ContentTitleTextBlock}"/>
                         <ui:SimpleStackPanel Orientation="Vertical" Style="{StaticResource ContentSimpleStackPanel}">
                             <RadioButton Content="Solid Color" GroupName="BackgroundType"
-                                         IsChecked="{Binding InputCanvasBackgroundType.Value, ConverterParameter=SolidColor, Converter={StaticResource EnumToBoolean}}"/>
+                                         IsChecked="{Binding ListVM.BackgroundType.Value, ConverterParameter=SolidColor, Converter={StaticResource EnumToBoolean}}"/>
                             <ui:SimpleStackPanel Orientation="Horizontal" Spacing="10">
                                 <Button Content="Select" Command="{Binding SelectBackgroundColorCommand}"/>
                                 <Border BorderThickness="1" Width="100" Height="30"
-                                        Background="{Binding InputCanvasBackgroundColor.Value, Converter={StaticResource ObjectToBrush}}"/>
-                                <TextBlock Text="{Binding InputCanvasBackgroundColor.Value}"
+                                        Background="{Binding ListVM.BackgroundColor.Value, Converter={StaticResource ObjectToBrush}}"/>
+                                <TextBlock Text="{Binding ListVM.BackgroundColor.Value}"
                                            VerticalAlignment="Center"/>
                             </ui:SimpleStackPanel>
                             <RadioButton Content="Image" GroupName="BackgroundType"
-                                         IsChecked="{Binding InputCanvasBackgroundType.Value, ConverterParameter=Image, Converter={StaticResource EnumToBoolean}}"/>
+                                         IsChecked="{Binding ListVM.BackgroundType.Value, ConverterParameter=Image, Converter={StaticResource EnumToBoolean}}"/>
                             <ui:SimpleStackPanel Orientation="Horizontal" Spacing="10">
                                 <Button Content="Select" Command="{Binding SelectBackgroundImageCommand}"/>
-                                <TextBlock Text="{Binding InputCanvasBackgroundImagePath.Value}"
+                                <TextBlock Text="{Binding ListVM.BackgroundImagePath.Value}"
                                            VerticalAlignment="Center"/>
                             </ui:SimpleStackPanel>
                         </ui:SimpleStackPanel>
                     </ui:SimpleStackPanel>
-                    <Grid Visibility="{Binding IsEditorViewModelSelected.Value, Converter={StaticResource InverseBooleanToVisibility}}">
-                        <ContentPresenter Content="{Binding SelectedEditorViewModel.Value}">
+                    <Grid Visibility="{Binding ListVM.IsEditorViewModelSelected.Value, Converter={StaticResource InverseBooleanToVisibility}}">
+                        <ContentPresenter Content="{Binding ListVM.SelectedEditorViewModel.Value}">
                             <ContentPresenter.Resources>
                                 <DataTemplate DataType="{x:Type evm:StaticTextBlockEditorViewModel}">
                                     <editor:StaticTextBlockEditor />

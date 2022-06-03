@@ -3,10 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:TuringSmartScreenTool.Views"
+        xmlns:ctrl="clr-namespace:TuringSmartScreenTool.Views.Controls"
         mc:Ignorable="d"
-        Title="DrawCanvasWindow" Height="450" Width="800">
-    <Grid>
-        
-    </Grid>
+        Height="600" Width="600" Background="White">
+    <ctrl:CanvasEditorList/>
 </Window>

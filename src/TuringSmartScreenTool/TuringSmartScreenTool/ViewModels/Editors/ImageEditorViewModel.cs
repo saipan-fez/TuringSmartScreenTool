@@ -10,6 +10,7 @@ namespace TuringSmartScreenTool.ViewModels.Editors
 {
     public class ImageEditorViewModel : BaseEditorViewModel
     {
+        public override EditorType EditorType => EditorType.Image;
         public override ReactiveProperty<string> Name { get; } = new("Image");
         public ReactiveProperty<string> ImageFilePath { get; } = new();
 

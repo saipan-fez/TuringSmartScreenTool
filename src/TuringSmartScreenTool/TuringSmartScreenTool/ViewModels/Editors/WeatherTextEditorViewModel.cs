@@ -14,6 +14,7 @@ using Reactive.Bindings.Extensions;
 using TuringSmartScreenTool.Controllers.Interfaces;
 using TuringSmartScreenTool.Entities;
 using TuringSmartScreenTool.Helpers;
+using TuringSmartScreenTool.UseCases.Interfaces;
 using TuringSmartScreenTool.Views.ContentDialogs.Interdfaces;
 using WeatherLib.Entities;
 
@@ -61,6 +62,7 @@ namespace TuringSmartScreenTool.ViewModels.Editors
         private readonly ReadOnlyReactiveProperty<double?> _tommorowMaxCelsiusTemp;
         private readonly ReadOnlyReactiveProperty<double?> _currentCelsiusTemp;
 
+        public override EditorType EditorType => EditorType.Weather;
         public override ReactiveProperty<string> Name { get; } = new("Weather");
         public override ReadOnlyReactiveProperty<string> Text { get; }
         public override IReadOnlyReactiveProperty<bool> CanSelectFontFamily { get; }
@@ -93,8 +95,7 @@ namespace TuringSmartScreenTool.ViewModels.Editors
         public ICommand ShowWeatherIconPreviewCommand { get; }
 
         public WeatherTextEditorViewModel(
-            // TODO: usecase
-            IWeatherManager weatherManager,
+            IGetWeatherInfoUseCase getWeatherInfoUseCase,
             ILocationSelectContentDialog locationSelectContentDialog,
             IWeatherIconPreviewContentDialog weatherIconPreviewContentDialog)
         {
@@ -105,7 +106,7 @@ namespace TuringSmartScreenTool.ViewModels.Editors
                     (latitude, longitude) =>
                     {
                         if (latitude.HasValue && longitude.HasValue)
-                            return weatherManager.Get(new Geocode(latitude.Value, longitude.Value));
+                            return getWeatherInfoUseCase.Get(new Geocode(latitude.Value, longitude.Value));
                         else
                             return null;
                     })

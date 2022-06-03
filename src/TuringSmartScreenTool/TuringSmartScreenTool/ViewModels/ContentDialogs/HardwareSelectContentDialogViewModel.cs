@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using TuringSmartScreenTool.Entities;
-using TuringSmartScreenTool.Controllers.Interfaces;
+using TuringSmartScreenTool.UseCases.Interfaces;
 
 namespace TuringSmartScreenTool.ViewModels.ContentDialogs
 {
@@ -26,8 +26,7 @@ namespace TuringSmartScreenTool.ViewModels.ContentDialogs
         public ReactiveProperty<SelectionMode> Mode { get; } = new(SelectionMode.Sensor);
 
         public HardwareSelectContentDialogViewModel(
-            // TODO: usecase
-            IHardwareMonitorController hardwareMonitorController)
+            IGetMonitorTargetsUseCase getMonitorTargetsUseCase)
         {
             Mode.Subscribe(async mode =>
                 {
@@ -37,7 +36,7 @@ namespace TuringSmartScreenTool.ViewModels.ContentDialogs
                         new MonitorTargetType[] { MonitorTargetType.Hardware, MonitorTargetType.Sensor } :
                         new MonitorTargetType[] { MonitorTargetType.Hardware };
 
-                    MonitorTargets.Value = await hardwareMonitorController.GetMonitorTargetsAsync(targetTypes);
+                    MonitorTargets.Value = await getMonitorTargetsUseCase.GetMonitorTargetsAsync(targetTypes);
                 })
                 .AddTo(_disposables);
 

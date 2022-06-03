@@ -1,14 +1,17 @@
-﻿using System.IO;
-using System.Reflection;
+﻿using System;
+using System.IO;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
 using TuringSmartScreenLibrary;
 using TuringSmartScreenTool.Controllers;
 using TuringSmartScreenTool.Controllers.Interfaces;
+using TuringSmartScreenTool.Helpers;
 using TuringSmartScreenTool.UseCases;
-using TuringSmartScreenTool.ViewModels;
+using TuringSmartScreenTool.UseCases.Interfaces;
 using TuringSmartScreenTool.ViewModels.ContentDialogs;
+using TuringSmartScreenTool.ViewModels.Controls;
+using TuringSmartScreenTool.ViewModels.Editors;
 using TuringSmartScreenTool.ViewModels.Pages;
 using TuringSmartScreenTool.Views;
 using TuringSmartScreenTool.Views.ContentDialogs;
@@ -40,6 +43,14 @@ namespace TuringSmartScreenTool
             services.AddTransient<CanvasEditorPageViewModel>();
             services.AddTransient<HardwareSelectContentDialogViewModel>();
             services.AddTransient<LocationSelectContentDialogViewModel>();
+            services.AddTransient<CanvasEditorListViewModel>();
+            services.AddTransient<StaticTextBlockEditorViewModel>();
+            services.AddTransient<ImageEditorViewModel>();
+            services.AddTransient<HardwareNameTextBlockEditorViewModel>();
+            services.AddTransient<HardwareSensorTextBlockEditorViewModel>();
+            services.AddTransient<HardwareSensorIndicatorEditorViewModel>();
+            services.AddTransient<DateTimeTextEditorViewModel>();
+            services.AddTransient<WeatherTextEditorViewModel>();
 
             // ContentDialog
             services.AddTransient<IHardwareSelectContentDialog, HardwareSelectContentDialog>();
@@ -47,18 +58,28 @@ namespace TuringSmartScreenTool
             services.AddTransient<IWeatherIconPreviewContentDialog, WeatherIconPreviewContentDialog>();
 
             // UseCase
-            services.AddTransient<IFindScreenDeviceUseCase, FindScreenDeviceUseCase>();
             services.AddTransient<IControlScreenDeviceUseCase, ControlScreenDeviceUseCase>();
-            services.AddTransient<IUpdateScreenUseCase, UpdateScreenUseCase>();
+            services.AddTransient<IEditCanvasUseCase, EditCanvasUseCase>();
+            services.AddTransient<IFindHardwareInfoUseCase, FindHardwareInfoUseCase>();
+            services.AddTransient<IFindSensorInfoUseCase, FindSensorInfoUseCase>();
+            services.AddTransient<IGetMonitorTargetsUseCase, GetMonitorTargetsUseCase>();
+            services.AddTransient<IGetTimeDataUseCase, GetTimeDataUseCase>();
+            services.AddTransient<IGetWeatherInfoUseCase, GetWeatherInfoUseCase>();
+            services.AddTransient<ISearchGeocodeUseCase, SearchGeocodeUseCase>();
 
-            // Registered as Singleton
+            // Controller
+            //   Registered as Singleton
             services.AddSingleton<HardwareMonitor>();
             services.AddSingleton<IHardwareMonitorController>(s => s.GetService<HardwareMonitor>());
             services.AddSingleton<ISensorFinder>(s => s.GetService<HardwareMonitor>());
             services.AddSingleton<IHardwareFinder>(s => s.GetService<HardwareMonitor>());
+            //   Registered as Singleton
             services.AddSingleton<IValueUpdateManager, ValueUpdateManager>();
+            //   Registered as Singleton
             services.AddSingleton<IScreenDeviceManager, ScreenDeviceManager>();
+            //   Registered as Singleton
             services.AddSingleton<ITimeManager, TimeManager>();
+            //   Registered as Singleton
             services.AddSingleton<IWeatherManager, WeatherManager>();
             services.AddTransient<IEditorFileManager, EditorFileManager>();
 
@@ -67,17 +88,24 @@ namespace TuringSmartScreenTool
 
         private static FileInfo GetNLogConfig()
         {
-            var exeFullPath = Assembly.GetExecutingAssembly().Location;
-            var exeDir = Path.GetDirectoryName(exeFullPath);
-
             var nlogFileName =
 #if DEBUG
                 "NLog.Debug.config";
 #else
                 "NLog.Release.config";
 #endif
-
-            return new FileInfo(Path.Combine(exeDir, nlogFileName));
+            // If a config file exists in the appdata folder, use it preferentially.
+            var appDataDir = DirectoryInfoHelper.GetApplicationDataDirectory();
+            var addtionalNlogFile = new FileInfo(Path.Combine(appDataDir.FullName, nlogFileName));
+            if (addtionalNlogFile.Exists)
+            {
+                return addtionalNlogFile;
+            }
+            else
+            {
+                var assemblyDir = DirectoryInfoHelper.GetCurrentAssemblyDirectory();
+                return new FileInfo(Path.Combine(assemblyDir.FullName, nlogFileName));
+            }
         }
     }
 }
